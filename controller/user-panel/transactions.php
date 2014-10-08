@@ -9,7 +9,7 @@ if(!Me::$loggedIn)
 $transactions = Database::selectMultiple("SELECT * FROM currency_records WHERE uni_id=? ORDER BY date_exchange DESC LIMIT 0, 20", array(Me::$id));
 
 // Run Header
-require(SYS_PATH . "/controller/includes/user_panel_header.php");
+require(APP_PATH . "/includes/user_panel_header.php");
 
 echo '
 <table class="mod-table">
@@ -36,7 +36,7 @@ foreach($transactions as $t)
 		<td>' . ($t['amount'] > 0 ? number_format($t['amount'], 2) : '&nbsp;') . '</td>
 		<td>' . number_format($t['running_total'], 2) . '</td>
 		<td>' . $t['description'] . '</td>
-		<td>' . Time::fuzzy($t['date_exchange']) . '</td>
+		<td>' . Time::fuzzy((int) $t['date_exchange']) . '</td>
 	</tr>';
 }
 
