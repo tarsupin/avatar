@@ -1,11 +1,19 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
+// Make sure you're logged in
+if(!Me::$loggedIn)
+{
+	header("Location: /login?logAct=switch"); exit;
+}
+
+// Make sure the user has an avatar
 if(!isset($avatarData['base']))
 {
 	header("Location: /create-avatar"); exit;
 }
 
-$config['pageTitle'] = "Home";
+// Set page title
+$config['pageTitle'] = "Utilities";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -17,12 +25,13 @@ require(SYS_PATH . "/controller/includes/header.php");
 // Display Side Panel
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
+// Display List of Tools
 echo '
 <div id="panel-right"></div>
-<div id="content">
-	' . Alert::display() . '
-	<h2>Avatar</h2>
-	<p>Welcome to the avatar site!</p>
+<div id="content">' . Alert::display() . '	
+	<h2>Utilities</h2>
+	Currency > <a href="/utilities/transactions">Transaction Log</a><br />' .
+	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a>' : "")	. '
 </div>';
 
 // Display the Footer

@@ -33,6 +33,16 @@ class AppAvatar_config {
 		");
 		
 		Database::exec("
+		CREATE TABLE IF NOT EXISTS `user_packages`
+		(
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`package_id`			smallint(5)		unsigned	NOT NULL	DEFAULT '0',
+			
+			INDEX (`uni_id`, `package_id`)
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+		");
+		
+		Database::exec("
 		CREATE TABLE IF NOT EXISTS `user_outfits`
 		(
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
@@ -97,6 +107,7 @@ class AppAvatar_config {
 		(
 			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
 			`title`					varchar(32)					NOT NULL	DEFAULT '',
+			`clearance`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
 			PRIMARY KEY (`id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
@@ -111,6 +122,16 @@ class AppAvatar_config {
 			`cost`					smallint(6)		unsigned	NOT NULL	DEFAULT '0',
 			
 			UNIQUE (`shop_id`, `item_id`, `cost`)
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+		");
+		
+		Database::exec("
+		CREATE TABLE IF NOT EXISTS `packages_content`
+		(
+			`item_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`package_id`			smallint(5)		unsigned	NOT NULL	DEFAULT '0',
+			
+			UNIQUE (`item_id`, `package_id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 		");
 		

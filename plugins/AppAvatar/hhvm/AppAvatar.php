@@ -1,4 +1,4 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+<?hh if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
 
 ----------------------------------------
 ------ About the AppAvatar Plugin ------
@@ -47,8 +47,8 @@ abstract class AppAvatar {
 /****** Get Avatar Data ******/
 	public static function avatarData
 	(
-		$uniID			// <int> The Uni-Account to get the avatar data from.
-	)					// RETURNS <str:mixed> data on the avatar, or array with a blank avatar image source.
+		int $uniID			// <int> The Uni-Account to get the avatar data from.
+	): array <str, mixed>					// RETURNS <str:mixed> data on the avatar, or array with a blank avatar image source.
 	
 	// $avatar = AppAvatar::avatarData($uniID);
 	{
@@ -71,7 +71,7 @@ abstract class AppAvatar {
 	
 /****** Return list of valid avatar positions ******/
 	public static function positions (
-	)				// RETURNS <int:str> list of valid avatar positions
+	): array <int, str>				// RETURNS <int:str> list of valid avatar positions
 	
 	// $positions = AppAvatar::positions();
 	{
@@ -117,11 +117,11 @@ abstract class AppAvatar {
 /****** List a User's Items ******/
 	public static function getUserItems
 	(
-		$uniID			// <int> The Uni-Account to list the items of.
-	,	$position		// <str> The position of items to retrieve.
-	,	$gender			// <str> The gender of the avatar.
-	,	$group = true	// <bool> TRUE means you group similar items together.
-	)					// RETURNS <int:[str:mixed]> list of items
+		int $uniID			// <int> The Uni-Account to list the items of.
+	,	string $position		// <str> The position of items to retrieve.
+	,	string $gender			// <str> The gender of the avatar.
+	,	bool $group = true	// <bool> TRUE means you group similar items together.
+	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> list of items
 	
 	// $userItems = AppAvatar::getUserItems($uniID, $position, $gender);
 	{
@@ -137,9 +137,9 @@ abstract class AppAvatar {
 /****** Get your Equipped Items ******/
 	public static function getEquippedItems
 	(
-		$uniID			// <int> The ID of the avatar (Uni-Account) to retrieve items for.
-	,	$gender			// <str> The gender to retrieve.
-	)					// RETURNS <int:[str:mixed]> list of items
+		int $uniID			// <int> The ID of the avatar (Uni-Account) to retrieve items for.
+	,	string $gender			// <str> The gender to retrieve.
+	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> list of items
 	
 	// $equippedItems = AppAvatar::getEquippedItems($uniID, $gender);
 	{
@@ -152,8 +152,8 @@ abstract class AppAvatar {
 /****** Get your Inventory Positions ******/
 	public static function getInvPositions
 	(
-		$uniID		// <int> The Uni-Account to check positions for.
-	)				// RETURNS <int:str> list of items, or FALSE if failed.
+		int $uniID		// <int> The Uni-Account to check positions for.
+	): array <int, str>				// RETURNS <int:str> list of items, or FALSE if failed.
 	
 	// $positions = AppAvatar::getInvPositions($uniID);
 	{
@@ -181,9 +181,9 @@ abstract class AppAvatar {
 /****** Get Shop Items ******/
 	public static function getShopItems
 	(
-		$shopID			// <int> The ID of the shop to get items from.
-	,	$itemID = 0		// <int> A specific item to return from the shop, if desired.
-	)					// RETURNS <array> list of items, or empty array if failed.
+		int $shopID			// <int> The ID of the shop to get items from.
+	,	int $itemID = 0		// <int> A specific item to return from the shop, if desired.
+	): array					// RETURNS <array> list of items, or empty array if failed.
 	
 	// $items = AppAvatar::getShopItems($shopID, $itemID = 0);
 	{
@@ -199,9 +199,9 @@ abstract class AppAvatar {
 /****** Get Item Data ******/
 	public static function itemData
 	(
-		$itemID			// <int> The ID of the item to get the data from.
-	,	$columns = "*"	// <str> The columns to retrieve from the database.
-	)					// RETURNS <str:mixed> data of the item, or FALSE if failed.
+		int $itemID			// <int> The ID of the item to get the data from.
+	,	string $columns = "*"	// <str> The columns to retrieve from the database.
+	): array <str, mixed>					// RETURNS <str:mixed> data of the item, or FALSE if failed.
 	
 	// $itemData = AppAvatar::itemData($itemID);
 	{
@@ -212,9 +212,9 @@ abstract class AppAvatar {
 /****** Get the list of colors that an item has ******/
 	public static function getItemColors
 	(
-		$position		// <str> The position of the item (e.g. "hair", "chest", etc).
-	,	$title			// <str> The title of the item.
-	)					// RETURNS <array> a list of the item's colors, or empty array if none.
+		string $position		// <str> The position of the item (e.g. "hair", "chest", etc).
+	,	string $title			// <str> The title of the item.
+	): array					// RETURNS <array> a list of the item's colors, or empty array if none.
 	
 	// $colors = AppAvatar::getItemColors($position, $title);
 	{
@@ -258,11 +258,11 @@ abstract class AppAvatar {
 /****** Check if an item has a specific color ******/
 	public static function itemHasColor
 	(
-		$position		// <str> The position of the item (e.g. "hair", "chest", etc).
-	,	$title			// <str> The title of the item.
-	,	$gender			// <str> The gender that is using this item.
-	,	$color			// <str> The intended color of the item (to see if it's available).
-	)					// RETURNS <bool> TRUE if the color is available, or FALSE if not.
+		string $position		// <str> The position of the item (e.g. "hair", "chest", etc).
+	,	string $title			// <str> The title of the item.
+	,	string $gender			// <str> The gender that is using this item.
+	,	string $color			// <str> The intended color of the item (to see if it's available).
+	): bool					// RETURNS <bool> TRUE if the color is available, or FALSE if not.
 	
 	// AppAvatar::itemHasColor($position, $title, $gender, $color);
 	{
@@ -282,10 +282,10 @@ abstract class AppAvatar {
 /****** Update the Avatar's Image ******/
 	public static function updateImage
 	(
-		$uniID		// <str> The Uni-Account to update
-	,	$base		// <str> The character base to use.
-	,	$gender		// <str> The gender to use.
-	)				// RETURNS <bool> TRUE on success, FALSE on failure.
+		string $uniID		// <str> The Uni-Account to update
+	,	string $base		// <str> The character base to use.
+	,	string $gender		// <str> The gender to use.
+	): bool				// RETURNS <bool> TRUE on success, FALSE on failure.
 	
 	// AppAvatar::updateImage($uniID, $base, $gender);
 	{
@@ -332,10 +332,10 @@ abstract class AppAvatar {
 /****** Draw an Avatar from an Outfit ******/
 	public static function drawAvatarOutfit
 	(
-		$base			// <str> The character base to use.
-	,	$gender			// <str> The gender to use.
-	,	$outfitArray	// <array> The outfit that you want to draw.
-	)					// RETURNS <void>
+		string $base			// <str> The character base to use.
+	,	string $gender			// <str> The gender to use.
+	,	array $outfitArray	// <array> The outfit that you want to draw.
+	): void					// RETURNS <void>
 	
 	// AppAvatar::drawAvatarOutfit($base, $gender, $outfitArray);
 	{
@@ -390,10 +390,10 @@ abstract class AppAvatar {
 /****** Create an Avatar ******/
 	public static function createAvatar
 	(
-		$uniID			// <int> The Uni-Account to create an avatar for.
-	,	$base			// <str> The avatar base (race) to use.
-	,	$gender			// <str> The gender of the avatar.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The Uni-Account to create an avatar for.
+	,	string $base			// <str> The avatar base (race) to use.
+	,	string $gender			// <str> The gender of the avatar.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::createAvatar($uniID, $base, $gender);
 	{
@@ -421,9 +421,9 @@ abstract class AppAvatar {
 /****** Add Item to User ******/
 	public static function receiveItem
 	(
-		$uniID			// <int> The Uni-Account to receive an item.
-	,	$itemID			// <int> The item to provide (based on ID).
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The Uni-Account to receive an item.
+	,	int $itemID			// <int> The item to provide (based on ID).
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::receiveItem($uniID, $itemID);
 	{
@@ -434,9 +434,9 @@ abstract class AppAvatar {
 /****** Drop an Item from User ******/
 	public static function dropItem
 	(
-		$uniID			// <int> The Uni-Account to drop the item from.
-	,	$itemID			// <int> The item to drop (based on ID).
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The Uni-Account to drop the item from.
+	,	int $itemID			// <int> The item to drop (based on ID).
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::dropItem($uniID, $itemID);
 	{
@@ -447,9 +447,9 @@ abstract class AppAvatar {
 /****** Check if you own this Item ******/
 	public static function checkOwnItem
 	(
-		$uniID			// <int> The Uni-Account to check the item for.
-	,	$itemID			// <int> The item to check if you own.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The Uni-Account to check the item for.
+	,	int $itemID			// <int> The item to check if you own.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::checkOwnItem($uniID, $itemID);
 	{
@@ -460,12 +460,12 @@ abstract class AppAvatar {
 /****** Equip Item to Avatar ******/
 	public static function equip
 	(
-		$uniID			// <int> The avatar (Uni-Account) to equip an item to.
-	,	$itemID			// <int> The item to equip (based on ID).
-	,	$color			// <str> The color of the item that you're equipping.
-	,	$minOrder = -99	// <int> The minimum order position for the item.
-	,	$maxOrder = 99	// <int> The maximum order position for the item.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to equip an item to.
+	,	int $itemID			// <int> The item to equip (based on ID).
+	,	string $color			// <str> The color of the item that you're equipping.
+	,	int $minOrder = -99	// <int> The minimum order position for the item.
+	,	int $maxOrder = 99	// <int> The maximum order position for the item.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::equip($uniID, $itemID, $color, $minOrder, $maxOrder);
 	{
@@ -499,9 +499,9 @@ abstract class AppAvatar {
 /****** Unequip Item from Avatar ******/
 	public static function unequip
 	(
-		$uniID			// <int> The avatar (Uni-Account) to unequip an item from.
-	,	$itemID			// <int> The item to unequip (based on ID).
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to unequip an item from.
+	,	int $itemID			// <int> The item to unequip (based on ID).
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::unequip($uniID, $itemID);
 	{
@@ -523,10 +523,10 @@ abstract class AppAvatar {
 /****** Sort the Item Positions on an Avatar ******/
 	public static function sort
 	(
-		$uniID			// <int> The avatar (Uni-Account) to sort the positions for.
-	,	$itemID			// <int> The item that you're sorting.
-	,	$toOrder		// <int> The sort position that you're moving TO.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to sort the positions for.
+	,	int $itemID			// <int> The item that you're sorting.
+	,	int $toOrder		// <int> The sort position that you're moving TO.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::sort($uniID, $itemID, $toOrder);
 	{
@@ -556,10 +556,10 @@ abstract class AppAvatar {
 /****** Sort the Item Positions on an Avatar ******/
 	public static function sortMove
 	(
-		$uniID			// <int> The avatar (Uni-Account) to sort the positions for.
-	,	$fromOrder		// <int> The order that you're moving FROM (such as from position 8).
-	,	$toOrder		// <int> The order that you're moving TO (such as to position 4).
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to sort the positions for.
+	,	int $fromOrder		// <int> The order that you're moving FROM (such as from position 8).
+	,	int $toOrder		// <int> The order that you're moving TO (such as to position 4).
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::sortMove($uniID, $fromOrder, $toOrder);
 	{
@@ -599,9 +599,9 @@ abstract class AppAvatar {
 /****** Sort the Item Positions on an Avatar ******/
 	public static function sortDelete
 	(
-		$uniID			// <int> The avatar (Uni-Account) to sort the positions for.
-	,	$deleteOrder	// <int> The sort order that you're deleting.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to sort the positions for.
+	,	int $deleteOrder	// <int> The sort order that you're deleting.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::sortDelete($uniID, $deleteOrder);
 	{
@@ -622,9 +622,9 @@ abstract class AppAvatar {
 /****** Sort the Item Positions on an Avatar ******/
 	public static function sortInsert
 	(
-		$uniID			// <int> The avatar (Uni-Account) to sort the positions for.
-	,	$insertOrder	// <int> The sort order that you're deleting.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $uniID			// <int> The avatar (Uni-Account) to sort the positions for.
+	,	int $insertOrder	// <int> The sort order that you're deleting.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::sortInsert($uniID, $insertOrder);
 	{
@@ -645,8 +645,8 @@ abstract class AppAvatar {
 /****** Get Shop Title ******/
 	public static function getShopTitle
 	(
-		$shopID			// <int> The ID of the shop.
-	)					// RETURNS <str> title of the shop, or "" if failed.
+		int $shopID			// <int> The ID of the shop.
+	): string					// RETURNS <str> title of the shop, or "" if failed.
 	
 	// $title = AppAvatar::getShopTitle($shopID);
 	{
@@ -657,8 +657,8 @@ abstract class AppAvatar {
 /****** Get Shop Clearance ******/
 	public static function getShopClearance
 	(
-		$shopID			// <int> The ID of the shop.
-	)					// RETURNS <int> clearance of the shop, or "" if failed.
+		int $shopID			// <int> The ID of the shop.
+	): int					// RETURNS <int> clearance of the shop, or "" if failed.
 	
 	// $title = AppAvatar::getShopClearance($shopID);
 	{

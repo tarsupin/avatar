@@ -64,6 +64,9 @@ Metadata::addHeader('
 <script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>');
 */
 
+// Set page title
+$config['pageTitle'] = "Dressing Room";
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -76,7 +79,8 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <style>
-.item_block { width:110px; height:150px; display:inline-block; margin:8px; text-align:center; }
+.item_block { display:inline-block; padding:15px; text-align:center; width:110px; }
+.item_block select { width:110px; }
 .item_block img { max-height:100px; max-width:80px; }
 </style>';
 

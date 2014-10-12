@@ -1,4 +1,4 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
+<?hh if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 abstract class AppAvatarAdmin {
 
@@ -27,15 +27,15 @@ abstract class AppAvatarAdmin {
 /****** Create a new Item ******/
 	public static function createItem
 	(
-		$title			// <str> The name of the item.
-	,	$position		// <str> The position (or body slot) of the item on the avatar.
-	,	$gender			// <str> This can be: male, female, or both.
-	,	$rarityLevel	// <int> 0 is normal, 1 or higher is exotic rarity. 8 is legendary, 9 is staff-only.
-	,	$coordXMale		// <int> The Male's X coordinate of the item on the avatar.
-	,	$coordYMale		// <int> The Male's Y coordinate of the item on the avatar.
-	,	$coordXFemale	// <int> The Female's X coordinate of the item on the avatar.
-	,	$coordYFemale	// <int> The Female's Y coordinate of the item on the avatar.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		string $title			// <str> The name of the item.
+	,	string $position		// <str> The position (or body slot) of the item on the avatar.
+	,	string $gender			// <str> This can be: male, female, or both.
+	,	int $rarityLevel	// <int> 0 is normal, 1 or higher is exotic rarity. 8 is legendary, 9 is staff-only.
+	,	int $coordXMale		// <int> The Male's X coordinate of the item on the avatar.
+	,	int $coordYMale		// <int> The Male's Y coordinate of the item on the avatar.
+	,	int $coordXFemale	// <int> The Female's X coordinate of the item on the avatar.
+	,	int $coordYFemale	// <int> The Female's Y coordinate of the item on the avatar.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::createItem($title, $position, $gender, $rarityLevel, $coordXMale, $coordYMale, $coordXFemale, $coordYFemale);
 	{
@@ -75,12 +75,12 @@ abstract class AppAvatarAdmin {
 /****** Edit an existing Item's Coordinates ******/
 	public static function editItemCoordinates
 	(
-		$itemID			// <int> The ID of the item to edit.
-	,	$coordXMale		// <int> The Male's X coordinate of the item on the avatar.
-	,	$coordYMale		// <int> The Male's Y coordinate of the item on the avatar.
-	,	$coordXFemale	// <int> The Female's X coordinate of the item on the avatar.
-	,	$coordYFemale	// <int> The Female's Y coordinate of the item on the avatar.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $itemID			// <int> The ID of the item to edit.
+	,	int $coordXMale		// <int> The Male's X coordinate of the item on the avatar.
+	,	int $coordYMale		// <int> The Male's Y coordinate of the item on the avatar.
+	,	int $coordXFemale	// <int> The Female's X coordinate of the item on the avatar.
+	,	int $coordYFemale	// <int> The Female's Y coordinate of the item on the avatar.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::editItemCoordinates($itemID, $coordXMale, $coordYMale, $coordXFemale, $coordYFemale);
 	{
@@ -103,9 +103,9 @@ abstract class AppAvatarAdmin {
 /****** Edit an Item's Position ******/
 	public static function editItemPosition
 	(
-		$itemID			// <int> The ID of the item to edit.
-	,	$position		// <str> The updated position for the item.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $itemID			// <int> The ID of the item to edit.
+	,	string $position		// <str> The updated position for the item.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::editItemPosition($itemID, $position);
 	{
@@ -121,8 +121,8 @@ abstract class AppAvatarAdmin {
 /****** Delete an Item ******/
 	public static function deleteItem
 	(
-		$itemID			// <int> The ID of the item to delete.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $itemID			// <int> The ID of the item to delete.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::deleteItem($itemID);
 	{
@@ -133,9 +133,9 @@ abstract class AppAvatarAdmin {
 /****** Create a Shop ******/
 	public static function createShop
 	(
-		$title			// <str> The title of the shop.
-	,	$clearance = 1	// <int> The required clearance to view or buy from the shop.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		string $title			// <str> The title of the shop.
+	,	int $clearance = 1	// <int> The required clearance to view or buy from the shop.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::createShop($title, $clearance);
 	{
@@ -146,9 +146,9 @@ abstract class AppAvatarAdmin {
 /****** Rename a Shop ******/
 	public static function renameShop
 	(
-		$shopID			// <int> The ID of the shop to rename.
-	,	$title			// <str> The title of the shop.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $shopID			// <int> The ID of the shop to rename.
+	,	string $title			// <str> The title of the shop.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::renameShop($shopID, $title);
 	{
@@ -159,10 +159,10 @@ abstract class AppAvatarAdmin {
 /****** Add Item to Shop Inventory ******/
 	public static function addShopItem
 	(
-		$shopID			// <int> The ID of the shop to add an item to.
-	,	$itemID			// <int> The ID of the item to add to the shop.
-	,	$cost			// <int> The cost (in standard currency) to purchase the item.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $shopID			// <int> The ID of the shop to add an item to.
+	,	int $itemID			// <int> The ID of the item to add to the shop.
+	,	int $cost			// <int> The cost (in standard currency) to purchase the item.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::addShopItem($shopID, $itemID, $cost);
 	{
@@ -173,9 +173,9 @@ abstract class AppAvatarAdmin {
 /****** Delete an Item from a Shop ******/
 	public static function deleteShopItem
 	(
-		$shopID			// <int> The ID of the shop to remove an item from.
-	,	$itemID			// <int> The ID of the item to remove from the shop.
-	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+		int $shopID			// <int> The ID of the shop to remove an item from.
+	,	int $itemID			// <int> The ID of the item to remove from the shop.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::deleteShopItem($shopID, $itemID);
 	{
