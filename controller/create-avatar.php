@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
+	Me::redirectLogin("/create-avatar");
 }
 
 // Make sure you don't already have an avatar

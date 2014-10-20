@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
+	Me::redirectLogin("/purchase-item");
 }
 
 // Make sure you have an avatar

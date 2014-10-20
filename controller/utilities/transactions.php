@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
+	Me::redirectLogin("/utilities/transactions");
 }
 
 // Get starting point for query
@@ -14,7 +14,7 @@ if ($url[2] < 0)	{ $url[2] = 0; }
 $transactions = Database::selectMultiple("SELECT * FROM currency_records WHERE uni_id=? ORDER BY date_exchange DESC LIMIT " . (20*$url[2]) . ", 20", array(Me::$id));
 
 // Set page title
-$config['pageTitle'] = "Transaction Log";
+$config['pageTitle'] = "Utilities > Transaction Log";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");

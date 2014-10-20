@@ -3,13 +3,13 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
+	Me::redirectLogin("/switch-avatar");
 }
 
 // Make sure you have an avatar
 if(!isset($avatarData['base']))
 {
-	header("Location: /shop-list"); exit;
+	header("Location: /create-avatar"); exit;
 }
 
 $config['pageTitle'] = "Switch Avatar";

@@ -26,8 +26,36 @@ abstract class AppTransfer {
 		
 		foreach($list as $item)
 		{
-			Database::query("INSERT INTO user_items (uni_id, item_id) VALUES (?, ?)", array($uniID, (int) $item['clothingID']));
-			Database::query("DELETE FROM _transfer_items WHERE id=? AND account=?", array((int) $item['id'], $oldUsername));
+			if(Database::query("INSERT INTO user_items (uni_id, item_id) VALUES (?, ?)", array($uniID, (int) $item['clothingID'])))
+			{
+				Database::query("DELETE FROM _transfer_items WHERE id=? AND account=? LIMIT 1", array((int) $item['id'], $oldUsername));
+			}
+		}
+		
+		return Database::endTransaction();
+	}
+	
+
+/****** Transfer Packages to New System ******/
+	public static function transferPackages
+	(
+		$uniID			// <int> The Uni-Account to transfer packages to.
+	,	$oldUsername	// <str> The old username account to transfer packages from.
+	)					// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppTransfer::transferPackages($uniID, $oldUsername);
+	{
+		// Get the transfer data
+		$list = Database::selectMultiple("SELECT id, packageID FROM _transfer_packages WHERE account=?", array($oldUsername));
+		
+		Database::startTransaction();
+		
+		foreach($list as $package)
+		{
+			if(Database::query("INSERT INTO user_packages (uni_id, package_id) VALUES (?, ?)", array($uniID, (int) $package['packageID'])))
+			{
+				Database::query("DELETE FROM _transfer_packages WHERE id=? AND account=? LIMIT 1", array((int) $package['id'], $oldUsername));
+			}
 		}
 		
 		return Database::endTransaction();

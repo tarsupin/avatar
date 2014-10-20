@@ -8,7 +8,7 @@ if(ENVIRONMENT == "production")
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
+	Me::redirectLogin("/utilities/free-auro");
 }
 
 // Run Action to get Free Auro
@@ -29,7 +29,7 @@ if($getLink = Link::clicked() and $getLink == "free-auro")
 }
 
 // Set page title
-$config['pageTitle'] = "Free Auro";
+$config['pageTitle'] = "Utilities > Free Auro";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");

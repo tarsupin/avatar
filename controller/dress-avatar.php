@@ -6,63 +6,159 @@ if(!isset($avatarData['base']))
 	header("Location: /create-avatar"); exit;
 }
 
+$outfitArray = AppOutfit::get(Me::$id, "default");
+
+if(!$getLink = Link::clicked())
+{
+	$getLink = "";
+}
+
 // Equip an item
 if(isset($_GET['equip']))
 {
 	$_GET['equip'] = (int) $_GET['equip'];
 	
 	$itemData = AppAvatar::itemData($_GET['equip']);
-	
-	// Check if you own the item
-	if(AppAvatar::checkOwnItem(Me::$id, $_GET['equip']))
+
+	// If a color was not provided (or is invalid), choose the first one
+	$colors = AppAvatar::getItemColors($itemData['position'], $itemData['title']);
+
+	if(!isset($_GET['color']) or !in_array($_GET['color'], $colors))
 	{
-		// If a color was not provided (or is invalid), choose the first one
-		$colors = AppAvatar::getItemColors($itemData['position'], $itemData['title']);
-		
-		if(!isset($_GET['color']) or !in_array($_GET['color'], $colors))
-		{
-			$_GET['color'] = $colors[0];
-		}
-		
-		// Equip your item
-		AppAvatar::equip(Me::$id, $_GET['equip'], $_GET['color'], $itemData['min_order'], $itemData['max_order']);
-		
-		// Update your avatar's image
-		AppAvatar::updateImage(Me::$id, $avatarData['base'], $avatarData['gender']);
+		$_GET['color'] = $colors[0];
 	}
+		
+	// Equip your item
+	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color'], "default");
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+	
+	// Save the changes
+	AppOutfit::save(Me::$id, "default", $outfitArray);
 }
 
 // Unequip an Item
 else if(isset($_GET['unequip']))
 {
-	AppAvatar::unequip(Me::$id, (int) $_GET['unequip']);
+	$outfitArray = AppOutfit::unequip($outfitArray, (int) $_GET['unequip']);
 	
 	// Update your avatar's image
-	AppAvatar::updateImage(Me::$id, $avatarData['base'], $avatarData['gender']);
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+	
+	// Save the outfit
+	AppOutfit::save(Me::$id, "default", $outfitArray);
 }
 
-// Reposition an item
-else if(isset($_GET['moveItem']) && isset($_GET['to']))
+// If we're unequipping everything
+else if($getLink == "unequipAll")
 {
-	AppAvatar::sort(Me::$id, (int) $_GET['moveItem'], (int) $_GET['to']);
+	$outfitArray = AppOutfit::unequipAll();
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+			
+	// Save the outfit
+	AppOutfit::save(Me::$id, "default", $outfitArray);
 }
 
-// List of categories to pick from
-$_GET['position'] = (!isset($_GET['position']) ? "body" : $_GET['position']);
+// If we're moving something left
+else if(isset($_GET['left']))
+{
+	$outfitArray = AppOutfit::move($outfitArray, $_GET['left'], "left");
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+
+	// Save the outfit
+	AppOutfit::save(Me::$id, "default", $outfitArray);
+}
+
+// If we're moving something right
+else if(isset($_GET['right']))
+{
+	$outfitArray = AppOutfit::move($outfitArray, $_GET['right'], "right");
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+
+	// Save the outfit
+	AppOutfit::save(Me::$id, "default", $outfitArray);
+}
+
+else if($getLink == "replace")
+{
+	$outfitArray2 = AppOutfit::get(Me::$id, "preview");
+	
+	$outfitArray = AppOutfit::unequipAll();
+	foreach($outfitArray2 as $key => $oa)
+	{
+		if($key < 0)
+		{
+			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], "default", true);
+		}
+		else
+		{
+			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], "default");
+		}
+	}
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+	
+	AppOutfit::save(Me::$id, "default", $outfitArray);
+}
+
+else if(isset($_POST['order']))
+{
+	// reformat code
+	$order = explode(",", $_POST['order']);
+	$outfitArray = array();
+	foreach ($order as $o)
+	{
+		$outfitArray[] = explode("#", $o);
+	}
+
+	// resort it all
+	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], "default");
+	
+	// Update your avatar's image
+	$aviData = Avatar::imageData(Me::$id);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+	
+	// Save the outfit
+	AppOutfit::save(Me::$id, "default", $outfitArray);
+}
+
+// Add links to nav panel
+WidgetLoader::add("SidePanel", 40, '
+	<div style="text-align:center;">
+		<a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
+		<a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview Image</a>
+	</div>');
 
 // Get the layers you can search between
 $positions = AppAvatar::getInvPositions(Me::$id);
 
+// List of categories to pick from
+$_GET['position'] = (!isset($_GET['position']) ? "" : $_GET['position']);
+
 // Add Javascript to header
-/*
 Metadata::addHeader('
 <!-- javascript -->
 <script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>');
-*/
+<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
+');
 
 // Set page title
 $config['pageTitle'] = "Dressing Room";
@@ -88,54 +184,76 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	<h3>Dressing Room</h3>';
-	
+
 	// Clothes currently worn
 	echo '
+	<form id="sortable" action="/dress-avatar" method="post">
+	<textarea id="order" name="order" style="display:none;"></textarea>
 	<ul id="equipped" class="dragndrop">';
-	
+
+	$outfitArray[0] = array(0, $avatarData['base']);
+	ksort($outfitArray);
+
+	$outfitArray = array_reverse($outfitArray);
+
 	// Gather your list of equipped items
-	$count = 0;
-	$equippedItems = AppAvatar::getEquippedItems(Me::$id, $avatarData['gender']);
-	
-	foreach($equippedItems as $eItem)
+	foreach($outfitArray as $pos => $item)
 	{
-		echo '
+		// Get Items
+		if($item[0] != 0)
+		{
+			$eItem = Database::selectOne("SELECT id, title, position FROM items WHERE id=?", array($item[0]));
+			
+			// Recognize Integers
+			$eItem['id'] = (int) $eItem['id'];
+			
+			$eItem['color'] = $item[1];
+			
+			echo '
 		<li id="worn_' . $eItem['id'] . '">
-			<div><img id="itemImg_' . $eItem['id'] . '_eq" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
-			<a id="link_' . $eItem['id'] . '_eq" class="close" href="/dress-avatar?position=' . $eItem['position'] . '&unequip=' . $eItem['id'] . '">&#10006;</a>
-			<select id="color_' . $eItem['id'] . '_eq" onchange="switch_color(' . $eItem['id'] . ', \'' . $eItem['position'] . '\', \'' . $eItem['title'] . '\', \'' . $avatarData['gender_full'] . '\', true)">';
-		
-		$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title']);
-		
-		foreach($colors as $color)
-		{
+			<div><img id="img_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
+			<a class="close" href="/dress-avatar?unequip=' . $eItem['id'] . '">&#10006;</a>
+			<select id="color_' . $eItem['id'] . '">';
+			
+			$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title']);
+			
+			foreach($colors as $color)
+			{
+				echo '
+				<option value="' . $color . '"' . ($color == $item[1] ? " selected" : "") . '>' . $color . '</option>';
+			}
+			
 			echo '
-			<option value="' . $color . '">' . $color . '</option>';
-		}
-		
-		echo '
 			</select>';
-		
-		if(isset($equippedItems[$count - 1]))
-		{
-			echo '
-			<a class="left" href="/dress-avatar?position=' . $_GET['position'] . '&moveItem=' . $eItem['id'] . '&to=' . $equippedItems[$count - 1]['sort_order'] . '">&lt;</a>';
-		}
-		
-		if(isset($equippedItems[$count + 1]))
-		{
-			echo '
-			<a class="right" href="/dress-avatar?position=' . $_GET['position'] . '&moveItem=' . $eItem['id'] . '&to=' . $equippedItems[$count + 1]['sort_order'] . '">&gt;</a>';
-		}
-		
-		echo '
+
+			if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
+			{
+				echo '
+			<a class="left" href="/dress-avatar?left=' . $eItem['id'] . '">&lt;</a>';
+			}
+			
+			if(isset($outfitArray[$pos + 1]) && $eItem['position'] != "skin")
+			{
+				echo '
+			<a class="right" href="/dress-avatar?right=' . $eItem['id'] . '">&gt;</a>';
+			}
+			
+				echo '
 		</li>';
-		
-		$count++;
+		}
+		else
+		{
+			echo '
+		<li id="worn_0">
+			<div style="line-height:50px;">Base</div>
+			<select id="color_0" disabled="disabled"><option value="' . ucfirst($avatarData['base']) . '">' . ucfirst($avatarData['base']) . '</option></select>
+		</li>';
+		}
 	}
-	
+
 	echo '
-	</ul>';
+	</ul>
+	</form>';
 	
 	// Show the layers you have access to
 	echo '
@@ -153,35 +271,38 @@ echo '
 	echo '
 	</div>';
 	
-	// Show the items within the category selected
-	$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position'], $avatarData['gender_full']);
-	
-	// If you have no items, say so
-	if(count($userItems) == 0)
+	if($_GET['position'] != "")
 	{
-		echo "<p>You have no items.</p>";
-	}
-	
-	foreach($userItems as $item)
-	{
-		$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
+		// Show the items within the category selected
+		$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position'], $avatarData['gender_full']);
 		
-		// Display the item block
-		echo '
-		<div class="item_block">
-			<a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '"><img id="itemImg_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default.png" /></a>
-			<br />' . $item['title'] . '
-			<select id="color_' . $item['id'] . '" name="color" onchange="switch_color(' . $item['id'] . ', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\')">';
-		
-		foreach($colors as $color)
+		// If you have no items, say so
+		if(count($userItems) == 0)
 		{
-			echo '
-				<option value="' . $color . '">' . $color . '</option>';
+			echo "<p>You have no items.</p>";
 		}
 		
-		echo '
-			</select>
-		</div>';
+		foreach($userItems as $item)
+		{
+			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
+			
+			// Display the item block
+			echo '
+			<div class="item_block">
+				<a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a>
+				<br />' . $item['title'] . '
+				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
+			
+			foreach($colors as $color)
+			{
+				echo '
+					<option value="' . $color . '">' . $color . '</option>';
+			}
+			
+			echo '
+				</select>
+			</div>';
+		}
 	}
 	
 	echo '
@@ -189,19 +310,13 @@ echo '
 
 ?>
 
-<script type="text/javascript">
-function switch_color(itemID, position, title, gender, equipped = false)
+<script src="/assets/scripts/reorder.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+function switch_item_inventory(id, layer, name, gender)
 {
-	var eq = (equipped != false) ? "_eq" : "";
-	
-	var imgswap = document.getElementById("itemImg_" + itemID + eq);
-	var colorswap = document.getElementById("color_" + itemID + eq);
-	var linkswap = document.getElementById("link_" + itemID + eq);
-	
-	var color = colorswap.options[colorswap.selectedIndex].value;
-	
-	linkswap.href = "/dress-avatar?equip=" + itemID + "&color=" + color;
-	imgswap.src = "/avatar_items/" + position + "/" + title + "/" + color + "_" + gender + ".png";
+	$("#pic_" + id).attr("src", "/avatar_items/" + layer + "/" + name + "/" + $("#item_" + id).val() + "_" + gender + ".png");
+	$("#link_" + id).attr("href", "/dress-avatar?equip=" + id + "&color=" + $("#item_" + id).val());
 }
 </script>
 

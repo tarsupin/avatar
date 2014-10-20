@@ -73,14 +73,7 @@
 
 .dragndrop li
 {
-	background-color:#c7e0ee;	
-	background-image:-linear-gradient(#c7e0ee, #e8eef1);
-	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
-	background-image:-ms-linear-gradient(top, #c7e0ee, #e8eef1);
-	background-image:-o-linear-gradient(#c7e0ee, #e8eef1);
-	background-image:-webkit-gradient(linear, left top, left bottom, from(#c7e0ee), to(#e8eef1));
-	background-image:-webkit-linear-gradient(top, #c7e0ee, #e8eef1);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
+	background-color:#e8e8e8;	
 	border-radius:5px;
 		-moz-border-radius:5px;
 		-webkit-border-radius:5px;
@@ -101,9 +94,8 @@
 .dragndrop select { width:100%; }
 .dragndrop div { height:50px; }
 
-.close, .buy, .owned
+.close
 {
-	color:#a49f95;
 	font-size:12px;
 	position:absolute;
 	text-decoration:none;
@@ -112,33 +104,15 @@
 
 .left, .right
 {
-	color:#a49f95;
 	font-weight:bold;
 	line-height:50px;
 	font-size:12px;
 	position:absolute;
 	text-decoration:none;
 	z-index:2;
-	opacity:0;
-		-khtml-opacity:0;
-		-moz-opacity:0;
-		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-	filter:alpha(opacity=0);
 }
 
 .close { right:2px; top:0px; }
-.buy { color:#a49f95; right:2px; top:42px; }
-.owned { color:#a49f95; right:4px; top:40px; }
-
-.left { left:2px; top:2px; }
-.right { right:2px; top:2px; }
-
-.left:hover, .right:hover
-{
-	opacity:1;
-		-khtml-opacity:1;
-		-moz-opacity:1;
-		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
-	filter:alpha(opacity=1);
-}
+.left { left:2px; top:4px; }
+.right { right:2px; top:4px; }
 

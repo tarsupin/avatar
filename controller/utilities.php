@@ -3,13 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	header("Location: /login?logAct=switch"); exit;
-}
-
-// Make sure the user has an avatar
-if(!isset($avatarData['base']))
-{
-	header("Location: /create-avatar"); exit;
+	Me::redirectLogin("/utilities");
 }
 
 // Set page title
@@ -31,7 +25,9 @@ echo '
 <div id="content">' . Alert::display() . '	
 	<h2>Utilities</h2>
 	Currency > <a href="/utilities/transactions">Transaction Log</a><br />' .
-	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a>' : "")	. '
+	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a><br/>' : "")	. '
+	<br/>
+	Transfer > <a href="/utilities/transfer">Transfer from Uni5</a><br/>
 </div>';
 
 // Display the Footer

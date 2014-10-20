@@ -1,6 +1,6 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-if(!isset($avatarData['base']))
+if(Me::$loggedIn and !isset($avatarData['base']))
 {
 	header("Location: /create-avatar"); exit;
 }

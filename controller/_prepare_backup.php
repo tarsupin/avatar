@@ -37,6 +37,7 @@ exit;
 DatabaseAdmin::renameTable("clothing_images", "items");
 DatabaseAdmin::copyTable("items", "_transfer_item_list");
 DatabaseAdmin::renameTable("exotic_packages", "packages");
+DatabaseAdmin::copyTable("packages", "_transfer_packages_list");
 
 echo 'Initial table structure has been prepared.';
 
@@ -162,18 +163,27 @@ foreach($allItemList as $fullL)
 	//if($fullL < "shoes") { continue; }
 
 	if($fullL == "base") { continue; }
-	if($fullL == "temp") { continue; }
+	if($fullL == "temp")
+	{
+		// temp is not a layer position, but was used for recoloring purposes
+		// that functionality will be moved elsewhere and important files have been backed up, so this isn't needed
+		if(Dir::exists(APP_PATH . "/avatar_items/" . $fullL))
+		{
+			Dir::delete(APP_PATH . "/avatar_items/" . $fullL);
+		}
+		continue;
+	}
 	
 	$list = Dir::getFolders(APP_PATH . "/avatar_items/" . $fullL);
 	
 	foreach($list as $l)
 	{
 		// Skip if it already exists
-		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
+		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
 		{
 			continue;
 		}
-		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
+		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
 		{
 			continue;
 		}
@@ -184,7 +194,7 @@ foreach($allItemList as $fullL)
 			File::delete(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default.png");
 		}
 		
-		// Cycle through all of the items and create a default image (height of 100px)
+		// Cycle through all of the items and create a default image (max height of 100px and max width of 80)
 		$results = Dir::getFiles(APP_PATH . "/avatar_items/" . $fullL . "/" . $l);
 		
 		if($results)
@@ -193,13 +203,13 @@ foreach($allItemList as $fullL)
 			$has_gender = array("female" => false, "male" => false);
 			foreach($results as $result)
 			{
-				if(substr($result,-11) == "_female.png" and $has_gender['female'] === false)
+				if(substr($result,-11) == "_female.png" && $has_gender['female'] === false)
 				{
 					$has_gender['female'] = $result;
 					if ($has_gender['male'] !== false)
 						break;
 				}
-				if(substr($result,-9) == "_male.png" and $has_gender['male'] === false)
+				if(substr($result,-9) == "_male.png" && $has_gender['male'] === false)
 				{
 					$has_gender['male'] = $result;
 					if ($has_gender['female'] !== false)
@@ -209,7 +219,7 @@ foreach($allItemList as $fullL)
 			
 			// Copy the images to a new location
 			foreach($has_gender as $key => $val)
-			{		
+			{
 				if($val !== false)
 				{
 					$image = new Image(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/" . $val);
@@ -257,7 +267,7 @@ if($value == false)
 	AppAvatarAdmin::createShop("Wrappers", 5);
 	Database::endTransaction();
 	
-	echo "Created shops";
+	echo "Created shops.";
 }
 
 exit;
@@ -334,7 +344,7 @@ foreach($results as $result)
 
 Database::endTransaction();
 
-echo "Added inventory to shops.";
+echo "Added inventory to shops and packages.";
 
 exit;
 
@@ -352,7 +362,7 @@ DatabaseAdmin::dropColumn("items", "rel_to_base");
 
 DatabaseAdmin::dropColumn("packages", "image");
 
-echo "Phase 2 updates of the items table is complete.";
+echo "Phase 2 updates of the items and packages tables is complete.";
 
 exit;
 
@@ -368,7 +378,7 @@ DatabaseAdmin::addIndex("items", "position, gender", "INDEX");
 DatabaseAdmin::setEngine("items");
 DatabaseAdmin::setEngine("packages");
 
-echo "Phase 3 updates of the items table is complete.";
+echo "Phase 3 updates of the items and packages tables is complete.";
 
 exit;
 
@@ -379,6 +389,147 @@ exit;
 /*
 	Prepare Item Transfer
 	-------------------
-	Step 1. Import "avatar_clothing".
-	Step 2.Rename "avatar_clothing" to "_transfer_items".
+	Step 1. Import "avatar_clothing" and "exotic_packages_owned".
+	Step 2. [HANDLED AUTOMATICALLY] Rename "avatar_clothing" to "_transfer_items" and "exotic_packages_owned" to "_transfer_packages".
+	Step 3. Import "s4u_accounts" and "s4u_account_trackers".
+	Step 4. [HANDLED AUTOMATICALLY] Combine Uni5 password and Auro amount into "_transfer_accounts".
+	Step 5. Import "wrap_items_staff".
+	Step 6. [HANDLED AUTOMATICALLY] Rename "wrap_items_staff" to "wrappers" and change to new structure.
 */
+
+echo 'Now download "avatar_clothing" and "exotic_packages_owned" before continuing.';
+
+exit;
+
+
+/********************************************************
+****** Prepare the proper table structure (Part 3) ******
+********************************************************/
+
+// You must have uploaded "avatar_clothing" and "exotic_packages_owned" by now.
+
+DatabaseAdmin::renameTable("avatar_clothing", "_transfer_items");
+DatabaseAdmin::renameTable("exotic_packages_owned", "_transfer_packages");
+DatabaseAdmin::dropColumn("_transfer_items", "in_trade");
+DatabaseAdmin::dropColumn("_transfer_packages", "in_trade");
+
+echo 'Tables have been prepared.';
+
+exit;
+
+
+/******************************************
+****** Get remaining individual data ******
+*******************************************/
+
+echo 'Now download "s4u_accounts" and "s4u_account_trackers" before continuing.';
+
+exit;
+
+
+/********************************************************
+****** Prepare the proper table structure (Part 4) ******
+********************************************************/
+
+// You must have uploaded "s4u_accounts" and "s4u_account_trackers" by now.
+
+DatabaseAdmin::renameTable("s4u_accounts", "_transfer_accounts");
+
+Database::exec("ALTER TABLE `_transfer_accounts` CHANGE `id` `id` int(10) unsigned NOT NULL");
+Database::exec("ALTER TABLE `_transfer_accounts` DROP PRIMARY KEY");
+
+DatabaseAdmin::dropIndex("_transfer_accounts", "account");
+Database::exec("ALTER TABLE `_transfer_accounts` ADD PRIMARY KEY(account)");
+
+DatabaseAdmin::dropIndex("_transfer_accounts", "clearance");
+
+DatabaseAdmin::dropColumn("_transfer_accounts", "id");
+DatabaseAdmin::dropColumn("_transfer_accounts", "clearance");
+
+DatabaseAdmin::addColumn("_transfer_accounts", "auro", "float(10,2) unsigned NOT NULL", "0.00");
+
+echo "Table structure has been prepared.";
+
+exit;
+
+/**************************************************
+****** Combine Uni5 password and Auro amount ******
+***************************************************/
+
+Database::startTransaction();
+
+$results = Database::selectMultiple("SELECT account, auro FROM s4u_account_trackers", array());
+foreach($results as $result)
+{
+	Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array((float) $result['auro'], $result['account']));
+}
+
+Database::endTransaction();
+
+DatabaseAdmin::dropTable("s4u_account_trackers");
+
+echo "Auro amount has been moved to the _transfer_accounts table.";
+
+exit;
+
+
+/******************************************
+****** Get wrapper data ******
+*******************************************/
+
+echo 'Now download "wrap_items_staff" before continuing.';
+
+exit;
+
+
+/***********************************************
+****** Adjust structure of wrappers table ******
+************************************************/
+
+// You must have uploaded "wrap_items_staff" by now.
+
+DatabaseAdmin::renameTable("wrap_items_staff", "wrappers");
+DatabaseAdmin::copyTable("wrappers", "_transfer_wrappers_list");
+
+Database::exec("ALTER TABLE `wrappers` DROP PRIMARY KEY");
+
+DatabaseAdmin::renameColumn("wrappers", "item_id", "id");
+DatabaseAdmin::editColumn("wrappers", "id", "mediumint(8) unsigned NOT NULL", "0");
+DatabaseAdmin::dropColumn("wrappers", "may_keep");
+DatabaseAdmin::addColumn("wrappers", "replacement", "mediumint(8) unsigned NOT NULL", "0");
+
+Database::exec("ALTER TABLE `wrappers` ADD PRIMARY KEY(id)");
+
+DatabaseAdmin::setEngine("wrappers");
+
+echo "Table structure has been prepared.";
+
+exit;
+
+
+/**********************************************
+****** Set replacement items for wrappers *****
+***********************************************/
+
+Database::startTransaction();
+
+$results = Database::selectMultiple("SELECT id, content FROM wrappers", array());
+foreach($results as $result)
+{
+	// check whether the wrapper was a "staying" one and has a replacement included
+	$wrap = Database::selectOne("SELECT title FROM items WHERE id=?", array($result['id']));	
+	$content = explode(",", $result['content']);
+	$item = (int) array_pop($content);
+	$content = implode(",", $content);
+	$cont = Database::selectOne("SELECT title FROM items WHERE id=?", array($item));
+	if($wrap['title'] == $cont['title'])
+	{
+		Database::query("UPDATE wrappers SET content=?, replacement=? WHERE id=? LIMIT 1", array($content, $item, (int) $wrap['id']));
+	}
+}
+
+Database::endTransaction();
+
+echo "Replacements have been switched to their own column.";
+
+exit;
