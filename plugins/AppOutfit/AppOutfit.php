@@ -324,7 +324,7 @@ abstract class AppOutfit {
 		// Overwrite the file if it already exists
 		if($check)
 		{
-			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? LIMIT 1", array(time() + 0, Me::$id));
+			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? LIMIT 1", array(time() -1, Me::$id));
 			return Database::query("UPDATE user_outfits SET outfit_json=? WHERE uni_id=? AND type=? LIMIT 1", array(json_encode($outfitArray), $uniID, $type));
 		}
 		

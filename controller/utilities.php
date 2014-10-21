@@ -25,7 +25,16 @@ echo '
 <div id="content">' . Alert::display() . '	
 	<h2>Utilities</h2>
 	Currency > <a href="/utilities/transactions">Auro Log</a><br />' .
-	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a><br/>' : "")	. '
+	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a><br/>' : "")	. '	
+	<br/>
+	Outfit > <a href="/utilities/outfitcode-real">Outfit Code (Current Avatar)</a><br/>
+	Outfit > <a href="/utilities/outfitcode-preview">Outfit Code (Preview Avatar)</a><br/>
+	<br/>
+	Exotic Packages > <a href="/utilities/exotic-open">Open Exotic Package</a><br/>
+	Exotic Packages > <a href="/utilities/exotic-list">List of Exotic Packages</a><br/>
+	<br/>
+	Wrappers > <a href="/utilities/wrapper-open">Open Wrapper</a><br/>
+	Wrappers > <a href="/utilities/wrapper-list">List of Wrappers</a><br/>
 	<br/>
 	Transfer > <a href="/utilities/transfer">Transfer from Uni5</a>
 </div>';

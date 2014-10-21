@@ -14,6 +14,17 @@ $config['pageTitle'] = "Shops";
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
+// Add Javascript to header
+Metadata::addHeader('
+<!-- javascript -->
+<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
+<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
+');
+
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");

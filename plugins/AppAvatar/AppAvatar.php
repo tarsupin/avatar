@@ -24,10 +24,14 @@ AppAvatar::updateImage($uniID);
 
 AppAvatar::createAvatar($uniID, $base, $gender);
 AppAvatar::purchaseItem($itemID);
+
 AppAvatar::receiveItem($uniID, $itemID);
 AppAvatar::dropItem($uniID, $itemID);
+AppAvatar::receivePackage($uniID, $packageID);
+AppAvatar::dropPackage($uniID, $packageID);
 
 AppAvatar::checkOwnItem($uniID, $itemID);
+AppAvatar::checkOwnPackage($uniID, $packageID);
 
 $title = AppAvatar::getShopTitle($shopID);
 $clearance = AppAvatar::getShopClearance($shopID);
@@ -123,7 +127,7 @@ abstract class AppAvatar {
 			return array();
 		}
 		
-		return Database::selectMultiple("SELECT ui.item_id as id, i.title FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ''), array($uniID, $position, $gender[0], 'b'));
+		return Database::selectMultiple("SELECT ui.item_id as id, i.title, COUNT(id) as count FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ''), array($uniID, $position, $gender[0], 'b'));
 	}
 	
 	
@@ -428,6 +432,32 @@ abstract class AppAvatar {
 	}
 	
 	
+/****** Add Package to User ******/
+	public static function receivePackage
+	(
+		$uniID			// <int> The Uni-Account to receive a package.
+	,	$packageID			// <int> The package to provide (based on ID).
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::receivePackage($uniID, $packageID);
+	{
+		return Database::query("INSERT INTO `user_packages` (uni_id, package_id) VALUES (?, ?)", array($uniID, $packageID));
+	}
+	
+	
+/****** Drop an Item from User ******/
+	public static function dropPackage
+	(
+		$uniID			// <int> The Uni-Account to drop the package from.
+	,	$packageID		// <int> The package to drop (based on ID).
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::dropItem($uniID, $itemID);
+	{
+		return Database::query("DELETE FROM `user_packages` WHERE uni_id=? AND package_id=? LIMIT 1", array($uniID, $packageID));
+	}
+	
+	
 /****** Check if you own this Item ******/
 	public static function checkOwnItem
 	(
@@ -438,6 +468,19 @@ abstract class AppAvatar {
 	// AppAvatar::checkOwnItem($uniID, $itemID);
 	{
 		return (Database::selectValue("SELECT item_id FROM user_items WHERE uni_id=? AND item_id=? LIMIT 1", array($uniID, $itemID))) ? true : false;
+	}
+	
+
+/****** Check if you own this Package ******/
+	public static function checkOwnPackage
+	(
+		$uniID			// <int> The Uni-Account to check the package for.
+	,	$packageID			// <int> The package to check if you own.
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::checkOwnPackage($uniID, $packageID);
+	{
+		return (Database::selectValue("SELECT package_id FROM user_packages WHERE uni_id=? AND package_id=? LIMIT 1", array($uniID, $packageID))) ? true : false;
 	}
 	
 	

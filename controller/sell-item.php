@@ -85,7 +85,7 @@ echo '
 	
 	foreach($images as $img)
 	{
-		if(strpos($img, "_" . ($avatarData['gender'] == "f" ? "female" : "male") . ".png") > -1)
+		if(strpos($img, "_" . ($avatarData['gender'] == "f" ? "female" : "male") . ".png") > -1 && strpos($img, "default_") === false)
 		{
 			echo '
 	<img src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/' . $img . '" />';

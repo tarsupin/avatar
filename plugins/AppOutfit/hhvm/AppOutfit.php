@@ -76,7 +76,7 @@ abstract class AppOutfit {
 		// Make sure the item allows this color
 		if(!AppAvatar::itemHasColor($itemData['position'], $itemData['title'], $gender, $color))
 		{
-			Alert::error("Missing Color", $itemData['title'] . " does not exist in the color " . $color . ".");
+			Alert::error($itemData['title'] . " Missing Color", $itemData['title'] . " does not exist in the color " . $color . ".");
 			return $outfitArray;
 		}
 		
@@ -96,7 +96,7 @@ abstract class AppOutfit {
 		{
 			if(!AppAvatar::checkOwnItem(Me::$id, $itemID))
 			{
-				Alert::error("Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+				Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
 				return $outfitArray;
 			}
 		}
@@ -324,7 +324,7 @@ abstract class AppOutfit {
 		// Overwrite the file if it already exists
 		if($check)
 		{
-			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? LIMIT 1", array(time() + 0, Me::$id));
+			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? LIMIT 1", array(time() -1, Me::$id));
 			return Database::query("UPDATE user_outfits SET outfit_json=? WHERE uni_id=? AND type=? LIMIT 1", array(json_encode($outfitArray), $uniID, $type));
 		}
 		
@@ -346,6 +346,7 @@ abstract class AppOutfit {
 		$toerase['male'] = array("base" => array(), "skin" => array(), "shoes" => array());
 		foreach($outfitArray as $oa)
 		{
+			// the item ID itself must be saved so that the item doesn't erase parts of itself
 			switch($oa[0])
 			{
 				case 2489:	// Mermaid Tail Blue
@@ -356,40 +357,40 @@ abstract class AppOutfit {
 				case 2949:	// Ebony Centaur Legs
 				case 2950:	// Chestnut Centaur Legs
 				case 2951:	// Ivory Centaur Legs
-					$toerase['female']['base'][] = array(30, 220, 160, 163);
-					$toerase['female']['skin'][] = array(30, 220, 160, 163);
-					$toerase['male']['base'][] = array(30, 230, 150, 153);
-					$toerase['male']['skin'][] = array(30, 230, 150, 153);
+					$toerase['female']['base'][] = array(30, 220, 160, 163, $oa[0]);
+					$toerase['female']['skin'][] = array(30, 220, 160, 163, $oa[0]);
+					$toerase['male']['base'][] = array(30, 230, 150, 153, $oa[0]);
+					$toerase['male']['skin'][] = array(30, 230, 150, 153, $oa[0]);
 					break;
 				case 3169:	// Peg
-					$toerase['female']['base'][] = array(118, 263, 87, 65);
-					$toerase['female']['skin'][] = array(118, 263, 87, 65);
-					$toerase['female']['base'][] = array(136, 328, 69, 55);
-					$toerase['female']['skin'][] = array(136, 328, 69, 55);
-					$toerase['male']['base'][] = array(0, 260, 100, 123);
-					$toerase['male']['skin'][] = array(0, 260, 100, 123);
-					$toerase['female']['shoes'][] = array(116, 263, 89, 48);
-					$toerase['female']['shoes'][] = array(127, 311, 78, 19);
-					$toerase['female']['shoes'][] = array(136, 330, 69, 53);
-					$toerase['male']['shoes'][] = array(0, 262, 98, 121);
+					$toerase['female']['base'][] = array(118, 263, 87, 65, $oa[0]);
+					$toerase['female']['skin'][] = array(118, 263, 87, 65, $oa[0]);
+					$toerase['female']['base'][] = array(136, 328, 69, 55, $oa[0]);
+					$toerase['female']['skin'][] = array(136, 328, 69, 55, $oa[0]);
+					$toerase['male']['base'][] = array(0, 260, 100, 123, $oa[0]);
+					$toerase['male']['skin'][] = array(0, 260, 100, 123, $oa[0]);
+					$toerase['female']['shoes'][] = array(116, 263, 89, 48, $oa[0]);
+					$toerase['female']['shoes'][] = array(127, 311, 78, 19, $oa[0]);
+					$toerase['female']['shoes'][] = array(135, 330, 69, 53, $oa[0]);
+					$toerase['male']['shoes'][] = array(0, 262, 98, 121, $oa[0]);
 					break;
 				case 3171:	// Hook
-					$toerase['female']['base'][] = array(143, 174, 62, 43);
-					$toerase['female']['skin'][] = array(143, 174, 62, 43);
-					$toerase['male']['base'][] = array(0, 171, 74, 53);
-					$toerase['male']['skin'][] = array(0, 171, 74, 53);
+					$toerase['female']['base'][] = array(143, 174, 62, 43, $oa[0]);
+					$toerase['female']['skin'][] = array(143, 174, 62, 43, $oa[0]);
+					$toerase['male']['base'][] = array(0, 171, 74, 53, $oa[0]);
+					$toerase['male']['skin'][] = array(0, 171, 74, 53, $oa[0]);
 					break;
 				case 1362:	// Booby Base
 				case 3002:	// Heel Feet
 				case 3248:	// Velvet Skin Heels
 				case 3303:	// Ballerina Base
 				case 3455:  // Velvet Ballerina
-					$toerase['female']['base'][] = array(0, 0, 205, 383);
+					$toerase['female']['base'][] = array(0, 0, 205, 383, $oa[0]);
 					break;
 				case 3302:	// Dancer Base
 				case 3454:  // Velvet Dancer
-					$toerase['female']['base'][] = array(0, 0, 205, 383);
-					$toerase['male']['base'][] = array(0, 0, 205, 383);
+					$toerase['female']['base'][] = array(0, 0, 205, 383, $oa[0]);
+					$toerase['male']['base'][] = array(0, 0, 205, 383, $oa[0]);
 					break;
 			}
 		}
@@ -478,12 +479,16 @@ abstract class AppOutfit {
 				imagealphablending($draw->resource, false);
 				foreach($toerase[$itemData['position']] as $te)
 				{
-					$localx = $te[0] - $itemData[$cX];
-					$localy = $te[1] - $itemData[$cY];
-					imagefilledrectangle($draw->resource, $localx, $localy, $localx+$te[2], $localy+$te[3], $background_color);
+					// don't erase from item itself
+					if($te[4] != $content[0])
+					{
+						$localx = $te[0] - $itemData[$cX];
+						$localy = $te[1] - $itemData[$cY];
+						imagefilledrectangle($draw->resource, $localx, $localy, $localx+$te[2], $localy+$te[3], $background_color);
+					}
 				}
 				imagecopy($image->resource, $draw->resource, $itemData[$cX], $itemData[$cY], 0, 0, $draw->width, $draw->height);
-				imagedestroy($image2->resource);
+				imagedestroy($draw->resource);
 			}
 			// Copy this onto the avatar image
 			else

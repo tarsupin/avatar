@@ -73,12 +73,12 @@ echo '
 		if($url[2] > 0)
 		{
 			echo '
-	<a href="utilities/transactions/' . ($url[2]-1) . '"><span class="icon-arrow-left"></span> Newer</a>';
+	<a href="utilities/transactions/' . ($url[2]-1) . '">Newer <span class="icon-arrow-left"></span></a>';
 		}
 		if(isset($transactions[19]))
 		{
 			echo '
-	<a href="utilities/transactions/' . ($url[2]+1) . '">Older <span class="icon-arrow-right"></span></a>';
+	<a href="utilities/transactions/' . ($url[2]+1) . '"><span class="icon-arrow-right"></span> Older</a>';
 		}
 	}
 echo '

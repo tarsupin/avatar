@@ -65,14 +65,14 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Purchase ' . $item['title'] . '</h2>
-	<p>Are you sure you want to purchase ' . $item['title'] . ' for ' . $item['cost'] . ' Auro? [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "f" ? 'female' : 'male')) . ']</p>';
+	<p>Are you sure you want to purchase ' . $item['title'] . ' for ' . $item['cost'] . ' Auro? [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']</p>';
 	
 	// Get some of the items
 	$images = Dir::getFiles(APP_PATH . "/avatar_items/" . $item['position'] . '/' . $item['title'] . '/');
 	
 	foreach($images as $img)
 	{
-		if(strpos($img, "_" . ($avatarData['gender'] == "f" ? "female" : "male") . ".png") > -1)
+		if(strpos($img, "_" . ($avatarData['gender'] == "m" ? "male" : "female") . ".png") > -1 && strpos($img, "default_") === false)
 		{
 			echo '
 	<img src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/' . $img . '" />';

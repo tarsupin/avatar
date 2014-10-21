@@ -288,7 +288,7 @@ echo '
 			echo '
 			<div class="item_block">
 				<a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a>
-				<br />' . $item['title'] . '
+				<br />' . $item['title'] . ($item['count'] > 1 ? ' <span style="color:#fb7c7c;">(' . $item['count'] . ')</span>' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)

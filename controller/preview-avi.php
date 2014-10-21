@@ -151,7 +151,7 @@ html,body { background-color:white; }
 
 // Clothes currently worn
 echo '
-<form id="sortable" action="/preview-avi" method="post" style="margin-left:222px;">
+<form id="sortable" action="/preview-avi" method="post" style="margin-left:206px;">
 ' . Alert::display() . '
 <textarea id="order" name="order" style="display:none;"></textarea>
 <ul id="equipped" class="dragndrop">';
