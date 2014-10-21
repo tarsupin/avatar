@@ -21,7 +21,6 @@ if(!isset($url[1]))					{ header("Location: /shop-list"); exit; }
 $shopID = (int) $url[1];
 $shopTitle = AppAvatar::getShopTitle($shopID);
 $shopClearance = AppAvatar::getShopClearance($shopID);
-$cacheRefresh = 0;
 
 // Check that the shop exists
 if($shopTitle == "") 				{ header("Location: /shop-list"); exit; }
@@ -29,33 +28,38 @@ if($shopTitle == "") 				{ header("Location: /shop-list"); exit; }
 // Check that you're allowed to view this shop
 if(Me::$clearance < $shopClearance)	{ header("Location: /shop-list"); exit; }
 
-// Run Staff Tools
-if($runLink = Link::clicked())
-{
-	// Refresh the Shop Cache
-	if($runLink == "refresh-shop")	{ $cacheRefresh = 10; }
-}
-
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>');
-
 // Set page title
 $config['pageTitle'] = "Shops > " . $shopTitle;
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
+// Add Javascript to header
+Metadata::addHeader('
+<!-- javascript -->
+<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
+<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
+');
+
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
 
 // Display Side Panel
+WidgetLoader::add("SidePanel", 40, '
+	<div class="panel-links" style="text-align:center;">
+		<a href="javascript:review_item(0);">Open Preview Window</a>
+	</div>
+	<br/>');
+
+// Add list of shops
 if(!Me::$loggedIn)	{ $extra = '/' . $avatarData['gender']; }
 else				{ $extra = ''; }
-WidgetLoader::add("SidePanel", 40, '
+WidgetLoader::add("SidePanel", 50, '
 	<div class="panel-box"><ul class="panel-slots">
 		<li class="nav-slot' . ($url[1] == 1 ? " nav-active" : "") . '"><a href="/shop/1' . $extra . '">A Cut Above<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot' . ($url[1] == 2 ? " nav-active" : "") . '"><a href="/shop/2' . $extra . '">All That Glitters<span class="icon-circle-right nav-arrow"></span></a></li>
@@ -76,7 +80,7 @@ WidgetLoader::add("SidePanel", 40, '
 	
 if(Me::$clearance >= 5)
 {
-	WidgetLoader::add("SidePanel", 50, '
+	WidgetLoader::add("SidePanel", 60, '
 	<div class="panel-box"><ul class="panel-slots">
 		<li class="nav-slot' . ($url[1] == 13 ? " nav-active" : "") . '"><a href="/shop/13' . $extra . '">Archive<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot' . ($url[1] == 16 ? " nav-active" : "") . '"><a href="/shop/16' . $extra . '">Staff Shop<span class="icon-circle-right nav-arrow"></span></a></li>
@@ -87,26 +91,11 @@ if(Me::$clearance >= 5)
 
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
-echo '
-<style>
-.shop-block { display:inline-block; padding:15px; text-align:center; width:110px; }
-.shop-block select { width:110px; }
-.shop-block img { max-height:100px; max-width:80px; }
-</style>';
-
+// Display Page
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
 Alert::display();
-
-// Staff
-if(Me::$clearance >= 5)
-{
-	echo '
-	<div style="padding-bottom:20px;">
-		Staff Tools: <a href="/shop/' . $shopID . '?refresh=1&' . Link::prepare("refresh-shop") . '">Refresh Shop</a>
-	</div>';
-}
 
 // Shop Display
 echo '
@@ -115,7 +104,7 @@ echo '
 // Attempt to load the cached version of this shop page
 $cachedPage = "shop_" . $shopID . "_" . $avatarData['gender'];
 
-if(!CacheFile::load($cachedPage, $cacheRefresh, true))
+if(!CacheFile::load($cachedPage, 0, true))
 {
 	// Prepare the Shop
 	$html = "";
@@ -134,16 +123,13 @@ if(!CacheFile::load($cachedPage, $cacheRefresh, true))
 		// Get list of colors
 		$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
 		if(!$colors) { continue; }
-
-		$genderShow = ($item['gender'] == "b" ? $avatarData['gender'] : $item['gender']);
-		$genderShow = ($genderShow == "f" ? "female" : "male");
-
+		
 		// Display the Item					
 		$html .= '
-		<div class="shop-block">
-			<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $genderShow . '.png" /></a><br />
+		<div class="item_block">
+			<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a><br />
 			' . $item['title'] . '<br />
-			<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $genderShow . '\');">';
+			<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)
 			{
@@ -175,18 +161,42 @@ if(!CacheFile::load($cachedPage, $cacheRefresh, true))
 echo '
 </div>';
 
+// Allow staff to purchase all items (replaces the "Preview" text with a purchase link)
+if(Me::$clearance >= 5)
+{
+?>
+		
+<script type='text/javascript'>
+	$(".item_block").each(function(index)
+	{
+		var html = $(this).html();
+		html = html.trim();
+		if (html.substr(html.length-7) == "Preview")
+		{
+			var id = $(this).children("select").attr("id");
+			id = id.substr(id.indexOf("_")+1);
+			html = html.substr(0, html.length-7) + '<a href="/purchase-item/' + id + '?shopID=' + <?php echo $url[1]; ?> + '">Buy</a>';
+			$(this).html(html);
+		}
+	});
+</script>
+
+<?php
+}
+
 // Indicate items you own
 if(Me::$loggedIn)
 {
 	$items = array();
-	$positions = AppAvatar::getInvPositions(Me::$id);
-	foreach ($positions as $position)
+	$owned = Database::selectMultiple("SELECT DISTINCT shop_inventory.item_id FROM user_items INNER JOIN shop_inventory ON user_items.item_id=shop_inventory.item_id WHERE uni_id=? and shop_id=?", array(Me::$id, $shopID));
+	foreach($owned as $own)
 	{
-		$result = AppAvatar::getUserItems(Me::$id, $position, $avatarData['gender']);
-		foreach($result as $res)
-		{
-			$items[] = $res['id'];
-		}
+		$items[] = $own['item_id'];
+	}
+	// prevent problem with javascript array
+	if(count($items) == 1)
+	{
+		$items[] = 0;
 	}
 ?>
 		
@@ -197,7 +207,7 @@ if(Me::$loggedIn)
 		var el = $("#img_" + owned[i]);
 		if (el)
 		{
-			el.parents(".shop-block").html(el.parents(".shop-block").html() + " [&bull;]");
+			el.parents(".item_block").html(el.parents(".item_block").html() + " [&bull;]");
 		}
 	}
 </script>

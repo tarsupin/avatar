@@ -23,6 +23,7 @@ $colors		= AppAvatar::getItemColors($position, $title);
 AppAvatar::updateImage($uniID);
 
 AppAvatar::createAvatar($uniID, $base, $gender);
+AppAvatar::purchaseItem($itemID);
 AppAvatar::receiveItem($uniID, $itemID);
 AppAvatar::dropItem($uniID, $itemID);
 
@@ -283,6 +284,120 @@ abstract class AppAvatar {
 			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?)", array($uniID, $base, $gender[0], time()));
 		}
 		
+		return false;
+	}
+	
+
+/****** Purchase an Item ******/
+	public static function purchaseItem
+	(
+		$itemID			// <int> The item to provide (based on ID).
+	,	$shopID = 0		// <int> The ID of the shop this item is from.
+	,	$save = false	// <bool> Whether to display the messages on the same page (FALSE) or the next one (TRUE).
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::purchaseItem($itemID);
+	{
+		// Make sure the item exists
+		if(!$itemData = self::itemData($itemID))
+		{
+			if(!$save)
+			{
+				Alert::error($itemData['title'] . " Does Not Exist", "" . $itemData['title'] . " does not exist.");
+			}
+			else
+			{
+				Alert::saveError($itemData['title'] . "  Does Not Exist", "" . $itemData['title'] . " does not exist.");
+			}
+			return false;
+		}
+		
+		// Get cost and check if it's in an available shop
+		if($shopID == 0)
+		{
+			if($shop = Database::selectOne("SELECT shop_id, cost FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=? LIMIT 1", array($itemID, Me::$clearance)))
+			{
+				$shopID = (int) $shop['shop_id'];
+				$shop['cost'] = (float) $shop['cost'];
+			}
+			else
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Not Available", "" . $itemData['title'] . " is not available.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Available", "" . $itemData['title'] . " is not available.");
+				}
+				return false;
+			}
+		}
+		else
+		{
+			if(!$item = AppAvatar::getShopItems($shopID, $itemID))
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
+				}
+				return false;
+			}
+			$shop['cost'] = $item['cost'];
+		}
+		
+		// staff may purchase rare items
+		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
+		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
+		{
+			if(!$save)
+			{
+				Alert::error($itemData['title'] . " Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+			}
+			else
+			{
+				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+			}
+			return false;
+		}
+	
+		$balance = Currency::check(Me::$id);
+	
+		// Make sure your balance exceeds the item's cost
+		if($balance < $shop['cost'])
+		{
+			if(!$save)
+			{
+				Alert::error($itemData['title'] . " Too Expensive", "You don't have enough to purchase " . $itemData['title'] . "!");
+			}
+			else
+			{
+				Alert::saveError($itemData['title'] . " Too Expensive", "You don't have enough to purchase " . $itemData['title'] . "!");
+			}
+			return false;
+		}
+		
+		// Add this item to your inventory
+		if(self::receiveItem(Me::$id, $itemID))
+		{
+			// Spend the currency to purchase this item
+			Currency::subtract(Me::$id, $shop['cost'], "Purchased " . $itemData['title']);
+			
+			if(!$save)
+			{
+				Alert::success($itemData['title'] . " Purchased Item", "You have purchased " . $itemData['title'] . "!");
+			}
+			else
+			{
+				Alert::saveSuccess($itemData['title'] . " Purchased Item", "You have purchased " .$itemData['title'] . "!");
+			}
+			return true;
+		}
+
 		return false;
 	}
 	

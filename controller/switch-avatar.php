@@ -54,7 +54,7 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Choose Your Avatar</h2>
-	<p>Please select the Avatar that you would like to use!</p>
+	<p>Please select the avatar that you would like to use!</p>
 	<a href="/switch-avatar/"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" /></a>
 	<div class="spacer-huge"></div>
 	<p>You can also <a href="create-avatar">create another avatar</a>!</p>

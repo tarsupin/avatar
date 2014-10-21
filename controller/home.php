@@ -1,8 +1,15 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-if(Me::$loggedIn and !isset($avatarData['base']))
+// create avatar if you have none
+if(Me::$loggedIn && !isset($avatarData['base']))
 {
 	header("Location: /create-avatar"); exit;
+}
+
+// set dressing room as the start page unless you were sent here with messages
+if(Me::$loggedIn && Alert::display() == "")
+{
+	header("Location: /dress-avatar"); exit;
 }
 
 $config['pageTitle'] = "Home";

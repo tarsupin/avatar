@@ -138,16 +138,27 @@ else if(isset($_POST['order']))
 
 // Add links to nav panel
 WidgetLoader::add("SidePanel", 40, '
-	<div style="text-align:center;">
+	<div class="panel-links" style="text-align:center;">
 		<a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
 		<a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview Image</a>
+		<a href="javascript:review_item(0);">Open Preview Window</a>
 	</div>');
 
 // Get the layers you can search between
 $positions = AppAvatar::getInvPositions(Me::$id);
 
+// Set page title
+$config['pageTitle'] = "Dressing Room";
+if(isset($_GET['position']))
+{
+	$config['pageTitle'] .= " > " . $_GET['position'];
+}
+
 // List of categories to pick from
 $_GET['position'] = (!isset($_GET['position']) ? "" : $_GET['position']);
+
+// Run Global Script
+require(APP_PATH . "/includes/global.php");
 
 // Add Javascript to header
 Metadata::addHeader('
@@ -160,12 +171,6 @@ Metadata::addHeader('
 <script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
 ');
 
-// Set page title
-$config['pageTitle'] = "Dressing Room";
-
-// Run Global Script
-require(APP_PATH . "/includes/global.php");
-
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
@@ -174,20 +179,13 @@ require(SYS_PATH . "/controller/includes/header.php");
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
-<style>
-.item_block { display:inline-block; padding:15px; text-align:center; width:110px; }
-.item_block select { width:110px; }
-.item_block img { max-height:100px; max-width:80px; }
-</style>';
-
-echo '
 <div id="panel-right"></div>
-<div id="content">
-	<h3>Dressing Room</h3>';
+<div id="content">' . Alert::display() . '
+	<h2>Dressing Room</h2>';
 
 	// Clothes currently worn
 	echo '
-	<form id="sortable" action="/dress-avatar" method="post">
+	<form id="sortable" action="/dress-avatar' . ($_GET['position'] != "" ? "?position=" . $_GET['position'] : "") . '" method="post">
 	<textarea id="order" name="order" style="display:none;"></textarea>
 	<ul id="equipped" class="dragndrop">';
 
@@ -212,7 +210,7 @@ echo '
 			echo '
 		<li id="worn_' . $eItem['id'] . '">
 			<div><img id="img_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
-			<a class="close" href="/dress-avatar?unequip=' . $eItem['id'] . '">&#10006;</a>
+			<a class="close" href="/dress-avatar?position=' . $_GET['position'] . '&unequip=' . $eItem['id'] . '">&#10006;</a>
 			<select id="color_' . $eItem['id'] . '">';
 			
 			$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title']);
@@ -229,13 +227,13 @@ echo '
 			if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
 			{
 				echo '
-			<a class="left" href="/dress-avatar?left=' . $eItem['id'] . '">&lt;</a>';
+			<a class="left" href="/dress-avatar?position=' . $_GET['position'] . '&left=' . $eItem['id'] . '">&lt;</a>';
 			}
 			
 			if(isset($outfitArray[$pos + 1]) && $eItem['position'] != "skin")
 			{
 				echo '
-			<a class="right" href="/dress-avatar?right=' . $eItem['id'] . '">&gt;</a>';
+			<a class="right" href="/dress-avatar?position=' . $_GET['position'] . '&right=' . $eItem['id'] . '">&gt;</a>';
 			}
 			
 				echo '
@@ -301,6 +299,7 @@ echo '
 			
 			echo '
 				</select>
+				<br /><a href="javascript:review_item(' . $item['id'] . ');">Preview</a> | <a href="/sell-item/' . $item['id'] . '">Sell</a>
 			</div>';
 		}
 	}
@@ -316,7 +315,7 @@ echo '
 function switch_item_inventory(id, layer, name, gender)
 {
 	$("#pic_" + id).attr("src", "/avatar_items/" + layer + "/" + name + "/" + $("#item_" + id).val() + "_" + gender + ".png");
-	$("#link_" + id).attr("href", "/dress-avatar?equip=" + id + "&color=" + $("#item_" + id).val());
+	$("#link_" + id).attr("href", "/dress-avatar?<?php echo ($_GET['position'] != "" ? 'position=' . $_GET['position'] . '&' : ''); ?>equip=" + id + "&color=" + $("#item_" + id).val());
 }
 </script>
 

@@ -5,11 +5,11 @@ if(!Me::$loggedIn)
 {
 	Alert::info("Guest Access", 'You are viewing this page as a guest. If you have an account, please <a href="/login">log in</a>.');
 	if(isset($url[1]) and in_array($url[1], array("m", "f")))	{ $avatarData['gender'] = $url[1]; }
-	else														{ Alert::error('Please choose whether to view the shops with a <a href="/shop-list/m">male</a> or <a href="/shop-list/f">female</a> avatar.'); }
+	else														{ Alert::error("Choose Gender", 'Please choose whether to view the shops with a <a href="/shop-list/m">male</a> or <a href="/shop-list/f">female</a> avatar.'); }
 }
 
 // Set page title
-$config['pageTitle'] = "List of Shops";
+$config['pageTitle'] = "Shops";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -17,6 +17,15 @@ require(APP_PATH . "/includes/global.php");
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
+
+// Display Side Panel
+if(Me::$loggedIn)
+{
+WidgetLoader::add("SidePanel", 40, '
+	<div class="panel-links" style="text-align:center;">
+		<a href="javascript:review_item(0);">Open Preview Window</a>
+	</div>');
+}
 
 // Display Side Panel
 require(SYS_PATH . "/controller/includes/side-panel.php");
@@ -36,7 +45,7 @@ if(isset($avatarData['gender']))
 	echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2>List of Shops</h2>
+	<h2>Shops</h2>
 	<a class="shop-button" href="shop/1' . $extra . '"><img src="/assets/shop-icons/a_cut_above.png" alt="A Cut Above" /></a>
 	<a class="shop-button" href="shop/4' . $extra .'"><img src="/assets/shop-icons/pret_a_porter.png" alt="Pr&ecirc;t &agrave; Porter" /></a>
 	<a class="shop-button" href="shop/7' . $extra .'"><img src="/assets/shop-icons/haute_couture.png" alt="Haute Couture" /></a>

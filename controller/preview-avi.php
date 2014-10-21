@@ -3,19 +3,18 @@
 // put out error for guests (no redirect)
 if(!Me::$loggedIn)
 {
-	Alert::saveError("Guest", "You need to be logged in to use this feature.");
-	Me::redirectLogin("/preview-avi");
+	Alert::saveError("Guest", "You need to be logged in to use the avatar preview.");
+	header("Location: /home"); exit;
 }
-// Prepare the Preview Avatar
-else
+
+// Make sure you have an avatar
+if(!isset($avatarData['base']))
 {
-	// Make sure you have an avatar
-	if(!isset($avatarData['base']))
-	{
-		header("Location: /create-avatar"); exit;
-	}
-	$outfitArray = AppOutfit::get(Me::$id, "preview");
+	header("Location: /create-avatar"); exit;
 }
+
+// Prepare the avatar
+$outfitArray = AppOutfit::get(Me::$id, "preview");
 
 if(!$getLink = Link::clicked())
 {
@@ -29,14 +28,6 @@ if(isset($_GET['equip']) && $_GET['color'])
 	
 	$itemData = AppAvatar::itemData($_GET['equip']);
 	
-	// If a color was not provided (or is invalid), choose the first one
-	$colors = AppAvatar::getItemColors($itemData['position'], $itemData['title']);
-
-	if(!isset($_GET['color']) or !in_array($_GET['color'], $colors))
-	{
-		$_GET['color'] = $colors[0];
-	}
-		
 	// Equip your item
 	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color'], "preview");
 	
@@ -86,6 +77,12 @@ else if($getLink == "replace")
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 
+else if(isset($_GET['buy']))
+{
+	$_GET['buy'] = (int) $_GET['buy'];
+	AppAvatar::purchaseItem($_GET['buy']);
+}
+
 else if($getLink == "buyAll")
 {
 	foreach($outfitArray as $key => $oa)
@@ -94,31 +91,7 @@ else if($getLink == "buyAll")
 		
 		if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
 		{
-			$itemData = AppAvatar::itemData($oa[0]);
-			if($itemData['rarity_level'] == 0)
-			{
-				// check if the item is in a visible shop and get cost
-				$shop = Database::selectOne("SELECT cost FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=? LIMIT 1", array($itemData['id'], Me::$clearance));
-				if($shop)
-				{
-					$balance = Currency::check(Me::$id);
-		
-					// Make sure your balance exceeds the item's cost
-					if($balance < $shop['cost'])
-					{
-						Alert::error("Too Expensive", "You don't have enough to purchase " . $itemData['title'] . "!");
-					}
-					
-					// Add this item to your inventory
-					if(AppAvatar::receiveItem(Me::$id, $itemData['id']))
-					{
-						// Spend the currency to purchase this item
-						Currency::subtract(Me::$id, $shop['cost'], "Purchased " . $itemData['title'], $errorStr);
-						
-						Alert::success("Purchased Item", "You have purchased " . $itemData['title'] . "!");
-					}
-				}
-			}
+			AppAvatar::purchaseItem($oa[0]);
 		}
 	}
 }
@@ -140,6 +113,9 @@ else if(isset($_POST['order']))
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 
+// Set page title
+$config['pageTitle'] = "Preview Window";
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -148,6 +124,7 @@ Metadata::addHeader('
 <!-- javascript -->
 <script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
+<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
 <script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
@@ -159,12 +136,11 @@ require(SYS_PATH . "/controller/includes/metaheader.php");
 echo '
 <body>
 <style>
-.dragndrop li { background-color:white;	}
+html,body { background-color:white; }
+.alert-info, .alert-message, .alert-error { margin-top:0px; }
 </style>
-
-' . Alert::display() . '
-
-<div style="float:left;text-align:center;">
+<div id="viewport-wrap">
+<div class="panel-links" style="float:left;text-align:center;">
 	<img src="' . AppOutfit::drawSrc("preview") . '" /><br />
 	<a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
 	<a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Avatar Image</a><br/>
@@ -176,6 +152,7 @@ echo '
 // Clothes currently worn
 echo '
 <form id="sortable" action="/preview-avi" method="post" style="margin-left:222px;">
+' . Alert::display() . '
 <textarea id="order" name="order" style="display:none;"></textarea>
 <ul id="equipped" class="dragndrop">';
 
@@ -190,7 +167,7 @@ foreach($outfitArray as $pos => $item)
 	// Get Items
 	if($item[0] != 0)
 	{
-		$eItem = Database::selectOne("SELECT id, title, position FROM items WHERE id=?", array($item[0]));
+		$eItem = Database::selectOne("SELECT id, title, position, rarity_level FROM items WHERE id=?", array($item[0]));
 		
 		// Recognize Integers
 		$eItem['id'] = (int) $eItem['id'];
@@ -213,6 +190,17 @@ foreach($outfitArray as $pos => $item)
 		
 		echo '
 		</select>';
+		
+		if(AppAvatar::checkOwnItem(Me::$id, $eItem['id']))
+		{
+			echo '
+		<span class="owned" href="">[&bull;]</span>';
+		}
+		elseif($eItem['rarity_level'] == 0 || Me::$clearance >= 5)
+		{
+			echo '
+			<a class="buy" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+		}
 
 		if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
 		{
@@ -241,8 +229,8 @@ foreach($outfitArray as $pos => $item)
 
 echo '
 </ul>
-</form>';
-
+</form>
+</div>';
 ?>
 
 <script src="/assets/scripts/reorder.js" type="text/javascript" charset="utf-8"></script>

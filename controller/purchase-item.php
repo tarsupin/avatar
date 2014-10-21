@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/purchase-item");
+	Me::redirectLogin("/home");
 }
 
 // Make sure you have an avatar
@@ -19,13 +19,7 @@ if(!isset($url[1]) or (!isset($_GET['shopID'])))
 }
 
 $shopID = (int) $_GET['shopID'];
-
-// Check that you're allowed to view this shop
-$shopClearance = AppAvatar::getShopClearance($shopID);
-if(Me::$clearance < $shopClearance)
-{
-	header("Location: /shop-list"); exit;
-}
+$url[1] = (int) $url[1];
 
 // Get the item and ensure it is available at the shop
 if(!$item = AppAvatar::getShopItems($shopID, $url[1]))
@@ -34,33 +28,14 @@ if(!$item = AppAvatar::getShopItems($shopID, $url[1]))
 	header("Location: /shop-list"); exit;
 }
 
-// Make sure you're allowed to purchase the item
-if($item['rarity_level'] != 0) { header("Location: /shop-list"); exit; }
-
 // Check if you purchased the item
 if(Form::submitted("purchase-item"))
 {
-	$balance = Currency::check(Me::$id);
-	
-	// Make sure your balance exceeds the item's cost
-	if($balance < $item['cost'])
-	{
-		Alert::error("Too Expensive", "You don't have enough to purchase this item!");
-	}
-	
 	if(FormValidate::pass())
 	{
-		// Add this item to your inventory
-		if(AppAvatar::receiveItem(Me::$id, $item['id']))
-		{
-			// Spend the currency to purchase this item
-			Currency::subtract(Me::$id, $item['cost'], "Purchased " . $item['title'], $errorStr);
-			
-			Alert::saveSuccess("Purchased Item", "You have purchased " . $item['title'] . "!");
-			
-			// Return to the shop with a success message
-			header("Location: /shop/" . $shopID . "?purchased=" . $item['id']); exit;
-		}
+		AppAvatar::purchaseItem($item['id'], $shopID, true);
+		// Return to the shop with a success or error message
+		header("Location: /shop/" . $shopID . "?purchased=" . $item['id']); exit;
 	}
 }
 
@@ -72,6 +47,9 @@ if($ownItem)
 {
 	Alert::info("Own Item", "Note: You already own this item!");
 }
+
+// Set page title
+$config['pageTitle'] = "Purchase " . $item['title'];
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");

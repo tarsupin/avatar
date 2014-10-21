@@ -57,15 +57,15 @@
 #panel-nav { width:215px; }
 */
 
-/**************************
-****** Dressing Room ******
-**************************/
+/***************************
+****** Dressing Lists ******
+****************************/
 
 .dragndrop
 {
 	list-style-type:none;
 	margin-left:0px;
-	margin-right:-2px;
+	margin-right:-4px;
 	overflow:hidden;
 	width:100%;
 	padding:0px;
@@ -73,17 +73,17 @@
 
 .dragndrop li
 {
-	background-color:#e8e8e8;	
-	border-radius:5px;
-		-moz-border-radius:5px;
-		-webkit-border-radius:5px;
+	background-color:#eeeeee;	
+	border-radius:8px;
+		-moz-border-radius:8px;
+		-webkit-border-radius:8px;
 	box-sizing:border-box;
 		-moz-box-sizing:border-box;
 		-webkit-box-sizing:border-box;
 	cursor:move;
 	float:left;
-	margin-bottom:2px;
-	margin-right:2px;
+	margin-bottom:4px;
+	margin-right:4px;
 	padding:5px;
 	position:relative;
 	text-align:center;
@@ -94,25 +94,60 @@
 .dragndrop select { width:100%; }
 .dragndrop div { height:50px; }
 
-.close
+.close, .buy, .owned
 {
-	font-size:12px;
-	position:absolute;
-	text-decoration:none;
-	z-index:3;
-}
-
-.left, .right
-{
-	font-weight:bold;
-	line-height:50px;
-	font-size:12px;
+	color:#16b9b3;
+	font-size:0.8em;
 	position:absolute;
 	text-decoration:none;
 	z-index:2;
 }
 
-.close { right:2px; top:0px; }
-.left { left:2px; top:4px; }
-.right { right:2px; top:4px; }
+.left, .right
+{
+	color:#16b9b3;
+	font-weight:bold;
+	font-size:0.8em;
+	position:absolute;
+	text-decoration:none;
+	z-index:2;
+	opacity:0;
+		-khtml-opacity:0;
+		-moz-opacity:0;
+		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	filter:alpha(opacity=0);
+}
 
+.left:hover, .right:hover
+{
+	opacity:1;
+		-khtml-opacity:1;
+		-moz-opacity:1;
+		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
+	filter:alpha(opacity=1);
+}
+
+.close { right:2px; top:0px; }
+.buy { right:3px; top:42px; }
+.left { left:3px; top:21px; }
+.right { right:3px; top:21px; }
+.owned { right:1px; top:40px; }
+
+/***********************
+****** Item Block ******
+***********************/
+
+.item_block { display:inline-block; padding:15px; text-align:center; width:110px; }
+.item_block select { width:110px; }
+.item_block img { max-height:100px; max-width:80px; }
+
+
+/************************
+****** Panel Links ******
+************************/
+
+.panel-links a
+{
+	color:#16b9b3;
+	font-weight:bold;
+}

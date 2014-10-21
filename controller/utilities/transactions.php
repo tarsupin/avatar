@@ -14,7 +14,7 @@ if ($url[2] < 0)	{ $url[2] = 0; }
 $transactions = Database::selectMultiple("SELECT * FROM currency_records WHERE uni_id=? ORDER BY date_exchange DESC LIMIT " . (20*$url[2]) . ", 20", array(Me::$id));
 
 // Set page title
-$config['pageTitle'] = "Utilities > Transaction Log";
+$config['pageTitle'] = "Utilities > Auro Log";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -22,6 +22,11 @@ require(APP_PATH . "/includes/global.php");
 // Run Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
+
+echo '
+<style>
+table tr td:first-child, table tr td:nth-child(2), table tr td:nth-child(3) { text-align:right; }
+</style>';
 
 // Display Side Panel
 require(SYS_PATH . "/controller/includes/side-panel.php");
@@ -32,7 +37,7 @@ echo '
 Alert::display();
 
 echo '
-	<h2>Transaction Log</h2>
+	<h2><a href="/utilities">Utilities</a> > Auro Log</h2>
 	<table class="mod-table">
 		<tr>
 			<td>Sent</td>
@@ -64,7 +69,7 @@ echo '
 	if($url[2] > 0 or isset($transactions[19]))
 	{
 		echo '
-	<div class="spacer-huge"></div>';
+	<br/>';
 		if($url[2] > 0)
 		{
 			echo '

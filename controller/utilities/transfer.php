@@ -95,13 +95,13 @@ echo '
 Alert::display();
 
 echo '
-	<h2>Transfer from Uni5</h2>
+	<h2><a href="/utilities">Utilities</a> > Transfer from Uni5</h2>
 	<p>This will transfer your Auro, items and donation packages.</p>
 	
 	<form class="uniform" action="/utilities/transfer" method="post">' . Form::prepare("transfer") . '
 		<h4>Uni5 Account Name</h4>
 		<p><input type="text" name="account"/></p>
-		<h4>Password</h4>
+		<h4>Uni5 Password</h4>
 		<p><input type="password" name="password"/></p>
 		<input type="submit" name="submit" value="Transfer" />
 	</form>
