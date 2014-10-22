@@ -23,8 +23,7 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2>Utilities</h2>
-	Currency > <a href="/utilities/transactions">Auro Log</a><br />' .
+	<h2>Utilities</h2>' .
 	(ENVIRONMENT != "production" ? 'Currency > <a href="/utilities/free-auro">Free Auro</a><br/>' : "")	. '	
 	<br/>
 	Outfit > <a href="/utilities/outfitcode-real">Outfit Code (Current Avatar)</a><br/>
@@ -37,6 +36,8 @@ echo '
 	Wrappers > <a href="/utilities/wrapper-list">List of Wrappers</a><br/>
 	<br/>
 	Wish List > <a href="/utilities/wish-list">Wish List</a><br/>
+	<br/>
+	Logs > <a href="/utilities/transactions">Auro Log</a><br />
 	<br/>
 	Transfer > <a href="/utilities/transfer">Transfer from Uni5</a>
 </div>';

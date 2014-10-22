@@ -38,7 +38,7 @@ class AppAvatar_config {
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`item_id`				mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
 			
-			PRIMARY (`uni_id`, `item_id`)
+			PRIMARY KEY (`uni_id`, `item_id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 		");
 		

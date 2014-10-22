@@ -14,7 +14,7 @@ if(isset($url[2]))
 {
 	$url[2] = (int) $url[2];
 	// check item data
-	if($itemData = AppAvatar::itemData($url[2], "title"))
+	if($itemData = AppAvatar::itemData($url[2], "title, rarity_level"))
 	{
 		if(Database::query("REPLACE INTO user_wish VALUES (?, ?)", array(Me::$id, $url[2])))
 		{
@@ -37,6 +37,17 @@ if(isset($_GET['remove']))
 	}
 }
 
+// Sort order
+$order = "";
+if(isset($_GET['sort']) && in_array($_GET['sort'], array("title", "position", "gender")))
+{
+	$order = " ORDER BY " . $_GET['sort'];
+	if(isset($_GET['reverse']))
+	{
+		$order .= " DESC";
+	}
+}
+
 // Set page title
 $config['pageTitle'] = "Utilities > Wish List";
 
@@ -47,16 +58,9 @@ require(APP_PATH . "/includes/global.php");
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
 
-// Display Side Panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="/shop-search">Shop Search</a>
-	</div>
-	<br/>');
-
 echo '
 <style>
-table tr td { text-align:center; }
+table tr:first-child td { text-align:center; }
 </style>';
 
 require(SYS_PATH . "/controller/includes/side-panel.php");
@@ -68,28 +72,38 @@ echo '
 Alert::display();
 
 // Page Display
-$wished = Database::selectMultiple("SELECT item_id FROM user_wish WHERE uni_id=?", array(Me::$id));
+$wished = Database::selectMultiple("SELECT item_id, title, position, gender FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
 echo '
-	<h2>Wish List</h2>
+	<h2><a href="/utilities">Utilities</a> > Wish List</h2>
 	<table class="mod-table">
 		<tr>
-			<td>Remove</td>
-			<td>Item</td>
-			<td>Position</td>
-			<td>Gender</td>
-			<td>Owned</td>
-		</tr>';
-foreach ($wished as $wish)
+			<td>&nbsp;</td>';
+foreach (array("title", "position", "gender") as $col)
 {
-	$own = AppAvatar::checkOwnItem(Me::$id, $wish['item_id']);
-	$itemData = AppAvatar::itemData($wish['item_id'], "title,position,gender");
+	if (isset($_GET['sort']) && $_GET['sort'] == $col && !isset($_GET['reverse']))
+		echo "
+			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "&reverse'>&#9660;</a></td>";
+	elseif (isset($_GET['sort']) && $_GET['sort'] == $col)
+		echo "
+			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "'>&#9650;</a></td>";
+	else
+		echo "
+			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "'>&#9651;</a></td>";
+}
+echo '
+			<td>Package</td>
+		</tr>';
+foreach ($wished as $itemData)
+{
+	$own = AppAvatar::checkOwnItem(Me::$id, $itemData['item_id']);
+	$package = Database::selectOne("SELECT title, year FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE item_id=? LIMIT 1", array($itemData['item_id']));
 	echo '
 		<tr' . ($own ? ' class="opaque"' : "") . '>
-			<td><a href="/utilities/wish-list?remove=' . $wish['item_id'] . '">&#10006;</a></td>
-			<td>' . $itemData['title'] . '</td>
+			<td><a href="/utilities/wish-list?remove=' . $itemData['item_id'] . '">&#10006;</a></td>
+			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>
-			<td>' . ($own ? "yes" : "no") . '</td>
+			<td>' . ($package ? $package['title'] . " (" . $package['year'] . ")" : "&nbsp;") . '</td>
 		</tr>';
 }
 echo '

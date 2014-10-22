@@ -107,11 +107,22 @@ if(isset($_GET['submit']))
 	// order
 	if($_GET['sortby'] != "")
 	{
-		if(in_array($_GET['sortby'], array("name_asc", "name_desc", "gender_asc", "gender_desc", "position_asc", "position_desc", "id_asc", "id_desc")))
+		if(in_array($_GET['sortby'], array("title_asc", "title_desc", "gender_asc", "gender_desc", "shop_asc", "shop_desc", "cost_asc", "cost_desc", "position_asc", "position_desc", "id_asc", "id_desc")))
 		{
 			$_GET['sortby'] = str_replace("_", " ", $_GET['sortby']);
-			$_GET['sortby'] = str_replace("name", "title", $_GET['sortby']);
-			$sqlorder = " ORDER BY " . $_GET['sortby'];
+			if(strpos($_GET['sortby'], "cost") === false)
+			{
+				$_GET['sortby'] = str_replace("shop", "shop_id", $_GET['sortby']);
+				$sqlorder = " ORDER BY " . $_GET['sortby'];
+			}
+			else
+			{
+				$sqlorder = " ORDER BY rarity_level" . (strpos($_GET['sortby'], "desc") > 0 ? " desc" : "") . ", " . $_GET['sortby'];
+			}
+			if(strpos($_GET['sortby'], "title") === false)
+			{
+				$sqlorder .= ", title";
+			}
 		}
 	}
 	
@@ -174,17 +185,17 @@ echo '
 		<input type="text" name="title" maxlength="30" size="15" placeholder="Item Name" value="' . $_GET['title'] . '"/> 
 		<select name="gender"><option value="">Gender:</option><option value="both"' . ($_GET['gender'] == "both" ? " selected" : "") . '>both</option><option value="female-only"' . ($_GET['gender'] == "female-only" ? " selected" : "") . '>female-only</option><option value="male-only"' . ($_GET['gender'] == "male-only" ? " selected" : "") . '>male-only</option><option value="fab"' . ($_GET['gender'] == "fab" ? " selected" : "") . '>female or both</option><option value="mab"' . ($_GET['gender'] == "mab" ? " selected" : "") . '>male or both</option></select> 
 		<select name="shop"><option value="">Shop:</option><option value="1"' . ($_GET['shop'] == 1 ? " selected" : "") . '>A Cut Above</option><option value="4"' . ($_GET['shop'] == 4 ? " selected" : "") . '>Pr&ecirc;t &agrave; Porter</option><option value="7"' . ($_GET['shop'] == 7 ? " selected" : "") . '>Haute Couture</option><option value="10"' . ($_GET['shop'] == 10 ? " selected" : "") . '>Time Capsule</option><option value="2"' . ($_GET['shop'] == 2 ? " selected" : "") . '>All That Glitters</option><option value="5"' . ($_GET['shop'] == 5 ? " selected" : "") . '>Body Shop</option><option value="8"' . ($_GET['shop'] == 8 ? " selected" : "") . '>Junk Drawer</option><option value="11"' . ($_GET['shop'] == 11 ? " selected" : "") . '>Under Dressed</option><option value="3"' . ($_GET['shop'] == 3 ? " selected" : "") . '>Heart and Sole</option><option value="6"' . ($_GET['shop'] == 6 ? " selected" : "") . '>Finishing Touch</option><option value="9"' . ($_GET['shop'] == 9 ? " selected" : "") . '>Looking Glass</option><option value="12"' . ($_GET['shop'] == 12 ? " selected" : "") . '>Vogue Veneers</option><option value="14"' . ($_GET['shop'] == 14 ? " selected" : "") . '>Exotic Exhibit</option><option value="15"' . ($_GET['shop'] == 15 ? " selected" : "") . '>Avatar Museum</option><option value="18"' . ($_GET['shop'] == 18 ? " selected" : "") . '>Credit Shop</option>' . (Me::$clearance >= 5 ? '<option value="13"' . ($_GET['shop'] == 13 ? " selected" : "") . '>Archive</option><option value="16"' . ($_GET['shop'] == 16 ? " selected" : "") . '>Staff Shop</option><option value="17"' . ($_GET['shop'] == 18 ? " selected" : "") . '>Test Shop</option><option value="19"' . ($_GET['shop'] == 19 ? " selected" : "") . '>Wrappers</option>' : "") . '</select> 
-		<select name="sortby"><option value="">Sort By:</option><option value="name_asc"' . ($_GET['sortby'] == "title asc" ? " selected" : "") . '>Name (asc)</option><option value="name_desc"' . ($_GET['sortby'] == "title desc" ? " selected" : "") . '>Name (desc)</option><option value="gender_asc"' . ($_GET['sortby'] == "gender asc" ? " selected" : "") . '>Gender (asc)</option><option value="gender_desc"' . ($_GET['sortby'] == "gender desc" ? " selected" : "") . '>Gender (desc)</option><option value="position_asc"' . ($_GET['sortby'] == "position asc" ? " selected" : "") . '>Position (asc)</option><option value="position_desc"' . ($_GET['sortby'] == "position desc" ? " selected" : "") . '>Position (desc)</option><option value="id_asc"' . ($_GET['sortby'] == "id asc" ? " selected" : "") . '>ID (asc)</option><option value="id_desc"' . ($_GET['sortby'] == "id desc" ? " selected" : "") . '>ID (desc)</option></select> 
+		<select name="sortby"><option value="">Sort By:</option><option value="title_asc"' . ($_GET['sortby'] == "title asc" ? " selected" : "") . '>Name (asc)</option><option value="title_desc"' . ($_GET['sortby'] == "title desc" ? " selected" : "") . '>Name (desc)</option><option value="gender_asc"' . ($_GET['sortby'] == "gender asc" ? " selected" : "") . '>Gender (asc)</option><option value="gender_desc"' . ($_GET['sortby'] == "gender desc" ? " selected" : "") . '>Gender (desc)</option><option value="shop_asc"' . ($_GET['sortby'] == "shop asc" ? " selected" : "") . '>Shop (asc)</option><option value="shop_desc"' . ($_GET['sortby'] == "shop desc" ? " selected" : "") . '>Shop (desc)</option><option value="cost_asc"' . ($_GET['sortby'] == "cost asc" ? " selected" : "") . '>Cost (asc)</option><option value="cost_desc"' . ($_GET['sortby'] == "cost desc" ? " selected" : "") . '>Cost (desc)</option><option value="position_asc"' . ($_GET['sortby'] == "position asc" ? " selected" : "") . '>Position (asc)</option><option value="position_desc"' . ($_GET['sortby'] == "position desc" ? " selected" : "") . '>Position (desc)</option><option value="id_asc"' . ($_GET['sortby'] == "id asc" ? " selected" : "") . '>ID (asc)</option><option value="id_desc"' . ($_GET['sortby'] == "id desc" ? " selected" : "") . '>ID (desc)</option></select> 
 		<select name="purchasable"><option value="">Purchasable:</option><option value="yes"' . ($_GET['purchasable'] == "yes" ? " selected" : "") . '>Yes</option><option value="no"' . ($_GET['purchasable'] == "no" ? " selected" : "") . '>No</option></select>
 		<select name="owned"><option value="">Owned:</option><option value="yes"' . ($_GET['owned'] == "yes" ? " selected" : "") . '>Yes</option><option value="no"' . ($_GET['owned'] == "no" ? " selected" : "") . '>No</option></select>
-		<br/>';
+		<br/><br/>';
 
 foreach($positions as $pos)
 {
 	echo '<div style="width:8em; display:inline-block;"><input type="checkbox" name="' . $pos . '"' . (isset($_GET[$pos]) ? " checked" : "") . '/> ' . $pos . "</div>";
 }
 echo '
-		<br/><input type="submit" name="submit" value="Search"/>
+		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked=true" : "") . '/ > <span style="font-weight:bold;">Select/Deselect All</span>
 	</form><div class="spacer-huge"></div>';
 	
 // check for (non-)owned items

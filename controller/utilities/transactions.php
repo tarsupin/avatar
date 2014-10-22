@@ -26,6 +26,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 echo '
 <style>
 table tr td:first-child, table tr td:nth-child(2), table tr td:nth-child(3) { text-align:right; }
+table tr:first-child td { text-align:center; }
 </style>';
 
 // Display Side Panel
