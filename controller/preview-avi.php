@@ -113,6 +113,29 @@ else if(isset($_POST['order']))
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 
+else if($getLink == "randomize")
+{
+	// Pick a random color for each item
+	foreach($outfitArray as $key => $oa)
+	{
+		$item = AppAvatar::itemData($oa[0]);
+		$colors = AppAvatar::getItemColors($item['position'], $item['title']);
+		shuffle($colors);
+		while(true && $colors != array())
+		{
+			$color = array_shift($colors);
+			if(AppAvatar::itemHasColor($item['position'], $item['title'], $avatarData['gender'], $color))
+			{
+				$outfitArray[$key][1] = $color;
+				break;
+			}
+		}
+	}
+	
+	// Save the outfit
+	AppOutfit::save(Me::$id, "preview", $outfitArray);
+}
+
 // Set page title
 $config['pageTitle'] = "Preview Window";
 
@@ -142,9 +165,10 @@ html,body { background-color:white; }
 <div id="viewport-wrap">
 <div class="panel-links" style="float:left;text-align:center;">
 	<img src="' . AppOutfit::drawSrc("preview") . '" /><br />
-	<a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
 	<a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Avatar Image</a><br/>
-	<a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a>
+	<a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
+	<a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a><br/>
+	<a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a>
 </div>
 ';
 

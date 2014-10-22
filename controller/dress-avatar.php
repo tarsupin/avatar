@@ -139,9 +139,10 @@ else if(isset($_POST['order']))
 // Add links to nav panel
 WidgetLoader::add("SidePanel", 40, '
 	<div class="panel-links" style="text-align:center;">
-		<a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
-		<a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview Image</a>
-		<a href="javascript:review_item(0);">Open Preview Window</a>
+		<a href="javascript:review_item(0);">Open Preview Window</a><br/>
+		<a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview Image</a><br/>
+		<a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a>' . (isset($_GET['position']) ? '<br/>
+		<a href="/shop-search?submit=Search&' . $_GET['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">Shop Search</a>' : "") . '
 	</div>');
 
 // Get the layers you can search between
@@ -271,6 +272,8 @@ echo '
 	
 	if($_GET['position'] != "")
 	{
+		$itemlist = array();
+		
 		// Show the items within the category selected
 		$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position'], $avatarData['gender_full']);
 		
@@ -282,6 +285,8 @@ echo '
 		
 		foreach($userItems as $item)
 		{
+			$itemlist[] = $item['id'];
+			
 			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
 			
 			// Display the item block
@@ -290,6 +295,42 @@ echo '
 				<a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a>
 				<br />' . $item['title'] . ($item['count'] > 1 ? ' <span style="color:#fb7c7c;">(' . $item['count'] . ')</span>' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
+			
+			foreach($colors as $color)
+			{
+				echo '
+					<option value="' . $color . '">' . $color . '</option>';
+			}
+			
+			echo '
+				</select>
+				<br /><a href="javascript:review_item(' . $item['id'] . ');">Preview</a> | <a href="/sell-item/' . $item['id'] . '">Sell</a>
+			</div>';
+		}
+		
+		// Show the items of the other gender within the category selected
+		$userItemsOther = AppAvatar::getUserItems(Me::$id, $_GET['position'], ($avatarData['gender_full'] == "male" ? "female" : "male"));
+		foreach($userItemsOther as $key => $item)
+		{
+			// avoid duplicates
+			if(in_array($item['id'], $itemlist))
+			{
+				unset($userItemsOther[$key]);
+			}
+		}
+		
+		foreach($userItemsOther as $item)
+		{
+			$itemlist[] = $item['id'];
+			
+			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
+			
+			// Display the item block
+			echo '
+			<div class="item_block opaque">
+				<a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '.png" /></a>
+				<br />' . $item['title'] . ($item['count'] > 1 ? ' <span style="color:#fb7c7c;">(' . $item['count'] . ')</span>' : "") . '
+				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '\');">';
 			
 			foreach($colors as $color)
 			{

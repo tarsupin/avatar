@@ -34,7 +34,8 @@ if(Me::$loggedIn)
 {
 WidgetLoader::add("SidePanel", 40, '
 	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
+		<a href="javascript:review_item(0);">Open Preview Window</a><br/>
+		<a href="/shop-search">Shop Search</a>
 	</div>');
 }
 

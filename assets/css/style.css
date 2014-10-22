@@ -141,7 +141,6 @@
 .item_block select { width:110px; }
 .item_block img { max-height:100px; max-width:80px; }
 
-
 /************************
 ****** Panel Links ******
 ************************/
@@ -150,4 +149,17 @@
 {
 	color:#16b9b3;
 	font-weight:bold;
+}
+
+/***********************
+****** Faded Out ******
+***********************/
+
+.opaque
+{
+	opacity:0.5;
+		-khtml-opacity:0.5;
+		-moz-opacity:0.5;
+		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0.5)";
+	filter:alpha(opacity=0.5);
 }

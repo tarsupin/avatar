@@ -33,6 +33,16 @@ class AppAvatar_config {
 		");
 		
 		Database::exec("
+		CREATE TABLE IF NOT EXISTS `user_wish`
+		(
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`item_id`				mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
+			
+			PRIMARY (`uni_id`, `item_id`)
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+		");
+		
+		Database::exec("
 		CREATE TABLE IF NOT EXISTS `user_packages`
 		(
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',

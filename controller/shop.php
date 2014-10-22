@@ -52,7 +52,8 @@ require(SYS_PATH . "/controller/includes/header.php");
 // Display Side Panel
 WidgetLoader::add("SidePanel", 40, '
 	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
+		<a href="javascript:review_item(0);">Open Preview Window</a><br/>
+		<a href="/shop-search">Shop Search</a>
 	</div>
 	<br/>');
 
@@ -139,15 +140,17 @@ if(!CacheFile::load($cachedPage, 0, true))
 			
 			$html .= '
 			</select>';
+			
+			$html .= '<br /><a href="utilities/wish-list/' . $item['id'] . '">Wish</a> | ';
 			if($item['rarity_level'] < 1)
 			{
 				$html .= '
-			<br /><a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy</a>';
+			<a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy</a>';
 			}
 			else
 			{
 				$html .= '
-			<br />Preview';
+			Preview';
 			}
 		$html .= '
 		</div>';

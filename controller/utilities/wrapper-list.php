@@ -48,7 +48,7 @@ foreach($wrappers as $key => $wrap)
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > List of wrappers";
+$config['pageTitle'] = "Utilities > List of Wrappers";
 
 // Add links to nav panel
 WidgetLoader::add("SidePanel", 40, '
@@ -114,7 +114,7 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > List of wrappers</h2>';
+	<h2><a href="/utilities">Utilities</a> > List of Wrappers</h2>';
 
 $space = false;
 	
@@ -136,7 +136,7 @@ foreach($wrappers as $wrap)
 	if($url[2] > 0 or isset($wrappers[19]))
 	{
 		echo '
-	<br/>';
+	<div class="spacer-huge"></div>';
 		if($url[2] > 0)
 		{
 			echo '

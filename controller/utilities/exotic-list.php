@@ -115,7 +115,7 @@ if(!CacheFile::load($cachedPage, 0, true))
 if($url[2] > 2009 or $url[2] < date("Y"))
 {
 	echo '
-<br/>';
+<div class="spacer-huge"></div>';
 	if($url[2] < date("Y"))
 	{
 		echo '
