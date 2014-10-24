@@ -30,10 +30,6 @@ define("SITE_HANDLE", "avatar");
 // Set the Application Path (in most cases, this is the same as CONF_PATH)
 define("APP_PATH", CONF_PATH);
 
-
-// Prepare Default Theme
-Theme::set("default");
-
 // Site-Wide Configurations
 $config['site-name'] = "Avatar";
 $config['database']['name'] = "avatar";

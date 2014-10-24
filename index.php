@@ -7,11 +7,8 @@ define("SYS_PATH", 		dirname(CONF_PATH) . "/system");
 // Load phpTesla
 require(SYS_PATH . "/phpTesla.php");
 
-// Initialize and Test Active User's Behavior
-if(Me::initialize())
-{
-	Me::runBehavior($url);
-}
+// Initialize Active User
+Me::initialize();
 
 // Get the user's avatar
 $avatarData = AppAvatar::avatarData(Me::$id);
