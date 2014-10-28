@@ -61,25 +61,8 @@ if(Form::submitted("outfitcode-real"))
 // Set page title
 $config['pageTitle'] = "Utilities > Outfit Code (Current Avatar)";
 
-// Add links to nav panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
-	</div>');
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
-
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
 
 // Run Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -108,7 +91,7 @@ ksort($outfitArray);
 echo '
 	<h2><a href="/utilities">Utilities</a> > Outfit Code (Current Avatar)</h2>
 	<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
-	<textarea>' . json_encode($outfitArray) . '</textarea>
+	<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
 	<br/><br/>
 	<form class="uniform" action="/utilities/outfitcode-real" method="post">' . Form::prepare("outfitcode-real") . '
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.<br/>Items that you do not own will not equip.</p>

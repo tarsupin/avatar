@@ -1,10 +1,10 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// put out error for guests (no redirect)
+// put out error for guests
 if(!Me::$loggedIn)
 {
 	Alert::saveError("Guest", "You need to be logged in to use the avatar preview.");
-	header("Location: /home"); exit;
+	header("Location: /"); exit;
 }
 
 // Make sure you have an avatar
@@ -142,17 +142,6 @@ $config['pageTitle'] = "Preview Window";
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
-
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 
@@ -160,22 +149,22 @@ echo '
 <body>
 <style>
 html,body { background-color:white; }
-.alert-info, .alert-message, .alert-error { margin-top:0px; }
+.alert-info, .alert-message, .alert-error { margin:0px 0px 5px 0px; padding:5px; }
 </style>
 <div id="viewport-wrap">
-<div class="panel-links" style="float:left;text-align:center;">
-	<img src="' . AppOutfit::drawSrc("preview") . '" /><br />
-	<a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Avatar Image</a><br/>
-	<a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a><br/>
-	<a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a><br/>
-	<a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a>
-</div>
+<div class="panel-box" style="width:205px;float:left;margin:0px;"><ul class="panel-slots">
+	<li style="height:383px;"><img src="' . AppOutfit::drawSrc("preview") . '" /></li>
+	<li class="nav-slot"><a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Current<span class="icon-undo nav-arrow"></span></a></li>
+	<li class="nav-slot"><a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All<span class="icon-circle-minus nav-arrow"></span></a></li>
+	<li class="nav-slot"><a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a><span class="icon-dice nav-arrow"></span></a></li>
+	<li class="nav-slot"><a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a><span class="icon-cart nav-arrow"></span></a></li>
+</ul></div>
 ';
 
 
 // Clothes currently worn
 echo '
-<form id="sortable" action="/preview-avi" method="post" style="margin-left:206px;">
+<form id="sortable" action="/preview-avi" method="post" style="margin-left:210px;">
 ' . Alert::display() . '
 <textarea id="order" name="order" style="display:none;"></textarea>
 <ul id="equipped" class="dragndrop">';
@@ -246,7 +235,7 @@ foreach($outfitArray as $pos => $item)
 		echo '
 	<li id="worn_0">
 		<div style="line-height:50px;">Base</div>
-		<select id="color_0" disabled="disabled"><option value="' . ucfirst($avatarData['base']) . '">' . ucfirst($avatarData['base']) . '</option></select>
+		<select id="color_0" disabled><option value="' . ucfirst($avatarData['base']) . '">' . ucfirst($avatarData['base']) . '</option></select>
 	</li>';
 	}
 }

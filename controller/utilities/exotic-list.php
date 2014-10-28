@@ -19,25 +19,8 @@ else															{ $url[2] = (int) $url[2]; }
 // Set page title
 $config['pageTitle'] = "Utilities > List of Exotic Packages (" . $url[2] . ")";
 
-// Add links to nav panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
-	</div>');
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
-
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
 
 // Run Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -73,7 +56,8 @@ if(!CacheFile::load($cachedPage, 0, true))
 	
 		$html .= '
 		<h3>' . $package['title'] . '</h3>
-		<span style="color:#fb7c7c;"><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> can be opened to pick one of these items:</span><br/>';
+		If you own this package, you can <a href="/utilities/exotic-open/' . $package['id'] . '">open it here</a>.<br/>
+		<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> can be opened to pick one of these items:<br/>';
 	
 		$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($package['id']));
 		foreach($content as $cont)

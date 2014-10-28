@@ -50,25 +50,8 @@ foreach($wrappers as $key => $wrap)
 // Set page title
 $config['pageTitle'] = "Utilities > List of Wrappers";
 
-// Add links to nav panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
-	</div>');
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
-
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
 
 // Run Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -126,7 +109,9 @@ foreach($wrappers as $wrap)
 	
 	echo '
 	<h3>' . $details[$wrap['id']]['title'] . '</h3>
-	<span style="color:#fb7c7c;">' . $details[$wrap['id']]['html'] . ' can be replaced with:</span><br/>';
+	If you own this wrapper, you can <a href="/utilities/wrapper-open/' . $wrap['id'] . '">open it here</a>.<br/>
+	If you have opened this wrapper before and still have its contents, you can <a href="/utilities/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
+	' . $details[$wrap['id']]['html'] . ' can be replaced with:<br/>';
 	foreach($wrap['content']	as $cont)
 	{
 		echo $details[$cont]['html'];
@@ -140,12 +125,12 @@ foreach($wrappers as $wrap)
 		if($url[2] > 0)
 		{
 			echo '
-	<a href="utilities/wrappers-list/' . ($url[2]-1) . '">Newer <span class="icon-arrow-left"></span></a>';
+	<a href="utilities/wrapper-list/' . ($url[2]-1) . '">Newer <span class="icon-arrow-left"></span></a>';
 		}
 		if(isset($wrappers[19]))
 		{
 			echo '
-	<a href="utilities/wrappers-list/' . ($url[2]+1) . '"><span class="icon-arrow-right"> Older</span></a>';
+	<a href="utilities/wrapper-list/' . ($url[2]+1) . '"><span class="icon-arrow-right"> Older</span></a>';
 		}
 	}
 	

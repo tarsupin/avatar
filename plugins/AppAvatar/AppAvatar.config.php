@@ -76,18 +76,6 @@ class AppAvatar_config {
 		");
 		
 		Database::exec("
-		CREATE TABLE IF NOT EXISTS `avatar_equipped`
-		(
-			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
-			`sort_order`			tinyint(2)					NOT NULL	DEFAULT '0',
-			`item_id`				mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
-			`color`					varchar(22)					NOT NULL	DEFAULT '',
-			
-			INDEX (`uni_id`, `sort_order`, `item_id`, `color`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
-		");
-		
-		Database::exec("
 		CREATE TABLE IF NOT EXISTS `items`
 		(
 			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,

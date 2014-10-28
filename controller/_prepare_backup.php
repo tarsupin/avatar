@@ -118,19 +118,19 @@ exit;
 ini_set('max_execution_time', 120);
 
 // Run each directory in avatar_items
-$allItemList = Dir::getFolders(APP_PATH . "/avatar_items/");
+$allItemList = Dir::getFolders(APP_PATH . "/assets/avatar_items/");
 
 foreach($allItemList as $fullL)
 {
 	//if($fullL < "legs") { continue; }
 	
-	$list = Dir::getFolders(APP_PATH . "/avatar_items/" . $fullL);
+	$list = Dir::getFolders(APP_PATH . "/assets/avatar_items/" . $fullL);
 	
 	Database::startTransaction();
 	
 	foreach($list as $l)
 	{
-		$stats = File::read(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/_stats.txt");
+		$stats = File::read(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/_stats.txt");
 		
 		$values = explode(" ", $stats);
 		
@@ -138,7 +138,7 @@ foreach($allItemList as $fullL)
 		
 		$itemIDs = (array) Database::selectMultiple("SELECT id FROM items WHERE position=? AND title=? LIMIT 2", array($fullL, $l));
 		foreach($itemIDs as $itemID)
-			AppAvatarAdmin::editItemCoordinates($itemID['id'], $values[0], $values[1], $values[2], $values[3]);
+			AppAvatarAdmin::editItemCoordinates((int) $itemID['id'], (int) $values[0], (int) $values[1], (int) $values[2], (int) $values[3]);
 		
 		echo "Completed " . $fullL . "->" . $l . "<br />";
 	}
@@ -156,7 +156,7 @@ exit;
 ini_set('max_execution_time', 120);
 
 // Run each directory in avatar_items
-$allItemList = Dir::getFolders(APP_PATH . "/avatar_items/");
+$allItemList = Dir::getFolders(APP_PATH . "/assets/avatar_items/");
 
 foreach($allItemList as $fullL)
 {
@@ -167,35 +167,35 @@ foreach($allItemList as $fullL)
 	{
 		// temp is not a layer position, but was used for recoloring purposes
 		// that functionality will be moved elsewhere and important files have been backed up, so this isn't needed
-		if(Dir::exists(APP_PATH . "/avatar_items/" . $fullL))
+		if(Dir::exists(APP_PATH . "/assets/avatar_items/" . $fullL))
 		{
-			Dir::delete(APP_PATH . "/avatar_items/" . $fullL);
+			Dir::delete(APP_PATH . "/assets/avatar_items/" . $fullL);
 		}
 		continue;
 	}
 	
-	$list = Dir::getFolders(APP_PATH . "/avatar_items/" . $fullL);
+	$list = Dir::getFolders(APP_PATH . "/assets/avatar_items/" . $fullL);
 	
 	foreach($list as $l)
 	{
 		// Skip if it already exists
-		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
+		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
 		{
 			continue;
 		}
-		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
+		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
 		{
 			continue;
 		}
 		
 		// Cleanup of previous non-gender-specific default images
-		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default.png"))
+		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default.png"))
 		{
-			File::delete(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default.png");
+			File::delete(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default.png");
 		}
 		
 		// Cycle through all of the items and create a default image (max height of 100px and max width of 80)
-		$results = Dir::getFiles(APP_PATH . "/avatar_items/" . $fullL . "/" . $l);
+		$results = Dir::getFiles(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l);
 		
 		if($results)
 		{
@@ -222,12 +222,12 @@ foreach($allItemList as $fullL)
 			{
 				if($val !== false)
 				{
-					$image = new Image(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/" . $val);
+					$image = new Image(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/" . $val);
 					
 					if($image->height > 100) 		{ $image->autoHeight(100); }
 					if($image->width > 80) 			{ $image->autoWidth(80); }
 					
-					$image->save(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_" . $key . ".png");
+					$image->save(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_" . $key . ".png");
 				}
 			}
 			
@@ -447,6 +447,7 @@ DatabaseAdmin::dropColumn("_transfer_accounts", "id");
 DatabaseAdmin::dropColumn("_transfer_accounts", "clearance");
 
 DatabaseAdmin::addColumn("_transfer_accounts", "auro", "float(10,2) unsigned NOT NULL", "0.00");
+DatabaseAdmin::addColumn("_transfer_accounts", "uni6_id", "int(10) unsigned NOT NULL", "0");
 
 echo "Table structure has been prepared.";
 
@@ -469,6 +470,8 @@ Database::endTransaction();
 DatabaseAdmin::dropTable("s4u_account_trackers");
 
 echo "Auro amount has been moved to the _transfer_accounts table.";
+
+// You should drop the s4u_account_trackers table.
 
 exit;
 
@@ -517,7 +520,7 @@ $results = Database::selectMultiple("SELECT id, content FROM wrappers", array())
 foreach($results as $result)
 {
 	// check whether the wrapper was a "staying" one and has a replacement included
-	$wrap = Database::selectOne("SELECT title FROM items WHERE id=?", array($result['id']));	
+	$wrap = Database::selectOne("SELECT id, title FROM items WHERE id=?", array($result['id']));	
 	$content = explode(",", $result['content']);
 	$item = (int) array_pop($content);
 	$content = implode(",", $content);

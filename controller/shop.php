@@ -1,14 +1,9 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Defaults if a guest is viewing the page
+// Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	// preview is disabled for guests, so any base choice will suffice to get past the next page access check
-	$avatarData['base'] = "white";
-	// gender choice is provided when coming from the shop list
-	if(isset($url[2]) and in_array($url[2], array("m", "f")))	{ $avatarData['gender'] = $url[2]; }
-	else														{ header("Location: /shop-list"); exit; }
-	Alert::info("Guest Access", 'You are viewing this page as a guest. If you have an account, please <a href="/login">log in</a>.');
+	Me::redirectLogin("/shop" . (isset($url[1]) ? "/" . $url[1] : "-list"));
 }
 
 // Check if you have an avatar
@@ -34,61 +29,15 @@ $config['pageTitle'] = "Shops > " . $shopTitle;
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
-
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
 
 // Display Side Panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a><br/>
-		<a href="/shop-search">Shop Search</a>
-	</div>
-	<br/>');
-
-// Add list of shops
-if(!Me::$loggedIn)	{ $extra = '/' . $avatarData['gender']; }
-else				{ $extra = ''; }
-WidgetLoader::add("SidePanel", 50, '
+WidgetLoader::add("SidePanel", 20, '
 	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot' . ($url[1] == 1 ? " nav-active" : "") . '"><a href="/shop/1' . $extra . '">A Cut Above<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 2 ? " nav-active" : "") . '"><a href="/shop/2' . $extra . '">All That Glitters<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 15 ? " nav-active" : "") . '"><a href="/shop/15' . $extra . '">Avatar Museum<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 5 ? " nav-active" : "") . '"><a href="/shop/5' . $extra . '">Body Shop<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 18 ? " nav-active" : "") . '"><a href="/shop/18' . $extra . '">Credit Shop<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 14 ? " nav-active" : "") . '"><a href="/shop/14' . $extra . '">Exotic Exhibit<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 6 ? " nav-active" : "") . '"><a href="/shop/6' . $extra . '">Finishing Touch<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 7 ? " nav-active" : "") . '"><a href="/shop/7' . $extra . '">Haute Couture<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 3 ? " nav-active" : "") . '"><a href="/shop/3' . $extra . '">Heart and Sole<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 8 ? " nav-active" : "") . '"><a href="/shop/8' . $extra . '">Junk Drawer<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 9 ? " nav-active" : "") . '"><a href="/shop/9' . $extra . '">Looking Glass<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 4 ? " nav-active" : "") . '"><a href="/shop/4' . $extra . '">Pr&ecirc;t &agrave; Porter<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 10 ? " nav-active" : "") . '"><a href="/shop/10' . $extra . '">Time Capsule<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 11 ? " nav-active" : "") . '"><a href="/shop/11' . $extra . '">Under Dressed<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 12 ? " nav-active" : "") . '"><a href="/shop/12' . $extra . '">Vogue Veneers<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="/shop-search">Shop Search<span class="icon-search-plus nav-arrow"></span></a></li>
 	</ul></div>');
-	
-if(Me::$clearance >= 5)
-{
-	WidgetLoader::add("SidePanel", 60, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot' . ($url[1] == 13 ? " nav-active" : "") . '"><a href="/shop/13' . $extra . '">Archive<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 16 ? " nav-active" : "") . '"><a href="/shop/16' . $extra . '">Staff Shop<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 17 ? " nav-active" : "") . '"><a href="/shop/17' . $extra . '">Test Shop<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($url[1] == 19 ? " nav-active" : "") . '"><a href="/shop/19' . $extra . '">Wrappers<span class="icon-circle-right nav-arrow"></span></a></li>
-	</ul></div>');
-}
 
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
@@ -99,8 +48,40 @@ echo '
 Alert::display();
 
 // Shop Display
+$shops = array(
+	1 => "A Cut Above",
+	2 => "All That Glitters",
+	5 => "Body Shop",
+	6 => "Finishing Touch",
+	7 => "Haute Couture",
+	3 => "Heart and Sole",
+	8 => "Junk Drawer",
+	9 => "Looking Glass",
+	4 => "Pr&ecirc;t &agrave; Porter",
+	10 => "Time Capsule",
+	11 => "Under Dressed",
+	12 => "Vogue Veneers",
+	15 => "Avatar Museum",
+	18 => "Credit Shop",
+	14 => "Exotic Exhibit"
+);
+if(Me::$clearance >= 5)
+{
+	$shops[13] = "Archive";
+	$shops[16] = "Staff Shop";
+	$shops[17] = "Test Shop";
+	$shops[19] = "Wrappers";
+}
 echo '
-	<h2>' . $shopTitle . '</h2>';
+	<div class="redlinks">';
+foreach($shops as $key => $shop)
+{
+	echo '
+		<a href="/shop/' . $key . '"' . ($url[1] == $key ? ' class="category-active"' : '') . '>' . $shop . '</a>';
+}
+echo '
+	</div>';
+unset($shops);
 		
 // Attempt to load the cached version of this shop page
 $cachedPage = "shop_" . $shopID . "_" . $avatarData['gender'];
@@ -141,16 +122,11 @@ if(!CacheFile::load($cachedPage, 0, true))
 			$html .= '
 			</select>';
 			
-			$html .= '<br /><a href="utilities/wish-list/' . $item['id'] . '">Wish</a> | ';
-			if($item['rarity_level'] < 1)
+			$html .= '<br /><a href="utilities/wish-list?add=' . $item['id'] . '">Wish</a>';
+			if((int) $item['rarity_level'] == 0)
 			{
 				$html .= '
-			<a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy</a>';
-			}
-			else
-			{
-				$html .= '
-			Preview';
+			 | <a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy</a>';
 			}
 		$html .= '
 		</div>';
@@ -174,11 +150,11 @@ if(Me::$clearance >= 5)
 	{
 		var html = $(this).html();
 		html = html.trim();
-		if (html.substr(html.length-7) == "Preview")
+		if (html.substr(html.length-7) != "Buy</a>")
 		{
 			var id = $(this).children("select").attr("id");
 			id = id.substr(id.indexOf("_")+1);
-			html = html.substr(0, html.length-7) + '<a href="/purchase-item/' + id + '?shopID=' + <?php echo $url[1]; ?> + '">Buy</a>';
+			html = html + ' | <a href="/purchase-item/' + id + '?shopID=' + <?php echo $url[1]; ?> + '">Buy</a>';
 			$(this).html(html);
 		}
 	});
@@ -188,19 +164,17 @@ if(Me::$clearance >= 5)
 }
 
 // Indicate items you own
-if(Me::$loggedIn)
+$items = array();
+$owned = Database::selectMultiple("SELECT DISTINCT shop_inventory.item_id FROM user_items INNER JOIN shop_inventory ON user_items.item_id=shop_inventory.item_id WHERE uni_id=? and shop_id=?", array(Me::$id, $shopID));
+foreach($owned as $own)
 {
-	$items = array();
-	$owned = Database::selectMultiple("SELECT DISTINCT shop_inventory.item_id FROM user_items INNER JOIN shop_inventory ON user_items.item_id=shop_inventory.item_id WHERE uni_id=? and shop_id=?", array(Me::$id, $shopID));
-	foreach($owned as $own)
-	{
-		$items[] = $own['item_id'];
-	}
-	// prevent problem with javascript array
-	if(count($items) == 1)
-	{
-		$items[] = 0;
-	}
+	$items[] = $own['item_id'];
+}
+// prevent problem with javascript array
+if(count($items) == 1)
+{
+	$items[] = 0;
+}
 ?>
 		
 <script type='text/javascript'>
@@ -216,7 +190,6 @@ if(Me::$loggedIn)
 </script>
 
 <?php
-}
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

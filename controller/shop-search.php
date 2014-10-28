@@ -1,11 +1,9 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Defaults if a guest is viewing the page
+// Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	// preview is disabled for guests, so any base choice will suffice to get past the next page access check
-	$avatarData['base'] = "white";
-	Alert::info("Guest Access", 'You are viewing this page as a guest. If you have an account, please <a href="/login">log in</a>.');
+	Me::redirectLogin("/shop-search");
 }
 
 // Check if you have an avatar
@@ -18,22 +16,25 @@ if (!isset($_GET['title']))
 if (!isset($_GET['gender']))
 	$_GET['gender'] = "";
 if (!isset($_GET['shop']))
-	$_GET['shop'] = "";
+	$_GET['shop'] = 0;
+$_GET['shop'] = (int) $_GET['shop'];
 if (!isset($_GET['sortby']))
 	$_GET['sortby'] = "";
 if (!isset($_GET['purchasable']))
 	$_GET['purchasable'] = "";
 if (!isset($_GET['owned']))
 	$_GET['owned'] = "";
-if (!isset($_GET['cont']))
+if (!isset($_GET['cont']) || $_GET['cont'] < 0)
 	$_GET['cont'] = 0;
-if (!isset($_GET['start']))
+$_GET['cont'] = (int) $_GET['cont'];
+if (!isset($_GET['start']) || $_GET['start'] < 0)
 	$_GET['start'] = 0;
+$_GET['start'] = (int) $_GET['start'];
 $result = array();
 
 // Run Search
 if(isset($_GET['submit']))
-{			
+{
 	// Prepare Search
 	$comma = "";
 	$sqlwhere = "";
@@ -56,7 +57,7 @@ if(isset($_GET['submit']))
 	}
 	
 	// name
-	if(strlen(trim($_GET['title'])) > 2)
+	if(isset($_GET['title'][3]))
 	{
 		$sqlwhere .= $comma . "title LIKE ?";
 		$comma = " AND ";
@@ -89,7 +90,7 @@ if(isset($_GET['submit']))
 	}
 	
 	// shop
-	if($_GET['shop'] != "")
+	if($_GET['shop'] != 0)
 	{
 		$sqlwhere .= $comma . "shop_id=?";
 		$comma = " AND ";
@@ -126,21 +127,18 @@ if(isset($_GET['submit']))
 		}
 	}
 	
-	$disallow = array();
 	// remove items from staff shops
 	if(Me::$clearance < 5)
 	{
-		$disallowed = Database::selectMultiple("SELECT id FROM shop WHERE clearance>='5'");
-		foreach($disallowed as $dis)
-		{
-			$disallow[] = $dis['id'];
-		}
-		unset($disallowed);
+		$disallow = "13,16,17,19";
 	}
-	$disallow = implode(",", $disallow);
+	else
+	{
+		$disallow = "";
+	}
 	
 	// build query
-	$result = Database::selectMultiple("SELECT id, title, position, gender, rarity_level, shop_id FROM items INNER JOIN shop_inventory ON items.id=shop_inventory.item_id " . ($sqlwhere != "" || $disallow != "" ? " WHERE " : "") . ($sqlwhere != "" ? $sqlwhere : "") . ($disallow != "" && $sqlwhere != "" ? " AND " : "") . ($disallow != "" ? "shop_id NOT IN (" . $disallow . ")" : "") . $sqlorder . ($_GET['owned'] =="" ? " LIMIT " . ($_GET['start']*60) . ", 60" : ""), $questionmarks);
+	$result = Database::selectMultiple("SELECT id, title, position, gender, rarity_level, shop_id FROM items INNER JOIN shop_inventory ON items.id=shop_inventory.item_id " . ($sqlwhere != "" || $disallow != "" ? " WHERE " : "") . ($sqlwhere != "" ? $sqlwhere : "") . ($disallow != "" && $sqlwhere != "" ? " AND " : "") . ($disallow != "" ? "shop_id NOT IN (" . $disallow . ")" : "") . $sqlorder . ($_GET['owned'] == "" ? " LIMIT " . ($_GET['start']*60) . ", 60" : ""), $questionmarks);
 }
 
 // Set page title
@@ -149,26 +147,9 @@ $config['pageTitle'] = "Shop Search";
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
-
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
-
-// Display Side Panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
-	</div>');
 
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
@@ -180,7 +161,6 @@ Alert::display();
 
 // Search Display
 echo '
-	<h2>Shop Search</h2>
 	<form class="uniform" action="shop-search" method="get">
 		<input type="text" name="title" maxlength="30" size="15" placeholder="Item Name" value="' . $_GET['title'] . '"/> 
 		<select name="gender"><option value="">Gender:</option><option value="both"' . ($_GET['gender'] == "both" ? " selected" : "") . '>both</option><option value="female-only"' . ($_GET['gender'] == "female-only" ? " selected" : "") . '>female-only</option><option value="male-only"' . ($_GET['gender'] == "male-only" ? " selected" : "") . '>male-only</option><option value="fab"' . ($_GET['gender'] == "fab" ? " selected" : "") . '>female or both</option><option value="mab"' . ($_GET['gender'] == "mab" ? " selected" : "") . '>male or both</option></select> 
@@ -195,20 +175,23 @@ foreach($positions as $pos)
 	echo '<div style="width:8em; display:inline-block;"><input type="checkbox" name="' . $pos . '"' . (isset($_GET[$pos]) ? " checked" : "") . '/> ' . $pos . "</div>";
 }
 echo '
-		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked=true" : "") . '/ > <span style="font-weight:bold;">Select/Deselect All</span>
+		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <span style="font-weight:bold;">Select/Deselect All</span>
 	</form><div class="spacer-huge"></div>';
 	
 // check for (non-)owned items
+$checked = array();
 if($_GET['owned'] != "")
 {
 	foreach($result as $item)
 	{
 		if(AppAvatar::checkOwnItem(Me::$id, $item['id']))
 		{
+			$checked[$item['id']] = true;
 			if($_GET['owned'] == "yes")	{ $todo[] = $item['id']; }
 		}
 		else
 		{
+			$checked[$item['id']] = false;
 			if($_GET['owned'] == "no")	{ $todo[] = $item['id']; }
 		}
 	}
@@ -220,7 +203,7 @@ foreach($result as $item)
 {
 	if($_GET['owned'] != "" && !in_array($item['id'], $todo))	{ continue; }	
 	$found++;
-	if ($found <= $_GET['cont']*60) { continue; }
+	if($found <= $_GET['cont']*60) { continue; }
 
 	// adjust gender if item not available for the gender
 	$gender = $avatarData['gender_full'];
@@ -245,21 +228,20 @@ foreach($result as $item)
 		
 	echo '
 		</select>
-		<br/><a href="utilities/wish-list/' . $item['id'] . '">Wish</a> | ';
-	if($item['rarity_level'] < 1 || Me::$clearance >= 5)
+		<br/><a href="utilities/wish-list?add=' . $item['id'] . '">Wish</a>';
+	if($item['rarity_level'] != 0 || Me::$clearance >= 5)
 	{
 		echo '
-		<a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy</a>';
+		 | <a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy</a>';
 	}
-	else
+	if((isset($checked[$item['id']]) && $checked[$item['id']] == true) || AppAvatar::checkOwnItem(Me::$id, $item['id']))
 	{
-		echo '
-		Preview';
+		echo ' [&bull;]';
 	}
 	echo '
 	</div>';
 	
-	if ($found == ($_GET['cont']+1)*60) { break; }
+	if($found == ($_GET['cont']+1)*60) { break; }
 }
 
 // pages
@@ -309,37 +291,6 @@ else
 
 echo '
 </div>';
-
-// Indicate items you own
-if(Me::$loggedIn)
-{
-	$items = array();
-	$owned = Database::selectMultiple("SELECT DISTINCT shop_inventory.item_id FROM user_items INNER JOIN shop_inventory ON user_items.item_id=shop_inventory.item_id WHERE uni_id=?", array(Me::$id));
-	foreach($owned as $own)
-	{
-		$items[] = $own['item_id'];
-	}
-	// prevent problem with javascript array
-	if(count($items) == 1)
-	{
-		$items[] = 0;
-	}
-?>
-		
-<script type='text/javascript'>
-	var owned = new Array(<?php echo implode(",", $items); ?>);
-	for(i in owned)
-	{
-		var el = $("#img_" + owned[i]);
-		if (el)
-		{
-			el.parents(".item_block").html(el.parents(".item_block").html() + " [&bull;]");
-		}
-	}
-</script>
-
-<?php
-}
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

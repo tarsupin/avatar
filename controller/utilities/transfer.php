@@ -6,6 +6,12 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/utilities/transfer");
 }
 
+// Make sure you have an avatar
+if(!isset($avatarData['base']))
+{
+	header("Location: /create-avatar"); exit;
+}
+
 // Run Action to Transfer
 if(Form::submitted("transfer"))
 {
@@ -13,7 +19,7 @@ if(Form::submitted("transfer"))
 	{
 		$_POST['account'] = Sanitize::variable($_POST['account'], ".");
 		$_POST['password'] = Sanitize::variable($_POST['password']);
-		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? LIMIT 1", array($_POST['account']));
+		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
 		if(!$pass)
 		{
 			Alert::error("Wrong Username", "The user " . $pass['account'] . " does not exist on Uni5.");
@@ -28,7 +34,6 @@ if(Form::submitted("transfer"))
 				{
 					if(Currency::add(Me::$id, $pass['auro'], "Transfer from Uni5"))
 					{
-						Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array(0.00, $pass['account']));
 						Alert::success("Auro Transfer", $pass['auro'] . " Auro have been transferred.");
 					}
 					else
@@ -42,7 +47,7 @@ if(Form::submitted("transfer"))
 				{
 					if(AppTransfer::transferItems(Me::$id, $pass['account']))
 					{
-						Alert::success("Item Transfer", "Your items have been transferred.");
+						Alert::success("Item Transfer", 'Your items have been transferred. You can view them <a href="/dress-avatar">here</a>.');
 					}
 					else
 					{
@@ -55,7 +60,7 @@ if(Form::submitted("transfer"))
 				{
 					if(AppTransfer::transferPackages(Me::$id, $pass['account']))
 					{
-						Alert::success("Package Transfer", "Your packages have been transferred.");
+						Alert::success("Package Transfer", 'Your packages have been transferred. You can view them <a href="/exotic-open">here</a>.');
 					}
 					else
 					{
@@ -65,7 +70,7 @@ if(Form::submitted("transfer"))
 				
 				if(!Alert::hasErrors())
 				{
-					Database::query("DELETE from _transfer_accounts WHERE account=? LIMIT 1", array($pass['account']));
+					Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
 				}
 			}
 			else

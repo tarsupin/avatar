@@ -30,6 +30,7 @@ echo '
 	' . Alert::display() . '
 	<h2>Avatar</h2>
 	<p>Welcome to the avatar site!</p>
+	<p>This is where you can create your avatar doll and dress it up in various high quality items. Explore the endless combination possibilities our intuitive and flexible dressing system has to offer!</p>
 </div>';
 
 // Display the Footer

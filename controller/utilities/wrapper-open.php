@@ -6,17 +6,16 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/utilities/wrapper-open");
 }
 
-// Return home if you don't have an avatar
+// Create avatar if you don't have one
 if(!isset($avatarData['base']))
 {
 	header("Location: /create-avatar"); exit;
 }
 
 // get owned wrappers
-$owned = Database::selectMultiple("SELECT id, content, replacement FROM wrappers INNER JOIN user_items on wrappers.id=user_items.item_id WHERE uni_id=?", array(Me::$id));
+$owned = Database::selectMultiple("SELECT id, content, replacement, COUNT(id) AS c FROM wrappers INNER JOIN user_items on wrappers.id=user_items.item_id WHERE uni_id=? GROUP BY id", array(Me::$id));
 
 // get item info
-// doing this here to avoid duplicates because a user might have multiple identical wrappers
 $details = array();
 foreach($owned as $key => $own)
 {
@@ -88,7 +87,8 @@ if(Form::submitted("wrapper-open"))
 					{
 						if($own['id'] == $_POST['id'])
 						{
-							unset($owned[$key]);
+							if($own['c'] < 2)	{ unset($owned[$key]); }
+							else				{ $owned[$key]['c'] -= 1; }
 							break;
 						}
 					}		
@@ -106,25 +106,8 @@ if(Form::submitted("wrapper-open"))
 // Set page title
 $config['pageTitle'] = "Utilities > Open Wrapper";
 
-// Add links to nav panel
-WidgetLoader::add("SidePanel", 40, '
-	<div class="panel-links" style="text-align:center;">
-		<a href="javascript:review_item(0);">Open Preview Window</a>
-	</div>');
-
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
-
-// Add Javascript to header
-Metadata::addHeader('
-<!-- javascript -->
-<script src="/assets/scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
-<script src="/assets/scripts/review-switch.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- javascript for touch devices, source: http://touchpunch.furf.com/ -->
-<script src="/assets/scripts/jquery.ui.touch-punch.min.js" type="text/javascript" charset="utf-8"></script>
-');
 
 // Run Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -171,7 +154,7 @@ foreach($details as $key => $item)
 
 echo '
 	<h2><a href="/utilities">Utilities</a> > Open Wrapper</h2>
-	<p>Wrappers are items that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that\'s either identical or can be combined to look identical is given, so you lose nothing.</p>';
+	<p>Wrappers are items that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.</p>';
 
 $space = false;
 	
@@ -182,8 +165,8 @@ foreach($owned as $own)
 	$space = true;
 	
 	echo '
-	<h3>' . $details[$own['id']]['title'] . '</h3>
-	<span style="color:#fb7c7c;">' . $details[$own['id']]['html'] . ' will be replaced with:</span><br/>';
+	<h3>' . $details[$own['id']]['title'] . ($own['c'] > 1 ? ' (' . $own['c'] . ')' : '') . '</h3>
+	' . $details[$own['id']]['html'] . ' will be replaced with:<br/>';
 	foreach($own['content']	as $cont)
 	{
 		echo $details[$cont]['html'];

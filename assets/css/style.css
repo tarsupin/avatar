@@ -64,8 +64,6 @@
 .dragndrop
 {
 	list-style-type:none;
-	margin-left:0px;
-	margin-right:-4px;
 	overflow:hidden;
 	width:100%;
 	padding:0px;
@@ -141,18 +139,8 @@
 .item_block select { width:110px; }
 .item_block img { max-height:100px; max-width:80px; }
 
-/************************
-****** Panel Links ******
-************************/
-
-.panel-links a
-{
-	color:#16b9b3;
-	font-weight:bold;
-}
-
 /***********************
-****** Faded Out ******
+****** Faded Out *******
 ***********************/
 
 .opaque
@@ -162,4 +150,26 @@
 		-moz-opacity:0.5;
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0.5)";
 	filter:alpha(opacity=0.5);
+}
+
+/*************************
+****** Padded Links ******
+*************************/
+
+.redlinks>a
+{
+	background-color:#eeeeee;
+	border-radius:8px;
+		-moz-border-radius:8px;
+		-webkit-border-radius:8px;
+	padding:5px;
+	line-height:2.2em;
+	white-space:nowrap;
+}
+
+.redlinks .category-active
+{
+	background-color:inherit;
+	border:1px #eeeeee solid;
+	padding:4px;
 }

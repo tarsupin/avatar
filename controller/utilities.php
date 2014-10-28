@@ -35,9 +35,7 @@ echo '
 	Wrappers > <a href="/utilities/wrapper-open">Open Wrapper</a><br/>
 	Wrappers > <a href="/utilities/wrapper-list">List of Wrappers</a><br/>
 	<br/>
-	Wish List > <a href="/utilities/wish-list">Wish List</a><br/>
-	<br/>
-	Logs > <a href="/utilities/transactions">Auro Log</a><br />
+	Misc > <a href="/utilities/wish-list">Wish List</a><br/>
 	<br/>
 	Transfer > <a href="/utilities/transfer">Transfer from Uni5</a>
 </div>';

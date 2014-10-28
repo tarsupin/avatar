@@ -9,7 +9,7 @@ if(!Me::$loggedIn)
 // Make sure you are staff
 if(Me::$clearance < 5)
 {
-	header("Location: /home"); exit;
+	header("Location: /"); exit;
 }
 
 // Run Staff Tools
