@@ -159,9 +159,35 @@ echo '
 <div id="content">' .
 Alert::display();
 
+// Shop Display
+$shops = array(
+	1 => "A Cut Above",
+	2 => "All That Glitters",
+	5 => "Body Shop",
+	6 => "Finishing Touch",
+	7 => "Haute Couture",
+	3 => "Heart and Sole",
+	8 => "Junk Drawer",
+	9 => "Looking Glass",
+	4 => "Pr&ecirc;t &agrave; Porter",
+	10 => "Time Capsule",
+	11 => "Under Dressed",
+	12 => "Vogue Veneers",
+	15 => "Avatar Museum",
+	18 => "Credit Shop",
+	14 => "Exotic Exhibit"
+);
+if(Me::$clearance >= 5)
+{
+	$shops[13] = "Archive";
+	$shops[16] = "Staff Shop";
+	$shops[17] = "Test Shop";
+	$shops[19] = "Wrappers";
+}
+
 // Search Display
 echo '
-	<form class="uniform" action="shop-search" method="get">
+	<form class="uniform" action="/shop-search" method="get">
 		<input type="text" name="title" maxlength="30" size="15" placeholder="Item Name" value="' . $_GET['title'] . '"/> 
 		<select name="gender"><option value="">Gender:</option><option value="both"' . ($_GET['gender'] == "both" ? " selected" : "") . '>both</option><option value="female-only"' . ($_GET['gender'] == "female-only" ? " selected" : "") . '>female-only</option><option value="male-only"' . ($_GET['gender'] == "male-only" ? " selected" : "") . '>male-only</option><option value="fab"' . ($_GET['gender'] == "fab" ? " selected" : "") . '>female or both</option><option value="mab"' . ($_GET['gender'] == "mab" ? " selected" : "") . '>male or both</option></select> 
 		<select name="shop"><option value="">Shop:</option><option value="1"' . ($_GET['shop'] == 1 ? " selected" : "") . '>A Cut Above</option><option value="4"' . ($_GET['shop'] == 4 ? " selected" : "") . '>Pr&ecirc;t &agrave; Porter</option><option value="7"' . ($_GET['shop'] == 7 ? " selected" : "") . '>Haute Couture</option><option value="10"' . ($_GET['shop'] == 10 ? " selected" : "") . '>Time Capsule</option><option value="2"' . ($_GET['shop'] == 2 ? " selected" : "") . '>All That Glitters</option><option value="5"' . ($_GET['shop'] == 5 ? " selected" : "") . '>Body Shop</option><option value="8"' . ($_GET['shop'] == 8 ? " selected" : "") . '>Junk Drawer</option><option value="11"' . ($_GET['shop'] == 11 ? " selected" : "") . '>Under Dressed</option><option value="3"' . ($_GET['shop'] == 3 ? " selected" : "") . '>Heart and Sole</option><option value="6"' . ($_GET['shop'] == 6 ? " selected" : "") . '>Finishing Touch</option><option value="9"' . ($_GET['shop'] == 9 ? " selected" : "") . '>Looking Glass</option><option value="12"' . ($_GET['shop'] == 12 ? " selected" : "") . '>Vogue Veneers</option><option value="14"' . ($_GET['shop'] == 14 ? " selected" : "") . '>Exotic Exhibit</option><option value="15"' . ($_GET['shop'] == 15 ? " selected" : "") . '>Avatar Museum</option><option value="18"' . ($_GET['shop'] == 18 ? " selected" : "") . '>Credit Shop</option>' . (Me::$clearance >= 5 ? '<option value="13"' . ($_GET['shop'] == 13 ? " selected" : "") . '>Archive</option><option value="16"' . ($_GET['shop'] == 16 ? " selected" : "") . '>Staff Shop</option><option value="17"' . ($_GET['shop'] == 18 ? " selected" : "") . '>Test Shop</option><option value="19"' . ($_GET['shop'] == 19 ? " selected" : "") . '>Wrappers</option>' : "") . '</select> 
@@ -182,6 +208,7 @@ echo '
 $checked = array();
 if($_GET['owned'] != "")
 {
+	$todo = array();
 	foreach($result as $item)
 	{
 		if(AppAvatar::checkOwnItem(Me::$id, $item['id']))
@@ -217,7 +244,7 @@ foreach($result as $item)
 	echo '
 	<div class="item_block' . ($avatarData['gender_full'] != $gender ? " opaque" : "") . '">
 		<a href="javascript:review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
-		' . $item['title'] . '<br />
+		' . $item['title'] . '<br /><span style="font-size:0.6em;"><a href="/shop-search?submit=Search&' . $item['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">' . $item['position'] . '</a>, ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . '<br/><a href="/shop/' . $item['shop_id'] . '">' . $shops[$item['shop_id']] . '</a></span><br />
 		<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 		
 	foreach($colors as $color)
@@ -228,7 +255,7 @@ foreach($result as $item)
 		
 	echo '
 		</select>
-		<br/><a href="utilities/wish-list?add=' . $item['id'] . '">Wish</a>';
+		<br/><a href="/wish-list?add=' . $item['id'] . '">Wish</a>';
 	if($item['rarity_level'] != 0 || Me::$clearance >= 5)
 	{
 		echo '

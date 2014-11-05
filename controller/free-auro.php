@@ -2,13 +2,13 @@
 
 if(ENVIRONMENT == "production")
 {
-	header("Location: /utilities"); exit;
+	header("Location: /"); exit;
 }
 
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/free-auro");
+	Me::redirectLogin("/free-auro");
 }
 
 // Run Action to get Free Auro
@@ -29,7 +29,7 @@ if($getLink = Link::clicked() and $getLink == "free-auro")
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Free Auro";
+$config['pageTitle'] = "Free Auro";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -47,8 +47,8 @@ echo '
 Alert::display();
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Free Auro</h2>
-	<a class="button" href="/utilities/free-auro?want-free=yes&' . Link::prepare("free-auro") . '">Click to get FREE Auro</a>';
+	<h2>Free Auro</h2>
+	<a class="button" href="/free-auro?want-free=yes&' . Link::prepare("free-auro") . '">Click to get FREE Auro</a>';
 
 		echo '
 </div>';

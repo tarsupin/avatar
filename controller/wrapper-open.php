@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/wrapper-open");
+	Me::redirectLogin("/wrapper-open");
 }
 
 // Create avatar if you don't have one
@@ -92,7 +92,7 @@ if(Form::submitted("wrapper-open"))
 							break;
 						}
 					}		
-					Alert::success("Wrapper Removed", "The wrapper has been removed from your inventory.");
+					Alert::info("Wrapper Removed", "The wrapper has been removed from your inventory.");
 				}
 				else
 				{
@@ -104,7 +104,7 @@ if(Form::submitted("wrapper-open"))
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Open Wrapper";
+$config['pageTitle'] = "Open Wrapper";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -153,8 +153,8 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Open Wrapper</h2>
-	<p>Wrappers are items that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.</p>';
+	<h2>Open Wrapper</h2>
+	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.<br/>Click on the text with the dotted border to toggle the wrapper\'s content in/out of view.</p>';
 
 $space = false;
 	
@@ -166,13 +166,14 @@ foreach($owned as $own)
 	
 	echo '
 	<h3>' . $details[$own['id']]['title'] . ($own['c'] > 1 ? ' (' . $own['c'] . ')' : '') . '</h3>
-	' . $details[$own['id']]['html'] . ' will be replaced with:<br/>';
+	' . $details[$own['id']]['html'] . ' <span class="spoiler-header" onclick="if($(this).next().is(\':visible\')){ $(this).next().fadeOut(\'fast\'); } else { $(this).next().fadeIn(\'fast\'); }">will be replaced with:</span><div class="spoiler-content">';
 	foreach($own['content']	as $cont)
 	{
 		echo $details[$cont]['html'];
 	}
 	echo '
-	<form class="uniform" action="/utilities/wrapper-open" method="post">' . Form::prepare("wrapper-open") . '
+	</div>
+	<form class="uniform" method="post">' . Form::prepare("wrapper-open") . '
 		<input type="hidden" name="id" value="' . $own['id'] . '"/>
 		<input type="submit" name="open" value="Open ' . $details[$own['id']]['title'] . '"/>
 	</form>';

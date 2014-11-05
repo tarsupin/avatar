@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/exotic-open");
+	Me::redirectLogin("/exotic-open");
 }
 
 // Return home if you don't have an avatar
@@ -13,21 +13,21 @@ if(!isset($avatarData['base']))
 }
 
 // Check that you own the package
-if(isset($url[2]))
+if(isset($url[1]))
 {
-	if(!AppAvatar::checkOwnPackage(Me::$id, $url[2]))
+	if(!AppAvatar::checkOwnPackage(Me::$id, $url[1]))
 	{
-		header("Location:/utilities/exotic-open"); exit;
+		header("Location: /exotic-open"); exit;
 	}
 }
 
-if(isset($url[3]))
+if(isset($url[2]))
 {
+	$url[1] = (int) $url[1];
 	$url[2] = (int) $url[2];
-	$url[3] = (int) $url[3];
 	
 	// get item data
-	$item = AppAvatar::itemData($url[3], "id,title,position,gender");
+	$item = AppAvatar::itemData($url[2], "id,title,position,gender");
 	$item['id'] = (int) $item['id'];
 	
 	// check if you own the item
@@ -41,18 +41,18 @@ if(isset($url[3]))
 		if(FormValidate::pass())
 		{
 			// check if this item is in this package
-			$valid = Database::selectOne("SELECT id FROM packages INNER JOIN packages_content ON packages.id=packages_content.package_id WHERE item_id=? AND package_id=?", array($item['id'], $url[2]));
+			$valid = Database::selectOne("SELECT id FROM packages INNER JOIN packages_content ON packages.id=packages_content.package_id WHERE item_id=? AND package_id=?", array($item['id'], $url[1]));
 			if(!$valid)
 			{
 				Alert::saveError("Not Available", "This item is not available in this package.");
-				header("Location:/utilities/exotic-open"); exit;
+				header("Location: /exotic-open"); exit;
 			}
 						
 			// give item
 			if(AppAvatar::receiveItem(Me::$id, $item['id']))
 			{
 				// remove package
-				AppAvatar::dropPackage(Me::$id, $url[2]);
+				AppAvatar::dropPackage(Me::$id, $url[1]);
 				Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . ".");
 				header("Location:/dress-avatar?position=" . $item['position']); exit;
 			}
@@ -61,7 +61,7 @@ if(isset($url[3]))
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Open Exotic Package";
+$config['pageTitle'] = "Open Exotic Package";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -79,14 +79,14 @@ echo '
 Alert::display();
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Open Exotic Package</h2>';
+	<h2>Open Exotic Package</h2>';
 
 // output all packages
-if(!isset($url[3]))
+if(!isset($url[2]))
 {
 	$space = false;
 
-	if(!isset($url[2]))
+	if(!isset($url[1]))
 	{
 		// get packages
 		$packages = Database::selectMultiple("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? ORDER BY package_id DESC", array(Me::$id));
@@ -98,12 +98,12 @@ if(!isset($url[3]))
 			$space = true;
 			
 			echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')</h3>
-	<a href="utilities/exotic-open/' . $package['id'] . '"><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/></a>';
+	<a href="/exotic-open/' . $package['id'] . '"><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/></a>';
 		}
 	}
 	else
 	{
-		$package = Database::selectOne("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? AND id=?", array(Me::$id, (int) $url[2]));
+		$package = Database::selectOne("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? AND id=?", array(Me::$id, (int) $url[1]));
 	
 		echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')</h3>
 	<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> can be opened to pick one of these items:<br/>';
@@ -135,7 +135,7 @@ if(!isset($url[3]))
 				
 				echo '
 		</select>
-		<br/><a href="utilities/exotic-open/' . $package['id'] . '/' . $item['id'] . '">Choose ' . $item['title'] . '</a>';
+		<br/><a href="/exotic-open/' . $package['id'] . '/' . $item['id'] . '">Choose ' . $item['title'] . '</a>';
 			if(AppAvatar::checkOwnItem(Me::$id, $item['id']))
 			{
 				echo " [&bull;]";
@@ -148,7 +148,7 @@ if(!isset($url[3]))
 // confirm choice of one item
 else
 {
-	$package = Database::selectOne("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? AND id=?", array(Me::$id, (int) $url[2]));
+	$package = Database::selectOne("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? AND id=?", array(Me::$id, (int) $url[1]));
 	
 	if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
 	else	{ $gender = ($item['gender'] == "m" ? "male" : "female"); }
@@ -168,7 +168,7 @@ else
 		}
 	}
 	echo '
-	<form class="uniform" action="/utilities/exotic-open?package=' . $url[2] . '&item=' .$item['id'] . '" method="post">' . Form::prepare("exotic-open") . '
+	<form class="uniform" method="post">' . Form::prepare("exotic-open") . '
 		<input type="submit" name="submit" value="Choose ' . $item['title'] . '" />
 	</form>';
 }

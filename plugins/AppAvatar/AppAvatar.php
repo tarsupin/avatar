@@ -17,6 +17,7 @@ $items		= AppAvatar::getShopItems($shopID);
 $positions	= AppAvatar::getInvPositions($uniID)
 
 $itemData	= AppAvatar::itemData($itemID, $plusShopData = false);
+$itemCost	= AppAvatar::itemMinCost($itemID);
 $colors		= AppAvatar::getItemColors($position, $title);
 			= AppAvatar::itemHasColor($position, $title, $gender, $color);
 
@@ -191,6 +192,32 @@ abstract class AppAvatar {
 	}
 	
 	
+/****** Get Item Cost ******/
+	public static function itemMinCost
+	(
+		$itemID				// <int> The ID of the item to get the data from.
+	,	$allShops = false	// <bool> Whether the function should include shops inaccessible to the user.
+	)						// RETURNS <str:mixed> data of the item, or FALSE if failed.
+	
+	// $itemData = AppAvatar::itemMinCost($itemID);
+	{
+		if($allShops)
+		{
+			$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory WHERE item_id=?", array($itemID));
+		}
+		else
+		{
+			$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=?", array($itemID, Me::$clearance));
+		}
+	
+		if($shop['m'])
+		{
+			return $shop['m'];
+		}
+		return false;
+	}
+	
+	
 /****** Get the list of colors that an item has ******/
 	public static function getItemColors
 	(
@@ -291,6 +318,53 @@ abstract class AppAvatar {
 		return false;
 	}
 	
+	
+/****** Create an Avatar ******/
+	public static function editAvatar
+	(
+		$uniID			// <int> The Uni-Account to edit an avatar for.
+	,	$base			// <str> The avatar base (race) to use.
+	,	$gender			// <str> The gender of the avatar.
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::createAvatar($uniID, $base, $gender);
+	{
+		$gender = ($gender == "male" ? "male" : "female");
+		
+		// Compare with current data to determine cost
+		$avatarData = self::avatarData(Me::$id);
+		$cost = 0;
+		if($gender != $avatarData['gender_full'])	{ $cost += 1000; }
+		if($base != $avatarData['base'])			{ $cost += 30; }
+		
+		if($cost == 0)
+		{
+			return true;
+		}
+		
+		// Update the avatar data
+		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? LIMIT 1", array($base, $gender[0], $uniID)))
+		{
+			// Pay cost
+			$balance = Currency::check(Me::$id);
+			if($balance < $cost)
+			{
+				Alert::error("Too Expensive", "You don't have enough to change your base!");
+				return false;
+			}
+			Currency::subtract(Me::$id, $cost, "Changed Base");
+					
+			// Update the Avatar Image
+			$outfitArray = AppOutfit::get($uniID, "default");
+			$outfitArray[0] = array(0, $base);
+			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, "default");
+			AppOutfit::save($uniID, "default", $outfitArray);
+			return true;
+		}		
+		
+		return false;
+	}
+	
 
 /****** Purchase an Item ******/
 	public static function purchaseItem
@@ -316,44 +390,6 @@ abstract class AppAvatar {
 			return false;
 		}
 		
-		// Get cost and check if it's in an available shop
-		if($shopID == 0)
-		{
-			if($shop = Database::selectOne("SELECT shop_id, cost FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=? LIMIT 1", array($itemID, Me::$clearance)))
-			{
-				$shopID = (int) $shop['shop_id'];
-				$shop['cost'] = (float) $shop['cost'];
-			}
-			else
-			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Not Available", "" . $itemData['title'] . " is not available.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Available", "" . $itemData['title'] . " is not available.");
-				}
-				return false;
-			}
-		}
-		else
-		{
-			if(!$item = AppAvatar::getShopItems($shopID, $itemID))
-			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
-				}
-				return false;
-			}
-			$shop['cost'] = $item['cost'];
-		}
-		
 		// staff may purchase rare items
 		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
 		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
@@ -367,6 +403,40 @@ abstract class AppAvatar {
 				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
 			}
 			return false;
+		}
+		
+		// Get cost and check if it's in an available shop
+		if($shopID == 0)
+		{
+			if(!$shop['cost'] = self::itemMinCost($itemID))
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+				}
+				return false;
+			}
+		}
+		// Shop was provided
+		else
+		{
+			if(!$item = self::getShopItems($shopID, $itemID))
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
+				}
+				return false;
+			}
+			$shop['cost'] = $item['cost'];
 		}
 	
 		$balance = Currency::check(Me::$id);
@@ -393,11 +463,11 @@ abstract class AppAvatar {
 			
 			if(!$save)
 			{
-				Alert::success($itemData['title'] . " Purchased Item", "You have purchased " . $itemData['title'] . "!");
+				Alert::success($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
 			}
 			else
 			{
-				Alert::saveSuccess($itemData['title'] . " Purchased Item", "You have purchased " .$itemData['title'] . "!");
+				Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
 			}
 			return true;
 		}

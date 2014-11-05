@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/exotic-list");
+	Me::redirectLogin("/exotic-list");
 }
 
 // Return home if you don't have an avatar
@@ -13,11 +13,11 @@ if(!isset($avatarData['base']))
 }
 
 // get page
-if(!isset($url[2]) || $url[2] < 2009 || $url[2] > date("Y"))	{ $url[2] = date("Y"); }
-else															{ $url[2] = (int) $url[2]; }
+if(!isset($url[1]) || $url[1] < 2009 || $url[1] > date("Y"))	{ $url[1] = date("Y"); }
+else															{ $url[1] = (int) $url[1]; }
 
 // Set page title
-$config['pageTitle'] = "Utilities > List of Exotic Packages (" . $url[2] . ")";
+$config['pageTitle'] = "List of Exotic Packages (" . $url[1] . ")";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -35,29 +35,30 @@ echo '
 Alert::display();
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > List of Exotic Packages (' . $url[2] . ')</h2>';
+	<h2>List of Exotic Packages (' . $url[1] . ')</h2>
+	<p>Click on the text with the dotted border to toggle the package\'s content in/out of view.</p>';
 
 // Attempt to load the cached version of this page
-$cachedPage = "exotic_" . $url[2];
+$cachedPage = "exotic_" . $url[1];
 
-if(!CacheFile::load($cachedPage, 0, true))
+if(CacheFile::load($cachedPage, 86400, true) === false)
 {
 	$html = "";
 	$space = false;
 	
 	// get packages
-	$packages = Database::selectMultiple("SELECT * FROM packages WHERE year=? ORDER BY month DESC", array($url[2]));
+	$packages = Database::selectMultiple("SELECT * FROM packages WHERE year=? ORDER BY month DESC", array($url[1]));
 
 	// get item info
 	foreach($packages as $key => $package)
 	{
 		if($space) { $html .= '<div class="spacer-giant"></div>'; }
 		$space = true;
-	
+
 		$html .= '
 		<h3>' . $package['title'] . '</h3>
-		If you own this package, you can <a href="/utilities/exotic-open/' . $package['id'] . '">open it here</a>.<br/>
-		<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> can be opened to pick one of these items:<br/>';
+		If you own this package, you can <a href="/exotic-open/' . $package['id'] . '">open it here</a>.<br/>
+		<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> <span class="spoiler-header" onclick="if($(this).next().is(\':visible\')){ $(this).next().fadeOut(\'fast\'); } else { $(this).next().fadeIn(\'fast\'); }">can be opened to pick one of these items:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
 	
 		$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($package['id']));
 		foreach($content as $cont)
@@ -89,26 +90,27 @@ if(!CacheFile::load($cachedPage, 0, true))
 			$html .= '
 			</div>';
 		}
+		$html .= '</div>';
 	}
 
 	// Load the cache now that it's been saved
 	CacheFile::save($cachedPage, $html);
-	CacheFile::load($cachedPage);
+	echo CacheFile::load($cachedPage);
 }
 
-if($url[2] > 2009 or $url[2] < date("Y"))
+if($url[1] > 2009 or $url[1] < date("Y"))
 {
 	echo '
 <div class="spacer-huge"></div>';
-	if($url[2] < date("Y"))
+	if($url[1] < date("Y"))
 	{
 		echo '
-<a href="utilities/exotic-list/' . ($url[2]+1) . '">Newer <span class="icon-arrow-left"></span></a>';
+<a href="/exotic-list/' . ($url[1]+1) . '">Newer <span class="icon-arrow-left"></span></a>';
 	}
-	if($url[2] > 2009)
+	if($url[1] > 2009)
 	{
 		echo '
-<a href="utilities/exotic-list/' . ($url[2]-1) . '"><span class="icon-arrow-right"> Older</span></a>';
+<a href="/exotic-list/' . ($url[1]-1) . '"><span class="icon-arrow-right"> Older</span></a>';
 	}
 }
 

@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/staff");
+	Me::redirectLogin("/");
 }
 
 // Make sure you are staff
@@ -18,14 +18,14 @@ if($runLink = Link::clicked() && isset($_GET['refresh']))
 	// Refresh the Shop Cache
 	if($runLink == "refresh-shop")
 	{
-		CacheFile::load("shop_" . $_GET['refresh'] . "_male", 10);
-		CacheFile::load("shop_" . $_GET['refresh'] . "_female", 10);
+		touch("cache/shop_" . $_GET['refresh'] . "_m.html", time()-86401);
+		touch("cache/shop_" . $_GET['refresh'] . "_f.html", time()-86401);
 		Alert::success("Shop Refreshed", AppAvatar::getShopTitle($_GET['refresh']) . " has been refreshed.");
 	}
 }
 
 // Set page title
-$config['pageTitle'] = "Staff > Refresh Shops";
+$config['pageTitle'] = "Refresh Shops";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -41,7 +41,7 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2><a href="/staff">Staff</a> > Refresh Shops</h2>
+	<h2>Refresh Shops</h2>
 	<a href="/staff/shop-refresh?refresh=1&' . Link::prepare("refresh-shop") . '">A Cut Above</a><br/>
 	<a href="/staff/shop-refresh?refresh=2&' . Link::prepare("refresh-shop") . '">All That Glitters</a><br/>
 	<a href="/staff/shop-refresh?refresh=15&' . Link::prepare("refresh-shop") . '">Avatar Museum</a><br/>

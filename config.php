@@ -79,4 +79,4 @@ else if(ENVIRONMENT == "local") {
 }
 
 // Base style sheet for this site
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-3col.css" />');
+Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-2col.css" />');

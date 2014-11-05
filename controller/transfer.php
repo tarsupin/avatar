@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/transfer");
+	Me::redirectLogin("/transfer");
 }
 
 // Make sure you have an avatar
@@ -22,7 +22,7 @@ if(Form::submitted("transfer"))
 		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
 		if(!$pass)
 		{
-			Alert::error("Wrong Username", "The user " . $pass['account'] . " does not exist on Uni5.");
+			Alert::error("Wrong Username", "The user " . $pass['account'] . " does not exist on Uni5, or you have already transferred.");
 		}
 		else
 		{
@@ -82,7 +82,7 @@ if(Form::submitted("transfer"))
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Transfer from Uni5";
+$config['pageTitle'] = "Transfer from Uni5";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -100,10 +100,10 @@ echo '
 Alert::display();
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Transfer from Uni5</h2>
+	<h2>Transfer from Uni5</h2>
 	<p>This will transfer your Auro, items and donation packages.</p>
 	
-	<form class="uniform" action="/utilities/transfer" method="post">' . Form::prepare("transfer") . '
+	<form class="uniform" method="post">' . Form::prepare("transfer") . '
 		<h4>Uni5 Account Name</h4>
 		<p><input type="text" name="account"/></p>
 		<h4>Uni5 Password</h4>

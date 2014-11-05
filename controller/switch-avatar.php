@@ -9,7 +9,7 @@ if(!Me::$loggedIn)
 // Make sure you have an avatar
 if(!isset($avatarData['base']))
 {
-	header("Location: /create-avatar"); exit;
+	header("Location: /avatar/create-avatar"); exit;
 }
 
 $config['pageTitle'] = "Switch Avatar";
@@ -57,7 +57,7 @@ echo '
 	<p>Please select the avatar that you would like to use!</p>
 	<a href="/switch-avatar/"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" /></a>
 	<div class="spacer-huge"></div>
-	<p>You can also <a href="create-avatar">create another avatar</a>!</p>
+	<p>You can also <a href="avatar/create-avatar">create another avatar</a>!</p>
 </div>';
 
 // Display the Footer

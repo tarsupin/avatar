@@ -10,7 +10,7 @@ if(!Me::$loggedIn)
 if(isset($avatarData['base']))
 {
 	Alert::saveInfo("Multiple Avatars", "You already have an avatar. Multiple avatars per profile are not implemented yet.");
-	header("Location: /"); exit;
+	header("Location: /dress-avatar"); exit;
 }
 
 // Set page title
@@ -30,7 +30,7 @@ if(isset($url[1]) && isset($url[2]))
 		{
 			Alert::saveSuccess("Avatar Created", "You have created your avatar!");
 			
-			header("Location: /"); exit;
+			header("Location: /dress-avatar"); exit;
 		}
 		else
 		{
@@ -52,7 +52,7 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Choose Your Base</h2>
+	<h2>Create Your Avatar</h2>
 	<p>Please select the avatar base that you would like to use!</p>';
 		
 	foreach($races as $race)

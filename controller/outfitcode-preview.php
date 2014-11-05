@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/outfitcode-preview");
+	Me::redirectLogin("/outfitcode-preview");
 }
 
 // Return home if you don't have an avatar
@@ -37,7 +37,7 @@ if(Form::submitted("outfitcode-preview"))
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Outfit Code (Preview Avatar)";
+$config['pageTitle'] = "Outfit Code (Preview Avatar)";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -56,7 +56,7 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content">' .
+<div id="content" style="overflow:hidden;">' .
 Alert::display();
 
 // Output code of current preview outfit
@@ -67,11 +67,12 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Outfit Code (Preview Avatar)</h2>
-	<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
-	<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
-	<br/><br/>
-	<form class="uniform" action="/utilities/outfitcode-preview" method="post">' . Form::prepare("outfitcode-preview") . '
+	<h2>Outfit Code (Preview Avatar)</h2>
+	<img src="' . AppOutfit::drawSrc("preview") . '" style="float:left;margin-right:5px;"/>
+	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '
+		<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
+		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
+		<br/><br/>
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.</p>
 		<textarea name="saved"></textarea>
 		<br/><input type="submit" name="submit" value="Update Preview Avatar"/>

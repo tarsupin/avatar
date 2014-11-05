@@ -139,6 +139,12 @@ else if(isset($_POST['order']))
 // Get the layers you can search between
 $positions = AppAvatar::getInvPositions(Me::$id);
 
+// Provide link to transfer if the user has no items yet
+if($positions == array())
+{
+	Alert::info("No Items", 'Looks like you have no items yet! If you were a user of Uni5, perhaps you haven\'t <a href="/transfer">transferred your belongings</a> yet?');
+}
+
 // Set page title
 $config['pageTitle'] = "Dressing Room";
 if(isset($_GET['position']))
@@ -153,23 +159,22 @@ require(APP_PATH . "/includes/global.php");
 require(SYS_PATH . "/controller/includes/metaheader.php");
 require(SYS_PATH . "/controller/includes/header.php");
 
-// Add links to nav panel
-WidgetLoader::add("SidePanel", 20, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot"><a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview<span class="icon-undo nav-arrow"></span></a></li>
-		<li class="nav-slot"><a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All<span class="icon-circle-minus nav-arrow"></span></a></li>
-		' . (isset($_GET['position']) ? '<li class="nav-slot"><a href="/shop-search?submit=Search&' . $_GET['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">Search ' . $_GET['position'] . '<span class="icon-search-plus nav-arrow"></span></a></li>' : "") . '
-	</ul></div>');
-
 // Display Side Panel
 require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content">' . Alert::display() . '';
+<div id="content" style="overflow:hidden;">' . Alert::display() . '';
 
 	// Clothes currently worn
 	echo '
+	<div id="aviblock"><ul>
+	<li style="height:383px;"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '"/></li>
+	<li class="nav-slot"><a href="/dress-avatar?replace&' . Link::prepare("replace") . '">Replace with Preview</a></li>
+	<li class="nav-slot"><a href="/dress-avatar?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a></li>
+	' . (isset($_GET['position']) ? '<li class="nav-slot"><a href="/shop-search?submit=Search&' . $_GET['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">Search ' . $_GET['position'] . '</a></li>' : "") . '
+</ul></div>
+	
 	<form id="sortable" action="/dress-avatar' . (isset($_GET['position']) ? "?position=" . $_GET['position'] : "") . '" method="post">
 	<textarea id="order" name="order" style="display:none;"></textarea>
 	<ul id="equipped" class="dragndrop">';

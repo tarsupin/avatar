@@ -28,17 +28,6 @@ if(!$item = AppAvatar::getShopItems($shopID, $url[1]))
 	header("Location: /shop-list"); exit;
 }
 
-// Check if you purchased the item
-if(Form::submitted("purchase-item"))
-{
-	if(FormValidate::pass())
-	{
-		AppAvatar::purchaseItem($item['id'], $shopID, true);
-		// Return to the shop with a success or error message
-		header("Location: /shop/" . $shopID . "?purchased=" . $item['id']); exit;
-	}
-}
-
 // Check if you own the item
 $ownItem = AppAvatar::checkOwnItem(Me::$id, $item['id']);
 
@@ -46,6 +35,15 @@ $ownItem = AppAvatar::checkOwnItem(Me::$id, $item['id']);
 if($ownItem)
 {
 	Alert::info("Own Item", "Note: You already own this item!");
+}
+
+// Check if you purchased the item
+if(Form::submitted("purchase-item"))
+{
+	if(FormValidate::pass())
+	{
+		AppAvatar::purchaseItem($item['id'], $shopID);
+	}
 }
 
 // Set page title
@@ -70,19 +68,34 @@ echo '
 	// Get some of the items
 	$images = Dir::getFiles(APP_PATH . "/avatar_items/" . $item['position'] . '/' . $item['title'] . '/');
 	
-	foreach($images as $img)
+	if($item['gender'] == $avatarData['gender'] || $item['gender'] == "b")
 	{
-		if(strpos($img, "_" . ($avatarData['gender'] == "m" ? "male" : "female") . ".png") > -1 && strpos($img, "default_") === false)
+		foreach($images as $img)
 		{
-			echo '
+			if(strpos($img, "_" . $avatarData['gender_full'] . ".png") > -1 && strpos($img, "default_") === false)
+			{
+				echo '
 	<img src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/' . $img . '" />';
-			break;
+				break;
+			}
+		}
+	}
+	else
+	{
+		foreach($images as $img)
+		{
+			if(strpos($img, "_" . ($avatarData['gender'] == "m" ? "female" : "male") . ".png") > -1 && strpos($img, "default_") === false)
+			{
+				echo '
+	<img src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/' . $img . '" />';
+				break;
+			}
 		}
 	}
 	
 	echo '
 	<br /><br />
-	<form class="uniform" action="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '" method="post">' . Form::prepare("purchase-item") . '
+	<form class="uniform" method="post">' . Form::prepare("purchase-item") . '
 		<input type="submit" name="submit" value="Purchase" />
 	</form>
 </div>';

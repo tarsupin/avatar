@@ -3,22 +3,22 @@
 // Defaults if a guest is viewing the page
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/wish-list");
+	Me::redirectLogin("/wish-list");
 }
 
 // Check if you have an avatar
 if(!isset($avatarData['base']))		{ header("Location: /create-avatar"); exit; }
 
 // Add to List
-if(isset($url[2]))
+if(isset($_GET['add']))
 {
-	$url[2] = (int) $url[2];
+	$_GET['add'] = (int) $_GET['add'];
 	// check item data
-	if($itemData = AppAvatar::itemData($url[2], "title, rarity_level"))
+	if($itemData = AppAvatar::itemData($_GET['add'], "title, rarity_level"))
 	{
-		if(Database::query("REPLACE INTO user_wish VALUES (?, ?)", array(Me::$id, $url[2])))
+		if(Database::query("REPLACE INTO user_wish VALUES (?, ?)", array(Me::$id, $_GET['add'])))
 		{
-			Alert::success("Item Added", $itemData['title'] . " has been added to your wish list.");
+			Alert::success("Item Added", $itemData['title'] . ' has been added to your wish list. <a href="javascript:window.history.back();">Would you like to go back to the previous page?</a>');
 		}
 	}
 }
@@ -49,7 +49,7 @@ if(isset($_GET['sort']) && in_array($_GET['sort'], array("title", "position", "g
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Wish List";
+$config['pageTitle'] = "Wish List";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -74,7 +74,7 @@ Alert::display();
 // Page Display
 $wished = Database::selectMultiple("SELECT item_id, title, position, gender FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
 echo '
-	<h2><a href="/utilities">Utilities</a> > Wish List</h2>
+	<h2>Wish List</h2>
 	<table class="mod-table">
 		<tr>
 			<td>&nbsp;</td>';
@@ -82,13 +82,13 @@ foreach (array("title", "position", "gender") as $col)
 {
 	if (isset($_GET['sort']) && $_GET['sort'] == $col && !isset($_GET['reverse']))
 		echo "
-			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "&reverse'>&#9660;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/wish-list?sort=" . $col . "&reverse'>&#9660;</a></td>";
 	elseif (isset($_GET['sort']) && $_GET['sort'] == $col)
 		echo "
-			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "'>&#9650;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/wish-list?sort=" . $col . "'>&#9650;</a></td>";
 	else
 		echo "
-			<td>" . ucfirst($col) . " <a href='/utilities/wish-list?sort=" . $col . "'>&#9651;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/wish-list?sort=" . $col . "'>&#9651;</a></td>";
 }
 echo '
 			<td>Package</td>
@@ -99,7 +99,7 @@ foreach ($wished as $itemData)
 	$package = Database::selectOne("SELECT title, year FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE item_id=? LIMIT 1", array($itemData['item_id']));
 	echo '
 		<tr' . ($own ? ' class="opaque"' : "") . '>
-			<td><a href="/utilities/wish-list?remove=' . $itemData['item_id'] . '">&#10006;</a></td>
+			<td><a href="/wish-list?remove=' . $itemData['item_id'] . '">&#10006;</a></td>
 			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>

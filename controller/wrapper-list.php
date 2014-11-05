@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/wrappers-list");
+	Me::redirectLogin("/wrappers-list");
 }
 
 // Return home if you don't have an avatar
@@ -13,11 +13,11 @@ if(!isset($avatarData['base']))
 }
 
 // get page
-if(!isset($url[2]))	{ $url[2] = 0; }
-else				{ $url[2] = (int) $url[2]; }
+if(!isset($url[1]))	{ $url[1] = 0; }
+else				{ $url[1] = (int) $url[1]; }
 
 // get wrappers
-$wrappers = Database::selectMultiple("SELECT id, content, replacement FROM wrappers ORDER BY id DESC LIMIT " . (20*$url[2]) . ", 20", array());
+$wrappers = Database::selectMultiple("SELECT id, content, replacement FROM wrappers ORDER BY id DESC LIMIT " . (20*$url[1]) . ", 20", array());
 
 // get item info
 // doing this here to avoid potential duplicates
@@ -48,7 +48,7 @@ foreach($wrappers as $key => $wrap)
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > List of Wrappers";
+$config['pageTitle'] = "List of Wrappers";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -97,7 +97,8 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > List of Wrappers</h2>';
+	<h2>List of Wrappers</h2>
+	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it.<br/>Click on the text with the dotted border to toggle the wrapper\'s content in/out of view.</p>';
 
 $space = false;
 	
@@ -109,28 +110,29 @@ foreach($wrappers as $wrap)
 	
 	echo '
 	<h3>' . $details[$wrap['id']]['title'] . '</h3>
-	If you own this wrapper, you can <a href="/utilities/wrapper-open/' . $wrap['id'] . '">open it here</a>.<br/>
-	If you have opened this wrapper before and still have its contents, you can <a href="/utilities/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
-	' . $details[$wrap['id']]['html'] . ' can be replaced with:<br/>';
+	If you own this wrapper, you can <a href="/wrapper-open/' . $wrap['id'] . '">open it here</a>.<br/>
+	If you have opened this wrapper before and still have its contents, you can <a href="/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
+	' . $details[$wrap['id']]['html'] . ' <span class="spoiler-header" onclick="if($(this).next().is(\':visible\')){ $(this).next().fadeOut(\'fast\'); } else { $(this).next().fadeIn(\'fast\'); }">can be replaced with:</span><div class="spoiler-content">';
 	foreach($wrap['content']	as $cont)
 	{
 		echo $details[$cont]['html'];
 	}
+	echo '</div>';
 }
 
-	if($url[2] > 0 or isset($wrappers[19]))
+	if($url[1] > 0 or isset($wrappers[19]))
 	{
 		echo '
 	<div class="spacer-huge"></div>';
-		if($url[2] > 0)
+		if($url[1] > 0)
 		{
 			echo '
-	<a href="utilities/wrapper-list/' . ($url[2]-1) . '">Newer <span class="icon-arrow-left"></span></a>';
+	<a href="/wrapper-list/' . ($url[1]-1) . '">Newer <span class="icon-arrow-left"></span></a>';
 		}
 		if(isset($wrappers[19]))
 		{
 			echo '
-	<a href="utilities/wrapper-list/' . ($url[2]+1) . '"><span class="icon-arrow-right"> Older</span></a>';
+	<a href="/wrapper-list/' . ($url[1]+1) . '"><span class="icon-arrow-right"> Older</span></a>';
 		}
 	}
 	

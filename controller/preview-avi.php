@@ -152,19 +152,20 @@ html,body { background-color:white; }
 .alert-info, .alert-message, .alert-error { margin:0px 0px 5px 0px; padding:5px; }
 </style>
 <div id="viewport-wrap">
-<div class="panel-box" style="width:205px;float:left;margin:0px;"><ul class="panel-slots">
+<div id="content" style="padding:0px;margin:0px; overflow:hidden;">
+<div id="aviblock"><ul>
 	<li style="height:383px;"><img src="' . AppOutfit::drawSrc("preview") . '" /></li>
-	<li class="nav-slot"><a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Current<span class="icon-undo nav-arrow"></span></a></li>
-	<li class="nav-slot"><a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All<span class="icon-circle-minus nav-arrow"></span></a></li>
-	<li class="nav-slot"><a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a><span class="icon-dice nav-arrow"></span></a></li>
-	<li class="nav-slot"><a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a><span class="icon-cart nav-arrow"></span></a></li>
+	<li class="nav-slot"><a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Current</a></li>
+	<li class="nav-slot"><a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a></li>
+	<li class="nav-slot"><a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a></a></li>
+	<li class="nav-slot"><a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a></a></li>
 </ul></div>
 ';
 
 
 // Clothes currently worn
 echo '
-<form id="sortable" action="/preview-avi" method="post" style="margin-left:210px;">
+<form id="sortable" action="/preview-avi" method="post">
 ' . Alert::display() . '
 <textarea id="order" name="order" style="display:none;"></textarea>
 <ul id="equipped" class="dragndrop">';
@@ -243,6 +244,7 @@ foreach($outfitArray as $pos => $item)
 echo '
 </ul>
 </form>
+</div>
 </div>';
 ?>
 

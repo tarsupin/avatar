@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/utilities/outfitcode-real");
+	Me::redirectLogin("/outfitcode-real");
 }
 
 // Return home if you don't have an avatar
@@ -59,7 +59,7 @@ if(Form::submitted("outfitcode-real"))
 }
 
 // Set page title
-$config['pageTitle'] = "Utilities > Outfit Code (Current Avatar)";
+$config['pageTitle'] = "Outfit Code (Current Avatar)";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -78,7 +78,7 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content">' .
+<div id="content" style="overflow:hidden;">' .
 Alert::display();
 
 // Output code of current outfit
@@ -89,11 +89,12 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<h2><a href="/utilities">Utilities</a> > Outfit Code (Current Avatar)</h2>
-	<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
-	<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
-	<br/><br/>
-	<form class="uniform" action="/utilities/outfitcode-real" method="post">' . Form::prepare("outfitcode-real") . '
+	<h2>Outfit Code (Current Avatar)</h2>
+	<img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" style="float:left;margin-right:5px;"/>
+	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-real") . '
+		<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
+		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
+		<br/><br/>
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.<br/>Items that you do not own will not equip.</p>
 		<textarea name="saved"></textarea>
 		<br/><input type="submit" name="submit" value="Update Current Avatar"/>

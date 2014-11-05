@@ -14,40 +14,8 @@ if(!isset($url[1]))					{ header("Location: /shop-list"); exit; }
 
 // Get Important Values
 $shopID = (int) $url[1];
-$shopTitle = AppAvatar::getShopTitle($shopID);
 $shopClearance = AppAvatar::getShopClearance($shopID);
 
-// Check that the shop exists
-if($shopTitle == "") 				{ header("Location: /shop-list"); exit; }
-
-// Check that you're allowed to view this shop
-if(Me::$clearance < $shopClearance)	{ header("Location: /shop-list"); exit; }
-
-// Set page title
-$config['pageTitle'] = "Shops > " . $shopTitle;
-
-// Run Global Script
-require(APP_PATH . "/includes/global.php");
-
-// Display the Header
-require(SYS_PATH . "/controller/includes/metaheader.php");
-require(SYS_PATH . "/controller/includes/header.php");
-
-// Display Side Panel
-WidgetLoader::add("SidePanel", 20, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot"><a href="/shop-search">Shop Search<span class="icon-search-plus nav-arrow"></span></a></li>
-	</ul></div>');
-
-require(SYS_PATH . "/controller/includes/side-panel.php");
-
-// Display Page
-echo '
-<div id="panel-right"></div>
-<div id="content">' .
-Alert::display();
-
-// Shop Display
 $shops = array(
 	1 => "A Cut Above",
 	2 => "All That Glitters",
@@ -72,6 +40,32 @@ if(Me::$clearance >= 5)
 	$shops[17] = "Test Shop";
 	$shops[19] = "Wrappers";
 }
+
+// Check that the shop exists
+if(!isset($shops[$shopID])) 		{ header("Location: /shop-list"); exit; }
+
+// Check that you're allowed to view this shop
+if(Me::$clearance < $shopClearance)	{ header("Location: /shop-list"); exit; }
+
+// Set page title
+$config['pageTitle'] = "Shops > " . $shops[$shopID];
+
+// Run Global Script
+require(APP_PATH . "/includes/global.php");
+
+// Display the Header
+require(SYS_PATH . "/controller/includes/metaheader.php");
+require(SYS_PATH . "/controller/includes/header.php");
+
+require(SYS_PATH . "/controller/includes/side-panel.php");
+
+// Display Page
+echo '
+<div id="panel-right"></div>
+<div id="content">' .
+Alert::display();
+
+// Shop Display
 echo '
 	<div class="redlinks">';
 foreach($shops as $key => $shop)
@@ -82,11 +76,11 @@ foreach($shops as $key => $shop)
 echo '
 	</div>';
 unset($shops);
-		
+	
 // Attempt to load the cached version of this shop page
 $cachedPage = "shop_" . $shopID . "_" . $avatarData['gender'];
 
-if(!CacheFile::load($cachedPage, 0, true))
+if(CacheFile::load($cachedPage, 86400, true) === false)
 {
 	// Prepare the Shop
 	$html = "";
@@ -110,7 +104,7 @@ if(!CacheFile::load($cachedPage, 0, true))
 		$html .= '
 		<div class="item_block">
 			<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a><br />
-			' . $item['title'] . '<br />
+			' . $item['title'] . '<br /><span style="font-size:0.6em;"><a href="/shop-search?submit=Search&' . $item['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">' . $item['position'] . '</a>, ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . '</span><br />
 			<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)
@@ -122,7 +116,7 @@ if(!CacheFile::load($cachedPage, 0, true))
 			$html .= '
 			</select>';
 			
-			$html .= '<br /><a href="utilities/wish-list?add=' . $item['id'] . '">Wish</a>';
+			$html .= '<br /><a href="/wish-list?add=' . $item['id'] . '">Wish</a>';
 			if((int) $item['rarity_level'] == 0)
 			{
 				$html .= '
@@ -134,9 +128,8 @@ if(!CacheFile::load($cachedPage, 0, true))
 
 	// Load the cache now that it's been saved
 	CacheFile::save($cachedPage, $html);
-	CacheFile::load($cachedPage);
+	echo CacheFile::load($cachedPage);
 }
-
 echo '
 </div>';
 

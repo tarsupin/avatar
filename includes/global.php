@@ -7,43 +7,76 @@ if(Me::$loggedIn)
 {
 	if(isset($avatarData['base']))
 	{
-		// Widgets
-		WidgetLoader::add("SidePanel", 10, '	
-	<div class="panel-box"><ul class="panel-slots">
-		<li><div style="text-align:center;padding:5px 0px;"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" /></div></li>
-		<li class="nav-slot"><a href="javascript:review_item(0);">Open Preview Window</a><span class="icon-eye nav-arrow"></span></li>
-		<li class="nav-slot"><a href="/utilities/transactions">' . Currency::check(Me::$id) . ' Auro</a><span class="icon-circle-question nav-arrow"></span></li>
-	</ul></div>');
-	
-		// Main Navigation
-		WidgetLoader::add("SidePanel", 30, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot' . ($urlActive == "dress-avatar" ? " nav-active" : "") . '"><a href="/dress-avatar">Dressing Room<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($urlActive == "shop-list" ? " nav-active" : "") . '"><a href="/shop-list">Shops<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($urlActive == "switch-avatar" ? " nav-active" : "") . '"><a href="/switch-avatar">Switch Avatar<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot' . ($urlActive == "utilities" ? " nav-active" : "") . '"><a href="/utilities">Utilities<span class="icon-circle-right nav-arrow"></span></a></li>' .
-		(Me::$clearance >= 5 ? '
-		<li class="nav-slot' . ($urlActive == "staff" ? " nav-active" : "") . '"><a href="/staff">Staff<span class="icon-circle-right nav-arrow"></span></a></li>' : "") . '
-	</ul></div>');
+		WidgetLoader::add("UniFactionMenu", 10, '
+<div class="menu-wrap">
+	<ul class="menu">
+		<li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("create-avatar", "edit-avatar", "switch-avatar")) ? " nav-active" : "") . '">Avatar
+			<ul>
+				<li class="dropdown-slot"><a href="/create-avatar">Create Avatar</a></li>
+				<li class="dropdown-slot"><a href="/edit-avatar">Edit Avatar</a></li>
+				<li class="dropdown-slot"><a href="/switch-avatar">Switch Avatar</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("dress-avatar", "outfitcode-real")) ? " nav-active" : "") . '">Outfit
+			<ul>
+				<li class="dropdown-slot"><a href="/dress-avatar">Dressing Room</a></li>
+				<li class="dropdown-slot"><a href="/outfitcode-real">Outfit Code</a></li>
+			</ul></li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("preview-avi", "outfitcode-preview")) ? " nav-active" : "") . '">Preview
+			<ul>
+				<li class="dropdown-slot"><a href="javascript:review_item(0);">Preview Window</a></li>
+				<li class="dropdown-slot"><a href="/outfitcode-preview">Outfit Code</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "wish-list")) ? " nav-active" : "") . '">Shops
+			<ul>
+				<li class="dropdown-slot"><a href="/shop-list">Shop List</a></li>
+				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
+				<li class="dropdown-slot"><a href="/wish-list">Wish List</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("trade", "gift", "log-auro", "log-trade", "log-gift")) ? " nav-active" : "") . '">Gift &amp; Trade
+			<ul>
+				<li class="dropdown-slot"><a href="/gift">Gift</a></li>
+				<li class="dropdown-slot"><a href="/trade">Trade</a></li>
+				<li class="dropdown-slot"><a href="/log-auro">Auro Log</a></li>
+				<li class="dropdown-slot"><a href="/log-gift">Gift Log</a></li>
+				<li class="dropdown-slot"><a href="/log-trade">Trade Log</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '">EPs
+			<ul>
+				<li class="dropdown-slot"><a href="/exotic-open">Open Exotic Package</a></li>
+				<li class="dropdown-slot"><a href="/exotic-list">List of Exotic Packages</a></li>
+				<li class="dropdown-slot"><a href="/exotic-purchase">Purchase Exotic Package</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("wrapper-open", "wrapper-list")) ? " nav-active" : "") . '">Wrappers
+			<ul>
+				<li class="dropdown-slot"><a href="/wrapper-open">Open Wrapper</a></li>
+				<li class="dropdown-slot"><a href="/wrapper-list">List of Wrappers</a></li>
+			</ul>
+		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot menu-plain' . ($urlActive == "staff" ? " nav-active" : "") . '">Staff
+			<ul>
+				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
+			</ul>
+		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li>
+	</ul>
+</div>');
 	}
 	else
 	{
-		WidgetLoader::add("SidePanel", 10, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot' . ($urlActive == "create-avatar" ? " nav-active" : "") . '"><a href="/create-avatar">Create Avatar<span class="icon-circle-right nav-arrow"></span></a></li>
-	</ul></div>');
+		WidgetLoader::add("UniFactionMenu", 10, '
+<div class="menu-wrap">
+	<ul class="menu">
+		<li class="dropdown-slot' . ($urlActive == "create-avatar" ? " nav-active" : "") . '"><a href="/create-avatar">Create Avatar</a></li>
+	</ul>
+</div>');
 	}
 }
 else
 {
-	// Main Navigation
-	WidgetLoader::add("SidePanel", 10, '
-	<div class="panel-box"><ul class="panel-slots">
-		<li class="nav-slot' . ($urlActive == "login" ? " nav-active" : "") . '"><a href="/login">Login<span class="icon-circle-right nav-arrow"></span></a></li>
-	</ul></div>');
+	WidgetLoader::add("UniFactionMenu", 10, '
+<div class="menu-wrap">
+	<ul class="menu">
+		<li class="dropdown-slot' . ($urlActive == "login" ? " nav-active" : "") . '"><a href="/login">Login</a></li>
+	</ul>
+</div>');
 }
-
 // Complete page title (if available)
 if(isset($config['pageTitle']) and $config['pageTitle'] != "")
 {
