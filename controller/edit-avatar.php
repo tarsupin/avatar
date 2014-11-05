@@ -52,7 +52,7 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Edit Your Avatar</h2>
-	<p>Please select the avatar base that you would like to use! Currently you are using a <span style="font-weight:bold;">' . $avatarData['gender_full'] . ' ' . $avatarData['base'] . '</span> base.<br/>Changing the skin color costs 30 Auro. Changing the gender costs 1000 Auro.</p>';
+	<p>Please select the avatar base that you would like to use! Currently you are using a <strong>' . $avatarData['gender_full'] . ' ' . $avatarData['base'] . '</strong> base.<br/>Changing the skin color costs 30 Auro. Changing the gender costs 1000 Auro.</p>';
 		
 	foreach($races as $race)
 	{

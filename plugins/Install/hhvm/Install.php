@@ -12,6 +12,7 @@ abstract class Install extends Installation {
 	,	"Currency"			=> true
 	,	"Friends"			=> true
 	,	"Notifications"		=> true
+	,	"Transactions"		=> true
 	);
 	
 	

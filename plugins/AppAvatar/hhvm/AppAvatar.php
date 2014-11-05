@@ -17,6 +17,7 @@ $items		= AppAvatar::getShopItems($shopID);
 $positions	= AppAvatar::getInvPositions($uniID)
 
 $itemData	= AppAvatar::itemData($itemID, $plusShopData = false);
+$itemCost	= AppAvatar::itemMinCost($itemID);
 $colors		= AppAvatar::getItemColors($position, $title);
 			= AppAvatar::itemHasColor($position, $title, $gender, $color);
 
@@ -45,16 +46,18 @@ abstract class AppAvatar {
 	public static function avatarData
 	(
 		int $uniID			// <int> The Uni-Account to get the avatar data from.
+	,	int $aviID = 0		// <int> The identification of the user's avatar.
 	): array <str, mixed>					// RETURNS <str:mixed> data on the avatar, or array with a blank avatar image source.
 	
 	// $avatar = AppAvatar::avatarData($uniID);
 	{
-		if(!$uniID or !$avatar = Database::selectOne("SELECT base, gender, date_lastUpdate FROM avatars WHERE uni_id=? LIMIT 1", array($uniID)))
+		if(!$uniID or !$avatar = Database::selectOne("SELECT base, gender, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
 		{
 			return array('src' => '/assets/images/blank-avatar.png');
 		}
 		
 		// Prepare Values
+		$avatar['identification'] = ($aviID == 0 ? "real" : "real" . $aviID);
 		$avatar['gender_full'] = ($avatar['gender'] == "m" ? "male" : "female");
 		$avatar['date_lastUpdate'] = (int) $avatar['date_lastUpdate'];
 		
@@ -116,18 +119,25 @@ abstract class AppAvatar {
 	(
 		int $uniID			// <int> The Uni-Account to list the items of.
 	,	string $position		// <str> The position of items to retrieve.
-	,	string $gender			// <str> The gender of the avatar.
+	,	string $gender	= ""	// <str> The gender of the avatar or empty string to return items for all genders.
 	,	bool $group = true	// <bool> TRUE means you group similar items together.
 	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> list of items
 	
 	// $userItems = AppAvatar::getUserItems($uniID, $position, $gender);
 	{
-		if(!in_array($gender, array('male', 'female', 'm', 'f')))
+		if(!in_array($gender, array('male', 'female', 'm', 'f', '')))
 		{
 			return array();
 		}
 		
-		return Database::selectMultiple("SELECT ui.item_id as id, i.title, COUNT(id) as count FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ''), array($uniID, $position, $gender[0], 'b'));
+		if($gender != "")
+		{
+			return Database::selectMultiple("SELECT ui.item_id as id, i.title, " . ($group == true ? 'COUNT(id) as count, ' : '') . "i.gender FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ' ORDER BY i.title'), array($uniID, $position, $gender[0], 'b'));
+		}
+		else
+		{
+			return Database::selectMultiple("SELECT ui.item_id as id, i.title, " . ($group == true ? 'COUNT(id) as count, ' : '') . "i.gender FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=?" . ($group == true ? ' GROUP BY i.title' : ' ORDER BY i.title'), array($uniID, $position));
+		}
 	}
 	
 	
@@ -188,6 +198,29 @@ abstract class AppAvatar {
 	// $itemData = AppAvatar::itemData($itemID);
 	{
 		return Database::selectOne("SELECT " . Sanitize::variable($columns, " ,`*") . " FROM items WHERE id=? LIMIT 1", array($itemID));
+	}
+	
+	
+/****** Get Item Cost ******/
+	public static function itemMinCost
+	(
+		int $itemID				// <int> The ID of the item to get the data from.
+	,	bool $allShops = false	// <bool> Whether the function should include shops inaccessible to the user.
+	): array <str, mixed>						// RETURNS <str:mixed> data of the item, or FALSE if failed.
+	
+	// $itemData = AppAvatar::itemMinCost($itemID);
+	{
+		$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=?", array($itemID, Me::$clearance));
+		if(!$shop['m'] && $allShops)
+		{
+			$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory WHERE item_id=?", array($itemID));
+		}
+	
+		if($shop['m'])
+		{
+			return $shop['m'];
+		}
+		return false;
 	}
 	
 	
@@ -271,6 +304,17 @@ abstract class AppAvatar {
 	
 	// AppAvatar::createAvatar($uniID, $base, $gender);
 	{
+		// Determine avatar number_format
+		$number = Database::selectOne("SELECT MAX(avatar_id) AS max FROM avatars WHERE uni_id=?", array($uniID));
+		if($number !== false)
+		{
+			$number = $number['max'] + 1;
+		}
+		else
+		{
+			$number = 0;
+		}
+		
 		$gender = ($gender == "male" ? "male" : "female");
 		
 		$aviData = Avatar::imageData($uniID);
@@ -285,8 +329,56 @@ abstract class AppAvatar {
 		if($image->save(APP_PATH . $imgDir . '/' . $aviData['filename']))
 		{
 			// If the avatar image was created successfully, add the avatar
-			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?)", array($uniID, $base, $gender[0], time()));
+			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, avatar_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?, ?)", array($uniID, $number, $base, $gender[0], time()));
 		}
+		
+		return false;
+	}
+	
+	
+/****** Create an Avatar ******/
+	public static function editAvatar
+	(
+		int $uniID			// <int> The Uni-Account to edit an avatar for.
+	,	string $base			// <str> The avatar base (race) to use.
+	,	string $gender			// <str> The gender of the avatar.
+	,	int $aviID = 0		// <int> The ID of the specific avatar.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::createAvatar($uniID, $base, $gender);
+	{
+		$gender = ($gender == "male" ? "male" : "female");
+		
+		// Compare with current data to determine cost
+		$avatarData = self::avatarData(Me::$id);
+		$cost = 0;
+		if($gender != $avatarData['gender_full'])	{ $cost += 1000; }
+		if($base != $avatarData['base'])			{ $cost += 30; }
+		
+		if($cost == 0)
+		{
+			return true;
+		}
+		
+		// Update the avatar data
+		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array($base, $gender[0], $uniID, $aviID)))
+		{
+			// Pay cost
+			$balance = Currency::check(Me::$id);
+			if($balance < $cost)
+			{
+				Alert::error("Too Expensive", "You don't have enough to change your base!");
+				return false;
+			}
+			Currency::subtract(Me::$id, $cost, "Changed Base");
+					
+			// Update the Avatar Image
+			$outfitArray = AppOutfit::get($uniID, ($aviID == 0 ? "real" : "real" . $aviID));
+			$outfitArray[0] = array(0, $base);
+			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 0 ? "real" : "real" . $aviID));
+			AppOutfit::save($uniID, ($aviID == 0 ? "real" : "real" . $aviID), $outfitArray);
+			return true;
+		}		
 		
 		return false;
 	}
@@ -316,44 +408,6 @@ abstract class AppAvatar {
 			return false;
 		}
 		
-		// Get cost and check if it's in an available shop
-		if($shopID == 0)
-		{
-			if($shop = Database::selectOne("SELECT shop_id, cost FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=? LIMIT 1", array($itemID, Me::$clearance)))
-			{
-				$shopID = (int) $shop['shop_id'];
-				$shop['cost'] = (float) $shop['cost'];
-			}
-			else
-			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Not Available", "" . $itemData['title'] . " is not available.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Available", "" . $itemData['title'] . " is not available.");
-				}
-				return false;
-			}
-		}
-		else
-		{
-			if(!$item = AppAvatar::getShopItems($shopID, $itemID))
-			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
-				}
-				return false;
-			}
-			$shop['cost'] = $item['cost'];
-		}
-		
 		// staff may purchase rare items
 		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
 		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
@@ -367,6 +421,40 @@ abstract class AppAvatar {
 				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
 			}
 			return false;
+		}
+		
+		// Get cost and check if it's in an available shop
+		if($shopID == 0)
+		{
+			if(!$shop['cost'] = self::itemMinCost($itemID))
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+				}
+				return false;
+			}
+		}
+		// Shop was provided
+		else
+		{
+			if(!$item = self::getShopItems($shopID, $itemID))
+			{
+				if(!$save)
+				{
+					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
+				}
+				else
+				{
+					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
+				}
+				return false;
+			}
+			$shop['cost'] = $item['cost'];
 		}
 	
 		$balance = Currency::check(Me::$id);
@@ -393,11 +481,11 @@ abstract class AppAvatar {
 			
 			if(!$save)
 			{
-				Alert::success($itemData['title'] . " Purchased Item", "You have purchased " . $itemData['title'] . "!");
+				Alert::success($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
 			}
 			else
 			{
-				Alert::saveSuccess($itemData['title'] . " Purchased Item", "You have purchased " .$itemData['title'] . "!");
+				Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
 			}
 			return true;
 		}

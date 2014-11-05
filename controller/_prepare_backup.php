@@ -17,6 +17,62 @@ Database::initRoot();
 
 exit;
 
+/*****************************************************
+***** Fix possibly outdated database structures ******
+*****************************************************/
+
+if(!DatabaseAdmin::columnsExist("avatars", array("avatar_id")))
+{
+	DatabaseAdmin::addColumn("avatars", "avatar_id", "tinyint(2) unsigned NOT NULL", 0);
+	Database::exec("ALTER TABLE `avatars` DROP PRIMARY KEY");
+	Database::exec("ALTER TABLE `avatars` ADD PRIMARY KEY(uni_id, avatar_id)");
+}
+
+Database::exec("
+CREATE TABLE IF NOT EXISTS `transactions`
+(
+	`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
+	`title`					varchar(32)					NOT NULL	DEFAULT '',
+	
+	`date_created`			int(10)			unsigned	NOT NULL	DEFAULT '0',
+	`date_end`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+	
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+");
+
+Database::exec("
+CREATE TABLE IF NOT EXISTS `transactions_users`
+(
+	`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+	`transaction_id`		int(10)			unsigned	NOT NULL	DEFAULT '0',
+	`has_agreed`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
+	
+	UNIQUE (`uni_id`, `transaction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+");
+
+Database::exec("
+		CREATE TABLE IF NOT EXISTS `transactions_entries`
+		(
+			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
+			
+			`transaction_id`		int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			
+			`class`					varchar(24)					NOT NULL	DEFAULT '',
+			`process_method`		varchar(32)					NOT NULL	DEFAULT '',
+			`process_parameters`	varchar(255)				NOT NULL	DEFAULT '',
+			
+			`display`				text						NOT NULL	DEFAULT '',
+			
+			PRIMARY KEY (`id`),
+			INDEX (`transaction_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+
+exit;
+
 /********************************************************
 ****** Prepare the proper table structure (Part 1) ******
 ********************************************************/

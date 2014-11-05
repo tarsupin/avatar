@@ -6,7 +6,7 @@ if(!isset($avatarData['base']))
 	header("Location: /create-avatar"); exit;
 }
 
-$outfitArray = AppOutfit::get(Me::$id, "default");
+$outfitArray = AppOutfit::get(Me::$id, $avatarData['identification']);
 
 if(!$getLink = Link::clicked())
 {
@@ -29,14 +29,14 @@ if(isset($_GET['equip']))
 	}
 		
 	// Equip your item
-	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color'], "default");
+	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color'], $avatarData['identification']);
 	
 	// Update your avatar's image
 	$aviData = Avatar::imageData(Me::$id);
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 	
 	// Save the changes
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 // Unequip an Item
@@ -49,7 +49,7 @@ else if(isset($_GET['unequip']))
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 	
 	// Save the outfit
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 // If we're unequipping everything
@@ -62,7 +62,7 @@ else if($getLink == "unequipAll")
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 			
 	// Save the outfit
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 // If we're moving something left
@@ -75,7 +75,7 @@ else if(isset($_GET['left']))
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 
 	// Save the outfit
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 // If we're moving something right
@@ -88,7 +88,7 @@ else if(isset($_GET['right']))
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 
 	// Save the outfit
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 else if($getLink == "replace")
@@ -100,11 +100,11 @@ else if($getLink == "replace")
 	{
 		if($key < 0)
 		{
-			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], "default", true);
+			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], $avatarData['identification'], true);
 		}
 		else
 		{
-			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], "default");
+			$outfitArray = AppOutfit::equip($outfitArray, $oa[0], $avatarData['gender'], $oa[1], $avatarData['identification']);
 		}
 	}
 	
@@ -112,7 +112,7 @@ else if($getLink == "replace")
 	$aviData = Avatar::imageData(Me::$id);
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 	
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 else if(isset($_POST['order']))
@@ -126,14 +126,14 @@ else if(isset($_POST['order']))
 	}
 
 	// resort it all
-	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], "default");
+	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
 	
 	// Update your avatar's image
 	$aviData = Avatar::imageData(Me::$id);
 	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 	
 	// Save the outfit
-	AppOutfit::save(Me::$id, "default", $outfitArray);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 }
 
 // Get the layers you can search between
@@ -142,7 +142,7 @@ $positions = AppAvatar::getInvPositions(Me::$id);
 // Provide link to transfer if the user has no items yet
 if($positions == array())
 {
-	Alert::info("No Items", 'Looks like you have no items yet! If you were a user of Uni5, perhaps you haven\'t <a href="/transfer">transferred your belongings</a> yet?');
+	Alert::info("No Items", 'Looks like you have no items yet! If you were a member of Uni5, perhaps you haven\'t <a href="/transfer">transferred your belongings</a> yet?');
 }
 
 // Set page title
@@ -257,11 +257,10 @@ echo '
 	</div>';
 	
 	if(isset($_GET['position']))
-	{
-		$itemlist = array();
-		
+	{		
 		// Show the items within the category selected
-		$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position'], $avatarData['gender_full']);
+		$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position']);
+		$userItemsOther = array();
 		
 		// If you have no items, say so
 		if(count($userItems) == 0)
@@ -269,9 +268,14 @@ echo '
 			echo "<p>You have no items.</p>";
 		}
 		
-		foreach($userItems as $item)
+		foreach($userItems as $key => $item)
 		{
-			$itemlist[] = $item['id'];
+			if(!in_array($item['gender'], array($avatarData['gender'], "b")))
+			{
+				unset($userItems[$key]);
+				$userItemsOther[] = $item;
+				continue;
+			}
 			
 			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
 			
@@ -293,22 +297,9 @@ echo '
 				<br /><a id="link_' . $item['id'] . '" href="/dress-avatar?position=' . $_GET['position'] . '&equip=' . $item['id'] . '">Equip</a> | <a href="/sell-item/' . $item['id'] . '">Sell</a>
 			</div>';
 		}
-		
-		// Show the items of the other gender within the category selected
-		$userItemsOther = AppAvatar::getUserItems(Me::$id, $_GET['position'], ($avatarData['gender_full'] == "male" ? "female" : "male"));
-		foreach($userItemsOther as $key => $item)
-		{
-			// avoid duplicates
-			if(in_array($item['id'], $itemlist))
-			{
-				unset($userItemsOther[$key]);
-			}
-		}
-		
+
 		foreach($userItemsOther as $item)
-		{
-			$itemlist[] = $item['id'];
-			
+		{			
 			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
 			
 			// Display the item block

@@ -67,11 +67,12 @@ class AppAvatar_config {
 		CREATE TABLE IF NOT EXISTS `avatars`
 		(
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`avatar_id`				tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
 			`base`					varchar(8)					NOT NULL	DEFAULT '',
 			`gender`				char(1)						NOT NULL	DEFAULT '',
 			`date_lastUpdate`		int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
-			UNIQUE (`uni_id`)
+			UNIQUE (`uni_id`, `avatar_id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 		");
 		

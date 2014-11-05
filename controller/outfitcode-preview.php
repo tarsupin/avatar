@@ -67,10 +67,9 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<h2>Outfit Code (Preview Avatar)</h2>
-	<img src="' . AppOutfit::drawSrc("preview") . '" style="float:left;margin-right:5px;"/>
+	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/></div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '
-		<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
+		<p>To save a list of your preview outfit, copy and save the content of the following textbox.</p>
 		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
 		<br/><br/>
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.</p>

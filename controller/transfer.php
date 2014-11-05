@@ -34,6 +34,7 @@ if(Form::submitted("transfer"))
 				{
 					if(Currency::add(Me::$id, $pass['auro'], "Transfer from Uni5"))
 					{
+						Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array(0, $pass['account']));
 						Alert::success("Auro Transfer", $pass['auro'] . " Auro have been transferred.");
 					}
 					else

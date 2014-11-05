@@ -21,7 +21,7 @@ if(Form::submitted("outfitcode-real"))
 		if($outfitArray !== false)
 		{
 			// Uni5 code, need to index properly; ownership and existence is automatically checked
-			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], "default");
+			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
 		}
 		else
 		{
@@ -53,7 +53,7 @@ if(Form::submitted("outfitcode-real"))
 		unset($outfitArray[0]);
 		$aviData = Avatar::imageData(Me::$id);
 		AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
-		AppOutfit::save(Me::$id, "default", $outfitArray);
+		AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 		Alert::success("Avatar Updated", "Your outfit has been updated!");
 	}
 }
@@ -83,14 +83,13 @@ Alert::display();
 
 // Output code of current outfit
 $output = array();
-$outfitArray = AppOutfit::get(Me::$id, "default");
+$outfitArray = AppOutfit::get(Me::$id, $avatarData['identification']);
 // add base (needed for constructing outfit from scratch)
 $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<h2>Outfit Code (Current Avatar)</h2>
-	<img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" style="float:left;margin-right:5px;"/>
+	<div id="aviblock"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '"/></div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-real") . '
 		<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
 		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>

@@ -46,16 +46,18 @@ abstract class AppAvatar {
 	public static function avatarData
 	(
 		$uniID			// <int> The Uni-Account to get the avatar data from.
+	,	$aviID = 0		// <int> The identification of the user's avatar.
 	)					// RETURNS <str:mixed> data on the avatar, or array with a blank avatar image source.
 	
 	// $avatar = AppAvatar::avatarData($uniID);
 	{
-		if(!$uniID or !$avatar = Database::selectOne("SELECT base, gender, date_lastUpdate FROM avatars WHERE uni_id=? LIMIT 1", array($uniID)))
+		if(!$uniID or !$avatar = Database::selectOne("SELECT base, gender, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
 		{
 			return array('src' => '/assets/images/blank-avatar.png');
 		}
 		
 		// Prepare Values
+		$avatar['identification'] = ($aviID == 0 ? "real" : "real" . $aviID);
 		$avatar['gender_full'] = ($avatar['gender'] == "m" ? "male" : "female");
 		$avatar['date_lastUpdate'] = (int) $avatar['date_lastUpdate'];
 		
@@ -117,18 +119,25 @@ abstract class AppAvatar {
 	(
 		$uniID			// <int> The Uni-Account to list the items of.
 	,	$position		// <str> The position of items to retrieve.
-	,	$gender			// <str> The gender of the avatar.
+	,	$gender	= ""	// <str> The gender of the avatar or empty string to return items for all genders.
 	,	$group = true	// <bool> TRUE means you group similar items together.
 	)					// RETURNS <int:[str:mixed]> list of items
 	
 	// $userItems = AppAvatar::getUserItems($uniID, $position, $gender);
 	{
-		if(!in_array($gender, array('male', 'female', 'm', 'f')))
+		if(!in_array($gender, array('male', 'female', 'm', 'f', '')))
 		{
 			return array();
 		}
 		
-		return Database::selectMultiple("SELECT ui.item_id as id, i.title, COUNT(id) as count FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ''), array($uniID, $position, $gender[0], 'b'));
+		if($gender != "")
+		{
+			return Database::selectMultiple("SELECT ui.item_id as id, i.title, " . ($group == true ? 'COUNT(id) as count, ' : '') . "i.gender FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=? AND i.gender IN (?, ?)" . ($group == true ? ' GROUP BY i.title' : ' ORDER BY i.title'), array($uniID, $position, $gender[0], 'b'));
+		}
+		else
+		{
+			return Database::selectMultiple("SELECT ui.item_id as id, i.title, " . ($group == true ? 'COUNT(id) as count, ' : '') . "i.gender FROM user_items ui INNER JOIN items i ON i.id = ui.item_id WHERE ui.uni_id = ? AND i.position=?" . ($group == true ? ' GROUP BY i.title' : ' ORDER BY i.title'), array($uniID, $position));
+		}
 	}
 	
 	
@@ -201,13 +210,10 @@ abstract class AppAvatar {
 	
 	// $itemData = AppAvatar::itemMinCost($itemID);
 	{
-		if($allShops)
+		$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=?", array($itemID, Me::$clearance));
+		if(!$shop['m'] && $allShops)
 		{
 			$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory WHERE item_id=?", array($itemID));
-		}
-		else
-		{
-			$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=?", array($itemID, Me::$clearance));
 		}
 	
 		if($shop['m'])
@@ -298,6 +304,17 @@ abstract class AppAvatar {
 	
 	// AppAvatar::createAvatar($uniID, $base, $gender);
 	{
+		// Determine avatar number_format
+		$number = Database::selectOne("SELECT MAX(avatar_id) AS max FROM avatars WHERE uni_id=?", array($uniID));
+		if($number !== false)
+		{
+			$number = $number['max'] + 1;
+		}
+		else
+		{
+			$number = 0;
+		}
+		
 		$gender = ($gender == "male" ? "male" : "female");
 		
 		$aviData = Avatar::imageData($uniID);
@@ -312,7 +329,7 @@ abstract class AppAvatar {
 		if($image->save(APP_PATH . $imgDir . '/' . $aviData['filename']))
 		{
 			// If the avatar image was created successfully, add the avatar
-			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?)", array($uniID, $base, $gender[0], time()));
+			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, avatar_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?, ?)", array($uniID, $number, $base, $gender[0], time()));
 		}
 		
 		return false;
@@ -325,6 +342,7 @@ abstract class AppAvatar {
 		$uniID			// <int> The Uni-Account to edit an avatar for.
 	,	$base			// <str> The avatar base (race) to use.
 	,	$gender			// <str> The gender of the avatar.
+	,	$aviID = 0		// <int> The ID of the specific avatar.
 	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::createAvatar($uniID, $base, $gender);
@@ -343,7 +361,7 @@ abstract class AppAvatar {
 		}
 		
 		// Update the avatar data
-		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? LIMIT 1", array($base, $gender[0], $uniID)))
+		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array($base, $gender[0], $uniID, $aviID)))
 		{
 			// Pay cost
 			$balance = Currency::check(Me::$id);
@@ -355,10 +373,10 @@ abstract class AppAvatar {
 			Currency::subtract(Me::$id, $cost, "Changed Base");
 					
 			// Update the Avatar Image
-			$outfitArray = AppOutfit::get($uniID, "default");
+			$outfitArray = AppOutfit::get($uniID, ($aviID == 0 ? "real" : "real" . $aviID));
 			$outfitArray[0] = array(0, $base);
-			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, "default");
-			AppOutfit::save($uniID, "default", $outfitArray);
+			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 0 ? "real" : "real" . $aviID));
+			AppOutfit::save($uniID, ($aviID == 0 ? "real" : "real" . $aviID), $outfitArray);
 			return true;
 		}		
 		

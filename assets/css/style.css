@@ -61,7 +61,7 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 .nav-slot { color:#1d2f46; }
 .nav-slot>a { color:#1d2f46 !important; }
 
-.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea
+.uniform input[type=text], .uniform input[type=password], .uniform input[type=number], .uniform select, .uniform textarea
 {
 	background-color:#e8eef1;
 	background-image:-moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 100%);
@@ -71,6 +71,7 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 	background-image:-ms-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
 	background-image:linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
 }
+.uniform input[type=number] { padding:6px 6px 6px 12px; font-size:16px; color:#475055; border:solid 1px #c0c0c0; }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 

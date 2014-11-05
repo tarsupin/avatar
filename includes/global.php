@@ -31,13 +31,12 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
 				<li class="dropdown-slot"><a href="/wish-list">Wish List</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("trade", "gift", "log-auro", "log-trade", "log-gift")) ? " nav-active" : "") . '">Gift &amp; Trade
+		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("trade", "gift", "log-auro", "log-item")) ? " nav-active" : "") . '">Gift &amp; Trade
 			<ul>
 				<li class="dropdown-slot"><a href="/gift">Gift</a></li>
 				<li class="dropdown-slot"><a href="/trade">Trade</a></li>
 				<li class="dropdown-slot"><a href="/log-auro">Auro Log</a></li>
-				<li class="dropdown-slot"><a href="/log-gift">Gift Log</a></li>
-				<li class="dropdown-slot"><a href="/log-trade">Trade Log</a></li>
+				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
 			</ul>
 		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '">EPs
 			<ul>

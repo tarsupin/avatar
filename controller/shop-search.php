@@ -201,7 +201,7 @@ foreach($positions as $pos)
 	echo '<div style="width:8em; display:inline-block;"><input type="checkbox" name="' . $pos . '"' . (isset($_GET[$pos]) ? " checked" : "") . '/> ' . $pos . "</div>";
 }
 echo '
-		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <span style="font-weight:bold;">Select/Deselect All</span>
+		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <strong>Select/Deselect All</strong>
 	</form><div class="spacer-huge"></div>';
 	
 // check for (non-)owned items

@@ -73,7 +73,7 @@ else if(isset($_GET['right']))
 
 else if($getLink == "replace")
 {
-	$outfitArray = AppOutfit::get(Me::$id, "default");
+	$outfitArray = AppOutfit::get(Me::$id, $avatarData['identification']);
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 

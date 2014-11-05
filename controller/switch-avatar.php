@@ -17,25 +17,27 @@ $config['pageTitle'] = "Switch Avatar";
 // Check if an avatar was chosen
 if(isset($url[1]))
 {
-	// [pseudo code, these functions do not exist]
-	// Check if this avatar belongs to your profile
-	/*if(AppAvatar::isMine(Me::$id, $url[1]))
+	// Check if you have an avatar with this identification
+	$url[1] = (int) $url[1];
+	$has = Database::selectOne("SELECT avatar_id FROM avatars WHERE uni_id=? AND avatar_id=?", array(Me::$id, $url[1]));
+	if($has !== false)
 	{
 		// Switch to the chosen avatar
-		if(AppAvatar::switchAvatar(Me::$id, $url[1]))
-		{		
+		// [pseudo code, this function does not exist]
+		/*if(AppAvatar::switchAvatar(Me::$id, $url[1]))
+		{
 			Alert::saveSuccess("Avatar Switched", "You have switched your avatar!");
 			header("Location: /dress-avatar"); exit;
 		}
 		else
 		{
 			Alert::error("Avatar couldn't be switched!");
-		}
+		}*/
 	}
 	else
 	{
 		Alert::error("Wrong Input", "This is not your avatar.");
-	}*/
+	}
 }
 
 // Run Global Script
@@ -54,10 +56,18 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Choose Your Avatar</h2>
-	<p>Please select the avatar that you would like to use!</p>
-	<a href="/switch-avatar/"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '" /></a>
+	<p>Please select the avatar that you would like to use!</p>';
+$avis = Database::selectMultiple("SELECT avatar_id FROM avatars WHERE uni_id=?", array(Me::$id));
+foreach($avis as $avi)
+{
+	$data = AppAvatar::avatarData(Me::$id, $avi['avatar_id']);
+	echo '
+	<a href="/switch-avatar/' . $avi['avatar_id'] . '"><img src="' . $data['src'] . (isset($data['date_lastUpdate']) ? '?' . $data['date_lastUpdate'] : "") . '" /></a>';
+}
+
+echo '
 	<div class="spacer-huge"></div>
-	<p>You can also <a href="avatar/create-avatar">create another avatar</a>!</p>
+	<p>You can also <a href="/create-avatar">create another avatar</a>!</p>
 </div>';
 
 // Display the Footer
