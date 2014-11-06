@@ -173,7 +173,7 @@ if($positions == array())
 }
 
 // Set page title
-$config['pageTitle'] = "Dressing Room";
+$config['pageTitle'] = ($avatarData['name'] != '' ? $avatarData['name'] . '\'s ' : '') . "Dressing Room";
 if(isset($_GET['position']))
 {
 	$config['pageTitle'] .= " > " . $_GET['position'];

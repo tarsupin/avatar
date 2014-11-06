@@ -1,4 +1,4 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+<?hh if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
 
 ----------------------------
 ------ About this API ------
@@ -37,16 +37,16 @@ class MyAvatarsAPI extends API {
 	
 	
 /****** API Variables ******/
-	public $isPrivate = true;			// <bool> TRUE if this API is private (requires an API Key), FALSE if not.
-	public $encryptType = "";			// <str> The encryption algorithm to use for response, or "" for no encryption.
-	public $allowedSites = array();		// <int:str> the sites to allow the API to connect with. Default is all sites.
-	public $microCredits = 50;			// <int> The cost in microcredits (1/10000 of a credit) to access this API.
-	public $minClearance = 6;			// <int> The clearance level required to use this API.
+	public bool $isPrivate = true;			// <bool> TRUE if this API is private (requires an API Key), FALSE if not.
+	public string $encryptType = "";			// <str> The encryption algorithm to use for response, or "" for no encryption.
+	public array <int, str> $allowedSites = array();		// <int:str> the sites to allow the API to connect with. Default is all sites.
+	public int $microCredits = 50;			// <int> The cost in microcredits (1/10000 of a credit) to access this API.
+	public int $minClearance = 6;			// <int> The clearance level required to use this API.
 	
 	
 /****** Run the API ******/
 	public function runAPI (
-	)					// RETURNS <int:str> the data of the avatars available, array() if no avatars.
+	): array <int, str>					// RETURNS <int:str> the data of the avatars available, array() if no avatars.
 	
 	// $this->runAPI()
 	{

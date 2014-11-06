@@ -37,12 +37,12 @@ echo '
 <div id="content">' . Alert::display() . '
 	<h2>Choose Your Avatar</h2>
 	<p>Please select the avatar that you would like to use!</p>';
-$avis = Database::selectMultiple("SELECT avatar_id FROM avatars WHERE uni_id=?", array(Me::$id));
+$avis = Database::selectMultiple("SELECT avatar_id, name, date_lastUpdate FROM avatars WHERE uni_id=?", array(Me::$id));
 foreach($avis as $avi)
 {
 	$data = AppAvatar::avatarData(Me::$id, $avi['avatar_id']);
 	echo '
-	<a href="/switch-avatar/' . $avi['avatar_id'] . '"><img src="' . $data['src'] . (isset($data['date_lastUpdate']) ? '?' . $data['date_lastUpdate'] : "") . '" /></a>';
+	<div style="display:inline-block;text-align:center;"><a href="/switch-avatar/' . $avi['avatar_id'] . '"><img src="' . $data['src'] . (isset($data['date_lastUpdate']) ? '?' . $data['date_lastUpdate'] : "") . '" /></a><br/>' . ($data['name'] != '' ? $data['name'] : '<span style="font-style:italic;">name not set</span>') . '</div>';
 }
 
 echo '

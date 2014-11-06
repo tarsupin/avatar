@@ -13,6 +13,7 @@ abstract class Install extends Installation {
 	,	"Friends"			=> true
 	,	"Notifications"		=> true
 	,	"Transactions"		=> true
+	,	"FeaturedWidget"	=> true
 	);
 	
 	

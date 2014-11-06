@@ -11,8 +11,8 @@ require(SYS_PATH . "/phpTesla.php");
 Me::initialize();
 
 // Get the user's active avatar
-$activeAvatar = Database::selectOne("SELECT active_avatar FROM users WHERE uni_id=? LIMIT 1", array(Me::$id));
-$activeAvatar = $activeAvatar['active_avatar'];
+$activeAvatar = Database::selectOne("SELECT avatar_opt FROM users WHERE uni_id=? LIMIT 1", array(Me::$id));
+$activeAvatar = $activeAvatar['avatar_opt'];
 
 // Get the user's avatar
 $avatarData = AppAvatar::avatarData(Me::$id, $activeAvatar);

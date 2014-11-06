@@ -15,6 +15,28 @@ if(!isset($avatarData['base']))
 // Set page title
 $config['pageTitle'] = "Edit Avatar";
 
+// change avatar name
+if(isset($_POST['aviname']))
+{
+	if(Form::submitted("editname"))
+	{
+		$sanitized = trim(Sanitize::safeword($_POST['aviname']));
+		if($sanitized != $_POST['aviname'])
+		{
+			Alert::info("Sanitized Name", "Your chosen name contained characters that are not allowed. Those characters have been removed.");
+		}
+		if(Database::query("UPDATE avatars SET name=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array($sanitized, Me::$id, $avatarData['avatar_id'])))
+		{
+			Alert::success("Name Changed", "Your avatar's name has been set.");
+			$avatarData['name'] = $sanitized;
+		}
+		else
+		{
+			Alert::error("Name Not Changed", "Your avatar's name could not be set.");
+		}
+	}
+}
+
 // Prepare Values
 $races = array("white", "tan", "pacific", "dark", "light", "gray");
 
@@ -52,6 +74,12 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Edit Your Avatar</h2>
+	<p>You can set or change your avatar\'s name.</p>
+	<form class="uniform" method="post">' . Form::prepare("editname") . '
+		<p><input type="text" name="aviname" maxlength="20" value="' . $avatarData['name'] . '"/> (max 20 characters)</p>
+		<p><input type="submit" value="Set Name"/></p>
+	</form>
+	<br/>
 	<p>Please select the avatar base that you would like to use! Currently you are using a <strong>' . $avatarData['gender_full'] . ' ' . $avatarData['base'] . '</strong> base.<br/>Changing the skin color costs 30 Auro. Changing the gender costs 1000 Auro.</p>';
 		
 	foreach($races as $race)

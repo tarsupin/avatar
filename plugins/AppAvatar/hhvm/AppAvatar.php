@@ -55,7 +55,7 @@ abstract class AppAvatar {
 	
 	// $avatar = AppAvatar::avatarData($uniID);
 	{
-		if(!$uniID or !$avatar = Database::selectOne("SELECT avatar_id, base, gender, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
+		if(!$uniID or !$avatar = Database::selectOne("SELECT avatar_id, base, gender, name, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
 		{
 			return array('src' => '/assets/images/blank-avatar.png');
 		}
@@ -375,7 +375,7 @@ abstract class AppAvatar {
 		if($has !== false)
 		{
 			// Switch to the chosen avatar
-			if(Database::query("UPDATE users SET active_avatar=? WHERE uni_id=? LIMIT 1", array($has['avatar_id'], $uniID)))
+			if(Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array($has['avatar_id'], $uniID)))
 			{
 				return true;
 			}

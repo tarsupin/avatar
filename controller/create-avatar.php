@@ -59,7 +59,7 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 	<h2>Create Your Avatar</h2>
-	<p>Please select the avatar base that you would like to use!</p>';
+	<p>Please select the avatar base that you would like to use! You can change it later, as well as set a name for the new avatar.</p>';
 		
 	foreach($races as $race)
 	{
