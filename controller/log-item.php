@@ -48,22 +48,17 @@ echo '
 		</tr>';
 		
 // get wrappers
-$wrap = Database::selectMultiple("SELECT id FROM wrappers", array());
-$wrappers = array();
-foreach($wrap as $w)
-{
-	$wrappers[] = $w['id'];
-}
-unset($wrap);
+$wrappers = AppAvatar::wrappers();
 
 foreach($transactions as $t)
-{	
-	if($t['other_id'] != Me::$id)
+{
+	$other = "";
+	if($t['other_id'] != Me::$id && $t['other_id'] != 0)
 	{
 		$other = User::get($t['other_id'], "handle");
 		$other = $other['handle'];
 	}
-	else
+	elseif($t['other_id'] == Me::$id && $t['uni_id'] != 0)
 	{
 		$other = User::get($t['uni_id'], "handle");
 		$other = $other['handle'];

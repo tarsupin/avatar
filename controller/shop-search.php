@@ -57,7 +57,7 @@ if(isset($_GET['submit']))
 	}
 	
 	// name
-	if(isset($_GET['title'][3]))
+	if(isset($_GET['title'][2]))
 	{
 		$sqlwhere .= $comma . "title LIKE ?";
 		$comma = " AND ";

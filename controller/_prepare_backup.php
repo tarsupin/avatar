@@ -23,9 +23,14 @@ exit;
 
 if(!DatabaseAdmin::columnsExist("avatars", array("avatar_id")))
 {
-	DatabaseAdmin::addColumn("avatars", "avatar_id", "tinyint(2) unsigned NOT NULL", 0);
+	DatabaseAdmin::addColumn("avatars", "avatar_id", "tinyint(2) unsigned NOT NULL", 1);
 	Database::exec("ALTER TABLE `avatars` DROP PRIMARY KEY");
 	Database::exec("ALTER TABLE `avatars` ADD PRIMARY KEY(uni_id, avatar_id)");
+}
+
+if(!DatabaseAdmin::columnsExist("users", array("active_avatar")))
+{
+	DatabaseAdmin::addColumn("users", "active_avatar", "tinyint(2) unsigned NOT NULL", 0);
 }
 
 Database::exec("
@@ -68,6 +73,17 @@ Database::exec("
 			
 			PRIMARY KEY (`id`),
 			INDEX (`transaction_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+		
+Database::exec("
+		CREATE TABLE IF NOT EXISTS `featured_widget`
+		(
+			`hashtag`				varchar(22)					NOT NULL	DEFAULT '',
+			`widget_html`			text						NOT NULL	DEFAULT '',
+			`views_remaining`		mediumint(5)	unsigned	NOT NULL	DEFAULT '0',
+			
+			UNIQUE (`hashtag`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 
@@ -478,7 +494,7 @@ exit;
 ****** Get remaining individual data ******
 *******************************************/
 
-echo 'Now download "s4u_accounts" and "s4u_account_trackers" before continuing.';
+echo 'Now download "s4u_accounts", "s4u_account_trackers" and  "s4u_account_credits" before continuing.';
 
 exit;
 
@@ -487,7 +503,7 @@ exit;
 ****** Prepare the proper table structure (Part 4) ******
 ********************************************************/
 
-// You must have uploaded "s4u_accounts" and "s4u_account_trackers" by now.
+// You must have uploaded "s4u_accounts", "s4u_account_trackers" and "s4u_account_credits" by now.
 
 DatabaseAdmin::renameTable("s4u_accounts", "_transfer_accounts");
 
@@ -503,15 +519,16 @@ DatabaseAdmin::dropColumn("_transfer_accounts", "id");
 DatabaseAdmin::dropColumn("_transfer_accounts", "clearance");
 
 DatabaseAdmin::addColumn("_transfer_accounts", "auro", "float(10,2) unsigned NOT NULL", "0.00");
+DatabaseAdmin::addColumn("_transfer_accounts", "credits", "int(11) unsigned NOT NULL", "0");
 DatabaseAdmin::addColumn("_transfer_accounts", "uni6_id", "int(10) unsigned NOT NULL", "0");
 
 echo "Table structure has been prepared.";
 
 exit;
 
-/**************************************************
-****** Combine Uni5 password and Auro amount ******
-***************************************************/
+/**********************************************************
+****** Combine Uni5 password, Auro and Credit amount ******
+**********************************************************/
 
 Database::startTransaction();
 
@@ -521,13 +538,20 @@ foreach($results as $result)
 	Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array((float) $result['auro'], $result['account']));
 }
 
+$results = Database::selectMultiple("SELECT account, credits FROM s4u_account_credits", array());
+foreach($results as $result)
+{
+	Database::query("UPDATE _transfer_accounts SET credits=? WHERE account=? LIMIT 1", array((int) $result['credits'], $result['account']));
+}
+
 Database::endTransaction();
 
 DatabaseAdmin::dropTable("s4u_account_trackers");
 
 echo "Auro amount has been moved to the _transfer_accounts table.";
 
-// You should drop the s4u_account_trackers table.
+DatabaseAdmin::dropTable("s4u_account_trackers");
+DatabaseAdmin::dropTable("s4u_account_credits");
 
 exit;
 

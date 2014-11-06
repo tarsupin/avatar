@@ -49,7 +49,7 @@ if(isset($url[2]))
 			}
 						
 			// give item
-			if(AppAvatar::receiveItem(Me::$id, $item['id']))
+			if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
 			{
 				// remove package
 				AppAvatar::dropPackage(Me::$id, $url[1]);

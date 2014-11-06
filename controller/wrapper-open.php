@@ -69,7 +69,7 @@ if(Form::submitted("wrapper-open"))
 			foreach($detail['content'] as $item)
 			{
 				$item = $details[$item];
-				if(AppAvatar::receiveItem(Me::$id, $item['id']))
+				if(AppAvatar::receiveItem(Me::$id, $item['id'], "Opened Wrapper"))
 				{
 					Alert::success("Received " . $item['title'], 'You have received ' . $item['title'] . '! [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']');
 				}
@@ -81,7 +81,7 @@ if(Form::submitted("wrapper-open"))
 			// remove wrapper
 			if(!Alert::hasErrors())
 			{
-				if(AppAvatar::dropItem(Me::$id, $_POST['id']))
+				if(AppAvatar::dropItem(Me::$id, $_POST['id'], "Opened Wrapper"))
 				{
 					foreach($owned as $key => $own)
 					{
@@ -166,7 +166,7 @@ foreach($owned as $own)
 	
 	echo '
 	<h3>' . $details[$own['id']]['title'] . ($own['c'] > 1 ? ' (' . $own['c'] . ')' : '') . '</h3>
-	' . $details[$own['id']]['html'] . ' <span class="spoiler-header" onclick="if($(this).next().is(\':visible\')){ $(this).next().fadeOut(\'fast\'); } else { $(this).next().fadeIn(\'fast\'); }">will be replaced with:</span><div class="spoiler-content">';
+	' . $details[$own['id']]['html'] . ' <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">will be replaced with:</span><div class="spoiler-content">';
 	foreach($own['content']	as $cont)
 	{
 		echo $details[$cont]['html'];

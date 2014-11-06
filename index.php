@@ -10,8 +10,14 @@ require(SYS_PATH . "/phpTesla.php");
 // Initialize Active User
 Me::initialize();
 
+// Get the user's active avatar
+$activeAvatar = Database::selectOne("SELECT active_avatar FROM users WHERE uni_id=? LIMIT 1", array(Me::$id));
+$activeAvatar = $activeAvatar['active_avatar'];
+
 // Get the user's avatar
-$avatarData = AppAvatar::avatarData(Me::$id);
+$avatarData = AppAvatar::avatarData(Me::$id, $activeAvatar);
+
+// Get the user's active avatar
 
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");

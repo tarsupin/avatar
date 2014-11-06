@@ -20,7 +20,18 @@ if(Form::submitted("outfitcode-real"))
 		$outfitArray = @unserialize($_POST['saved']);
 		if($outfitArray !== false)
 		{
-			// Uni5 code, need to index properly; ownership and existence is automatically checked
+			// Uni5 code, need to index properly; existence is automatically checked
+			// check ownership
+			foreach($outfitArray as $key => $oa)
+			{
+				if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
+				{
+					$itemData = AppAvatar::itemData($oa[0], "title");
+					Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+					unset($outfitArray[$key]);
+				}
+			}			
+			
 			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
 		}
 		else
@@ -30,7 +41,7 @@ if(Form::submitted("outfitcode-real"))
 			foreach($outfitArray as $key => $oa)
 			{
 				// check existence
-				$itemData = AppAvatar::itemData($oa[0]);
+				$itemData = AppAvatar::itemData($oa[0], "title");
 				if(!$itemData)
 				{
 					unset($outfitArray[$key]);
@@ -40,7 +51,7 @@ if(Form::submitted("outfitcode-real"))
 				{
 					// check ownership
 					if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
-					{					
+					{
 						Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
 						unset($outfitArray[$key]);
 						$outfitArray = AppOutfit::sortDelete($outfitArray, $key);
@@ -51,7 +62,7 @@ if(Form::submitted("outfitcode-real"))
 		
 		// Save the changes
 		unset($outfitArray[0]);
-		$aviData = Avatar::imageData(Me::$id);
+		$aviData = Avatar::imageData(Me::$id, $activeAvatar);
 		AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 		AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
 		Alert::success("Avatar Updated", "Your outfit has been updated!");
@@ -70,7 +81,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 echo '
 <style>
-textarea { width:100%; height:100px; }
+textarea { width:100%; height:150px; }
 </style>';
 
 // Display Side Panel
@@ -89,7 +100,15 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<div id="aviblock"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '"/></div>
+	<div id="aviblock"><img src="' . $avatarData['src'] . (isset($avatarData['date_lastUpdate']) ? '?' . $avatarData['date_lastUpdate'] : "") . '"/><textarea onclick="$(this).select();">';
+// Show equipped items in human-readable form
+foreach($outfitArray as $oa)
+{
+	if($oa[0] == 0) { continue; }
+	$itemData = AppAvatar::itemData($oa[0], "title");
+	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "\n";
+}
+echo '</textarea></div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-real") . '
 		<p>To save a list of your current outfit, copy and save the content of the following textbox.</p>
 		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>

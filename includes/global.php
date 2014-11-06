@@ -5,9 +5,7 @@ $urlActive = (isset($url[0]) && $url[0] != "" ? $url[0] : "home");
 
 if(Me::$loggedIn)
 {
-	if(isset($avatarData['base']))
-	{
-		WidgetLoader::add("UniFactionMenu", 10, '
+	WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap">
 	<ul class="menu">
 		<li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("create-avatar", "edit-avatar", "switch-avatar")) ? " nav-active" : "") . '">Avatar
@@ -56,16 +54,6 @@ if(Me::$loggedIn)
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li>
 	</ul>
 </div>');
-	}
-	else
-	{
-		WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap">
-	<ul class="menu">
-		<li class="dropdown-slot' . ($urlActive == "create-avatar" ? " nav-active" : "") . '"><a href="/create-avatar">Create Avatar</a></li>
-	</ul>
-</div>');
-	}
 }
 else
 {

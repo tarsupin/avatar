@@ -6,37 +6,19 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/switch-avatar");
 }
 
-// Make sure you have an avatar
-if(!isset($avatarData['base']))
-{
-	header("Location: /avatar/create-avatar"); exit;
-}
-
 $config['pageTitle'] = "Switch Avatar";
 
 // Check if an avatar was chosen
 if(isset($url[1]))
 {
-	// Check if you have an avatar with this identification
-	$url[1] = (int) $url[1];
-	$has = Database::selectOne("SELECT avatar_id FROM avatars WHERE uni_id=? AND avatar_id=?", array(Me::$id, $url[1]));
-	if($has !== false)
+	if(AppAvatar::switchAvatar(Me::$id, (int) $url[1]))
 	{
-		// Switch to the chosen avatar
-		// [pseudo code, this function does not exist]
-		/*if(AppAvatar::switchAvatar(Me::$id, $url[1]))
-		{
-			Alert::saveSuccess("Avatar Switched", "You have switched your avatar!");
-			header("Location: /dress-avatar"); exit;
-		}
-		else
-		{
-			Alert::error("Avatar couldn't be switched!");
-		}*/
-	}
+		Alert::saveSuccess("Avatar Switched", "You have switched your avatar!");
+		header("Location: /dress-avatar"); exit;
+	}	
 	else
 	{
-		Alert::error("Wrong Input", "This is not your avatar.");
+		Alert::error("Avatar Not Switched", "The avatar could not be switched.");
 	}
 }
 
@@ -49,8 +31,6 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 // Display Side Panel
 require(SYS_PATH . "/controller/includes/side-panel.php");
-
-Alert::info("Multiple Avatars", "Multiple avatars per profile are not implemented yet.");
 
 echo '
 <div id="panel-right"></div>

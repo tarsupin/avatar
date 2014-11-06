@@ -10,13 +10,7 @@ if(!Me::$loggedIn)
 $config['pageTitle'] = "Gift Auro and Items";
 
 // get wrappers
-$wrap = Database::selectMultiple("SELECT id FROM wrappers", array());
-$wrappers = array();
-foreach($wrap as $w)
-{
-	$wrappers[] = $w['id'];
-}
-unset($wrap);
+$wrappers = AppAvatar::wrappers();
 
 if(isset($_POST['submit']) || isset($_POST['confirm']))
 {
@@ -111,13 +105,14 @@ if(isset($_POST['submit']) || isset($_POST['confirm']))
 					if(!Transaction::approve($transactionID, $recipientID))
 					{
 						Alert::error("Transaction Not Possible", "The transaction couldn't be completed! You don't have enough Auro or all the items you're trying to send.");
-						//Transaction::delete($transactionID);
+						Transaction::delete($transactionID);
 					}
 					else
 					{
 						Alert::saveSuccess("Transaction Completed", 'The transaction has been completed! Check the <a href="/log-auro">Auro Log</a> or <a href="/log-item">Item Log</a>.');
+						Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . $sender . '! Check the <a href="/log-auro">Auro Log</a> or <a href="/log-item">Item Log</a>.');
+						Transaction::delete($transactionID);
 						header("Location: /dress-avatar"); exit;
-						//Transaction::delete($transactionID);
 					}
 				}
 			}

@@ -42,7 +42,7 @@ if(Form::submitted("sell-item") && !Alert::hasErrors())
 {
 	if(FormValidate::pass())
 	{
-		if(AppAvatar::dropItem(Me::$id, $url[1]))
+		if(AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop"))
 		{
 			Currency::add(Me::$id, ($item['cost']/2), "Sold " . $item['title']);
 			Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . ($item['cost']/2) . ' Auro.');

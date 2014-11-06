@@ -6,18 +6,17 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/create-avatar");
 }
 
-// Make sure you don't already have an avatar
-if(isset($avatarData['base']))
-{
-	Alert::saveInfo("Multiple Avatars", "You already have an avatar. Multiple avatars per profile are not implemented yet.");
-	header("Location: /dress-avatar"); exit;
-}
-
 // Set page title
 $config['pageTitle'] = "Create Avatar";
 
 // Prepare Values
 $races = array("white", "tan", "pacific", "dark", "light", "gray");
+
+$number = Database::selectOne("SELECT MAX(avatar_id) AS max FROM avatars WHERE uni_id=?", array(Me::$id));
+if($number !== false)
+{
+	Alert::info("Has Avatars", 'You currently have ' . $number['max'] . ' avatars which you can view or activate on <a href="/switch-avatar">this page</a>.<br/>Are you sure you want to create another?');
+}
 
 // Check if a base was chosen
 if(isset($url[1]) && isset($url[2]))
@@ -25,16 +24,23 @@ if(isset($url[1]) && isset($url[2]))
 	// Check if the values are legitimate
 	if(in_array($url[1], array("male", "female")) && in_array($url[2], $races))
 	{
-		// Create Your Avatar
-		if(AppAvatar::createAvatar(Me::$id, $url[2], $url[1]))
+		if($number >= 9)
 		{
-			Alert::saveSuccess("Avatar Created", "You have created your avatar!");
-			
-			header("Location: /dress-avatar"); exit;
+			Alert::error("Enough Avatars", "You cannot create more than 9 avatars.");
 		}
 		else
 		{
-			Alert::error("Avatar Failed", "Avatar couldn't be created! Possible server permission issues.", 3);
+			// Create Your Avatar
+			if(AppAvatar::createAvatar(Me::$id, $url[2], $url[1]))
+			{
+				Alert::saveSuccess("Avatar Created", "You have created your avatar!");
+				
+				header("Location: /dress-avatar"); exit;
+			}
+			else
+			{
+				Alert::error("Avatar Failed", "Avatar couldn't be created! Possible server permission issues.", 3);
+			}
 		}
 	}
 }
@@ -58,8 +64,8 @@ echo '
 	foreach($races as $race)
 	{
 		echo '
-		<a href="/create-avatar/male/' . $race . '"><img src="/assets/create-avatar/male_' . $race . '.png" style="width:120px;" /></a>
-		<a href="/create-avatar/female/' . $race . '"><img src="/assets/create-avatar/female_' . $race . '.png" style="width:120px;" /></a>';
+		<a href="/create-avatar/male/' . $race . '"><img src="/assets/create-avatar/male_' . $race . '.png" style="width:120px;" onclick="return confirm(\'Are you sure you want to create an avatar with this base?\');" /></a>
+		<a href="/create-avatar/female/' . $race . '"><img src="/assets/create-avatar/female_' . $race . '.png" style="width:120px;" onclick="return confirm(\'Are you sure you want to create an avatar with this base?\');" /></a>';
 	}
 	
 	echo '

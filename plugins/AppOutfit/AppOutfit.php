@@ -24,6 +24,7 @@ abstract class AppOutfit {
 * 
 * AppOutfit::sortDelete($uniID, $deleteOrder);
 * AppOutfit::sortAll($outfitArray, $gender, $type);
+* AppOutfit::removeFromAvatar($uniID, $itemID);
 */
 	
 	
@@ -51,11 +52,10 @@ abstract class AppOutfit {
 	,	$itemID				// <int> The ID of the item to add.
 	,	$gender				// <str> The gender of the avatar wearing the item.
 	,	$color				// <str> The color of the item.
-	,	$type = "preview"	// <str> The type of outfit.
 	,	$forcedown = false	// <bool> Whether to force an item below the base. Needed when used through sortAll().
 	)						// RETURNS <array> the array of the outfit.
 	
-	// $outfitArray = AppOutfit::equip($outfitArray, $itemID, $gender, $color, $type);
+	// $outfitArray = AppOutfit::equip($outfitArray, $itemID, $gender, $color);
 	{
 		// If this outfit isn't in array form, return empty array
 		if(!is_array($outfitArray))
@@ -80,23 +80,12 @@ abstract class AppOutfit {
 			return $outfitArray;
 		}
 		
-		
 		// Replace color if the item is already in the outfit
 		foreach($outfitArray as $key => $scan)
 		{
 			if($scan[0] == $itemID)
 			{
 				$outfitArray[$key] = array($itemID, $color);
-				return $outfitArray;
-			}
-		}
-		
-		// Make sure you own the item if it's equipped to an actual avatar
-		if($type != "preview")
-		{
-			if(!AppAvatar::checkOwnItem(Me::$id, $itemID))
-			{
-				Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
 				return $outfitArray;
 			}
 		}
@@ -324,7 +313,8 @@ abstract class AppOutfit {
 		// Overwrite the file if it already exists
 		if($check)
 		{
-			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? LIMIT 1", array(time() - 1, Me::$id));
+			$aviID = ($type != "real" ? (int) substr($type, 4) : 1);
+			Database::query("UPDATE avatars SET date_lastUpdate=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array(time() - 1, $uniID, $aviID));
 			return Database::query("UPDATE user_outfits SET outfit_json=? WHERE uni_id=? AND type=? LIMIT 1", array(json_encode($outfitArray), $uniID, $type));
 		}
 		
@@ -615,15 +605,52 @@ abstract class AppOutfit {
 		{
 			if(in_array($oa[0], $below))
 			{
-				$outfitArray2 = self::equip($outfitArray2, (int) $oa[0], $gender, $oa[1], $type, true);
+				$outfitArray2 = self::equip($outfitArray2, (int) $oa[0], $gender, $oa[1], true);
 			}
 			else
 			{
-				$outfitArray2 = self::equip($outfitArray2, (int) $oa[0], $gender, $oa[1], $type);
+				$outfitArray2 = self::equip($outfitArray2, (int) $oa[0], $gender, $oa[1]);
 			}
 		}	
 	
 		return $outfitArray2;
+	}
+	
+	
+/****** Reorder and check outfit code ******/
+	public static function removeFromAvatar
+	(
+		$uniID			// <int> The Uni-Account.
+	,	$itemID			// <int> The ID of the item to be removed from outfits.
+	)					// RETURNS <void>
+	
+	// AppOutfit::removeFromAvatar($uniID, $itemID);
+	{
+		$avis = Database::selectMultiple("SELECT type, outfit_json FROM user_outfits WHERE uni_id=? AND type!=?", array($uniID, "preview"));
+		foreach($avis as $avi)
+		{
+			$clean = true;
+			$outfitArray = get_object_vars(json_decode($avi['outfit_json']));
+			foreach($outfitArray as $key => $oa)
+			{
+				if($oa[0] == $itemID)
+				{
+					$clean = false;
+					$deletedKey = $key;
+					unset($outfitArray[$key]);
+					break;
+				}
+			}
+			if(!$clean)
+			{
+				$outfitArray = self::sortDelete($outfitArray, $deletedKey);
+				$aviID = ($avi['type'] != "real" ? (int) substr($avi['type'], 4) : 1);
+				$aviData = Avatar::imageData($uniID, $aviID);
+				$base = Database::selectOne("SELECT base, gender FROM avatars WHERE uni_id=? AND avatar_id=?", array($uniID, $aviID));
+				self::draw($base['base'], $base['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+				self::save($uniID, $avi['type'], $outfitArray);
+			}
+		}
 	}
 	
 }

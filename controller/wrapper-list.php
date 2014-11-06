@@ -112,7 +112,7 @@ foreach($wrappers as $wrap)
 	<h3>' . $details[$wrap['id']]['title'] . '</h3>
 	If you own this wrapper, you can <a href="/wrapper-open">open it here</a>.<br/>
 	If you have opened this wrapper before and still have its contents, you can <a href="/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
-	' . $details[$wrap['id']]['html'] . ' <span class="spoiler-header" onclick="if($(this).next().is(\':visible\')){ $(this).next().fadeOut(\'fast\'); } else { $(this).next().fadeIn(\'fast\'); }">can be replaced with:</span><div class="spoiler-content">';
+	' . $details[$wrap['id']]['html'] . ' <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">can be replaced with:</span><div class="spoiler-content">';
 	foreach($wrap['content']	as $cont)
 	{
 		echo $details[$cont]['html'];

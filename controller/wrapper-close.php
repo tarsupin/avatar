@@ -58,32 +58,38 @@ if(Form::submitted("wrapper-close"))
 {
 	if(FormValidate::pass() && !Alert::hasErrors())
 	{
+		Database::startTransaction();
+		
 		// give wrapper
-		if(AppAvatar::receiveItem(Me::$id, $url[1]))
+		if(AppAvatar::receiveItem(Me::$id, $url[1], "Closed Wrapper"))
 		{
 			Alert::success("Received " . $details[$url[1]]['title'], 'You have received the wrapper ' . $details[$url[1]]['title'] . '! [' . $details[$url[1]]['position'] . ', ' . ($details[$url[1]]['gender'] == "b" ? 'both genders' : ($details[$url[1]]['gender'] == "m" ? 'male' : 'female')) . ']');
 		}
 		else
 		{
 			Alert::error("Wrapper Not Given", "Something went wrong. You did not receive " . $details[$url[1]]['title'] . ".");
+			Database::endTransaction(false);
 		}	
 	
 		// remove content
 		if(!Alert::hasErrors())
 		{
-			Database::startTransaction();
 			foreach($wrap['content'] as $item)
 			{
 				$item = $details[$item];
-				if(AppAvatar::dropItem(Me::$id, $item['id']))
+				if(AppAvatar::dropItem(Me::$id, $item['id'], "Closed Wrapper"))
 				{
 					Alert::info("Removed " . $item['title'], $item['title'] . ' has been removed from your inventory.');
 				}
 				else
 				{
 					Alert::error("Not Removed " . $item['title'], "Something went wrong. " . $item['title'] . " could not be removed from your inventory.");
+					Database::endTransaction(false);
 				}
 			}
+		}
+		if(!Alert::hasErrors())
+		{
 			Database::endTransaction();
 		}
 		
@@ -92,7 +98,7 @@ if(Form::submitted("wrapper-close"))
 		{
 			if(!AppAvatar::checkOwnItem(Me::$id, $cont))
 			{
-				Alert::error("Not Owned", "You no longer have all items that came from this wrapper, so you cannot re-wrap another one.");
+				Alert::info("Not Owned", "You no longer have all items that came from this wrapper, so you cannot re-wrap another one.");
 				break;
 			}
 		}

@@ -21,7 +21,7 @@ if(Form::submitted("outfitcode-preview"))
 		if($outfitArray !== false)
 		{
 			// Uni5 code, need to index properly
-			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], "preview");
+			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 		}
 		else
 		{
@@ -48,7 +48,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 echo '
 <style>
-textarea { width:100%; height:100px; }
+textarea { width:100%; height:150px; }
 </style>';
 
 // Display Side Panel
@@ -67,7 +67,15 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/></div>
+	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/><textarea onclick="$(this).select();">';
+// Show equipped items in human-readable form
+foreach($outfitArray as $oa)
+{
+	if($oa[0] == 0) { continue; }
+	$itemData = AppAvatar::itemData($oa[0], "title");
+	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "\n";
+}
+echo '</textarea></div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '
 		<p>To save a list of your preview outfit, copy and save the content of the following textbox.</p>
 		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>

@@ -12,6 +12,7 @@ This class provides handling of the dress-up avatars.
 
 $avatarData	= AppAvatar::avatarData($uniID);
 $positions	= AppAvatar::positions();
+$wrappers   = AppAvatar::wrappers();
 $items		= AppAvatar::getUserItems($uniID, $position, $gender);
 $items		= AppAvatar::getShopItems($shopID);
 $positions	= AppAvatar::getInvPositions($uniID)
@@ -24,10 +25,13 @@ $colors		= AppAvatar::getItemColors($position, $title);
 AppAvatar::updateImage($uniID);
 
 AppAvatar::createAvatar($uniID, $base, $gender);
-AppAvatar::purchaseItem($itemID);
+AppAvatar::switchAvatar($uniID, $aviID);
+AppAvatar::editAvatar($uniID, $base, $gender);
 
+AppAvatar::purchaseItem($itemID);
 AppAvatar::receiveItem($uniID, $itemID);
 AppAvatar::dropItem($uniID, $itemID);
+AppAvatar::record($senderID, $recipientID, 123, "Birthday Present");
 AppAvatar::receivePackage($uniID, $packageID);
 AppAvatar::dropPackage($uniID, $packageID);
 
@@ -46,22 +50,22 @@ abstract class AppAvatar {
 	public static function avatarData
 	(
 		$uniID			// <int> The Uni-Account to get the avatar data from.
-	,	$aviID = 0		// <int> The identification of the user's avatar.
+	,	$aviID = 1		// <int> The identification of the user's avatar. 1 is default
 	)					// RETURNS <str:mixed> data on the avatar, or array with a blank avatar image source.
 	
 	// $avatar = AppAvatar::avatarData($uniID);
 	{
-		if(!$uniID or !$avatar = Database::selectOne("SELECT base, gender, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
+		if(!$uniID or !$avatar = Database::selectOne("SELECT avatar_id, base, gender, date_lastUpdate FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($uniID, $aviID)))
 		{
 			return array('src' => '/assets/images/blank-avatar.png');
 		}
 		
 		// Prepare Values
-		$avatar['identification'] = ($aviID == 0 ? "real" : "real" . $aviID);
+		$avatar['identification'] = ($aviID == 1 ? "real" : "real" . $aviID);
 		$avatar['gender_full'] = ($avatar['gender'] == "m" ? "male" : "female");
 		$avatar['date_lastUpdate'] = (int) $avatar['date_lastUpdate'];
 		
-		$aviData = Avatar::imageData($uniID);
+		$aviData = Avatar::imageData($uniID, $aviID);
 		
 		$avatar['src'] = $aviData['path'];
 		
@@ -111,6 +115,22 @@ abstract class AppAvatar {
 		,	'wings'
 		,	'wrists'
 		);
+	}
+	
+	
+/****** Return list of valid avatar positions ******/
+	public static function wrappers (
+	)				// RETURNS <int:str> list of wrapper IDs
+	
+	// $wrappers = AppAvatar::wrappers();
+	{
+		$wrap = Database::selectMultiple("SELECT id FROM wrappers", array());
+		$wrappers = array();
+		foreach($wrap as $w)
+		{
+			$wrappers[] = $w['id'];
+		}
+		return $wrappers;
 	}
 	
 	
@@ -312,12 +332,12 @@ abstract class AppAvatar {
 		}
 		else
 		{
-			$number = 0;
+			$number = 1;
 		}
 		
 		$gender = ($gender == "male" ? "male" : "female");
 		
-		$aviData = Avatar::imageData($uniID);
+		$aviData = Avatar::imageData($uniID, $number);
 		$imgDir = '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'];
 
 		// Make sure the directory exists
@@ -329,7 +349,36 @@ abstract class AppAvatar {
 		if($image->save(APP_PATH . $imgDir . '/' . $aviData['filename']))
 		{
 			// If the avatar image was created successfully, add the avatar
-			return Database::query("INSERT IGNORE INTO `avatars` (uni_id, avatar_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?, ?)", array($uniID, $number, $base, $gender[0], time()));
+			$success = Database::query("INSERT IGNORE INTO `avatars` (uni_id, avatar_id, base, gender, date_lastUpdate) VALUES (?, ?, ?, ?, ?)", array($uniID, $number, $base, $gender[0], time()));
+			if($success)
+			{
+				self::switchAvatar($uniID, $number);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+/****** Switch to different Avatar ******/
+	public static function switchAvatar
+	(
+		$uniID			// <int> The Uni-Account to create an avatar for.
+	,	$aviID			// <int> The avatar to use.
+	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
+	
+	// AppAvatar::switchAvatar($uniID, $aviID);
+	{
+		// Check if you have an avatar with this identification
+		$has = Database::selectOne("SELECT avatar_id FROM avatars WHERE uni_id=? AND avatar_id=?", array($uniID, $aviID));
+		if($has !== false)
+		{
+			// Switch to the chosen avatar
+			if(Database::query("UPDATE users SET active_avatar=? WHERE uni_id=? LIMIT 1", array($has['avatar_id'], $uniID)))
+			{
+				return true;
+			}
 		}
 		
 		return false;
@@ -342,10 +391,10 @@ abstract class AppAvatar {
 		$uniID			// <int> The Uni-Account to edit an avatar for.
 	,	$base			// <str> The avatar base (race) to use.
 	,	$gender			// <str> The gender of the avatar.
-	,	$aviID = 0		// <int> The ID of the specific avatar.
+	,	$aviID = 1		// <int> The ID of the specific avatar. 1 is default.
 	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
-	// AppAvatar::createAvatar($uniID, $base, $gender);
+	// AppAvatar::editAvatar($uniID, $base, $gender);
 	{
 		$gender = ($gender == "male" ? "male" : "female");
 		
@@ -373,10 +422,12 @@ abstract class AppAvatar {
 			Currency::subtract(Me::$id, $cost, "Changed Base");
 					
 			// Update the Avatar Image
-			$outfitArray = AppOutfit::get($uniID, ($aviID == 0 ? "real" : "real" . $aviID));
+			$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
 			$outfitArray[0] = array(0, $base);
-			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 0 ? "real" : "real" . $aviID));
-			AppOutfit::save($uniID, ($aviID == 0 ? "real" : "real" . $aviID), $outfitArray);
+			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 1 ? "real" : "real" . $aviID));
+			$aviData = Avatar::imageData(Me::$id, $aviID);
+			AppOutfit::draw($base, $gender[0], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+			AppOutfit::save($uniID, ($aviID == 1 ? "real" : "real" . $aviID), $outfitArray);
 			return true;
 		}		
 		
@@ -474,7 +525,7 @@ abstract class AppAvatar {
 		}
 		
 		// Add this item to your inventory
-		if(self::receiveItem(Me::$id, $itemID))
+		if(self::receiveItem(Me::$id, $itemID, "Purchased from Shop"))
 		{
 			// Spend the currency to purchase this item
 			Currency::subtract(Me::$id, $shop['cost'], "Purchased " . $itemData['title']);
@@ -499,11 +550,17 @@ abstract class AppAvatar {
 	(
 		$uniID			// <int> The Uni-Account to receive an item.
 	,	$itemID			// <int> The item to provide (based on ID).
+	,	$desc = ""		// <str> The message to log with.
 	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::receiveItem($uniID, $itemID);
 	{
-		return Database::query("INSERT INTO `user_items` (uni_id, item_id) VALUES (?, ?)", array($uniID, $itemID));
+		$result = Database::query("INSERT INTO `user_items` (uni_id, item_id) VALUES (?, ?)", array($uniID, $itemID));
+		if($result)
+		{
+			self::record(0, $uniID, $itemID, $desc);
+		}
+		return $result;
 	}
 	
 	
@@ -512,11 +569,43 @@ abstract class AppAvatar {
 	(
 		$uniID			// <int> The Uni-Account to drop the item from.
 	,	$itemID			// <int> The item to drop (based on ID).
+	,	$desc = ""		// <str> The message to log with.
 	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::dropItem($uniID, $itemID);
 	{
-		return Database::query("DELETE FROM `user_items` WHERE uni_id=? AND item_id=? LIMIT 1", array($uniID, $itemID));
+		// remove item
+		$result = Database::query("DELETE FROM `user_items` WHERE uni_id=? AND item_id=? LIMIT 1", array($uniID, $itemID));
+		if($result)
+		{
+			self::record($uniID, 0, $itemID, $desc);
+			// remove from outfits
+			AppOutfit::removeFromAvatar($uniID, $itemID);
+		}
+		
+		return $result;
+	}
+	
+/****** Records an item transaction ******/
+	public static function record
+	(
+		$senderID		// <int> The Uni-Account to send item. 0 if given by the system.
+	,	$recipientID	// <int> The Uni-Account to receive the item. 0 if removed from the system.
+	,	$itemID			// <int> The item ID.
+	,	$desc = ""		// <str> A brief description about the transaction's purpose.
+	)					// RETURNS <bool> TRUE on success, or FALSE on error.
+	
+	// AppAvatar::record($senderID, $recipientID, 123, "Birthday Present");
+	{
+		if($senderID === false or $recipientID === false) { return false; }
+		
+		// Prepare Values
+		$timestamp = time();
+		
+		// Run the record keeping
+		$pass = Database::query("INSERT INTO item_records (description, uni_id, other_id, item_id, date_exchange) VALUES (?, ?, ?, ?, ?)", array(Sanitize::text($desc), $senderID, $recipientID, $itemID, $timestamp));
+		
+		return ($pass);
 	}
 	
 	
@@ -540,7 +629,7 @@ abstract class AppAvatar {
 	,	$packageID		// <int> The package to drop (based on ID).
 	)					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
-	// AppAvatar::dropItem($uniID, $itemID);
+	// AppAvatar::dropPackage($uniID, $itemID);
 	{
 		return Database::query("DELETE FROM `user_packages` WHERE uni_id=? AND package_id=? LIMIT 1", array($uniID, $packageID));
 	}
@@ -594,4 +683,5 @@ abstract class AppAvatar {
 	{
 		return (int) Database::selectValue("SELECT clearance FROM shop WHERE id=? LIMIT 1", array($shopID));
 	}
+	
 }

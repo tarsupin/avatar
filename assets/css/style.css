@@ -34,6 +34,8 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 #header-wrap
 {
 	box-shadow:0 0 0 2px #a49f95;
+	-moz-box-shadow:0 0 0 2px #a49f95;
+	-webkit-box-shadow:0 0 0 2px #a49f95;
 	background-color:#d9e8f7;	
 	background-image:url('theme-unifaction/headerUF.png');
 	background-size:auto 100px;
@@ -61,7 +63,7 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 .nav-slot { color:#1d2f46; }
 .nav-slot>a { color:#1d2f46 !important; }
 
-.uniform input[type=text], .uniform input[type=password], .uniform input[type=number], .uniform select, .uniform textarea
+.uniform input[type=text], .uniform input[type=password], .uniform input[type=number], .uniform select, .uniform textarea, textarea
 {
 	background-color:#e8eef1;
 	background-image:-moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 100%);
@@ -75,7 +77,7 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 
-.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea  { box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; color:#1d2f46; }
+.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea, textarea  { box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; color:#1d2f46; }
 
 .mod-table tr:nth-child(2n-1) { background-color:#c7e0ee; }
 .mod-table td { padding:3px; border:1px #a49f95 solid; }
@@ -165,8 +167,9 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 /***********************
 ****** Item Block ******
 ***********************/
-.item_block { display:inline-block; padding:15px; text-align:center; width:130px; }
-.item_block select { width:130px; }
+
+.item_block { display:inline-block; padding:10px; text-align:center; width:135px; }
+.item_block select { width:135px; }
 .item_block img { max-height:100px; max-width:80px; }
 
 /***********************
@@ -239,4 +242,8 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 .spoiler-content
 {
 	display:none;
+	box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		-webkit-box-sizing:border-box;
+	border-left:1px #1d2f46 dotted;
 }

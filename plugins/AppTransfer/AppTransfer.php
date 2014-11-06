@@ -7,6 +7,7 @@ abstract class AppTransfer {
 * 
 ****** Methods Available ******
 * AppTransfer::transferItems($uniID, $oldUsername);
+* AppTransfer::transferPackages($uniID, $oldUsername);
 */
 	
 	
@@ -29,6 +30,7 @@ abstract class AppTransfer {
 			if(Database::query("INSERT INTO user_items (uni_id, item_id) VALUES (?, ?)", array($uniID, (int) $item['clothingID'])))
 			{
 				Database::query("DELETE FROM _transfer_items WHERE id=? AND account=? LIMIT 1", array((int) $item['id'], $oldUsername));
+				AppAvatar::record(0, Me::$id, (int) $item['clothingID'], "Transfer from Uni5");
 			}
 		}
 		

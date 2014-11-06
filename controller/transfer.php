@@ -29,6 +29,8 @@ if(Form::submitted("transfer"))
 			// check password
 			if($pass['password'] == sha1($_POST['password']))
 			{
+				Database::startTransaction();
+			
 				// transfer Auro
 				if($pass['auro'] > 0)
 				{
@@ -40,6 +42,7 @@ if(Form::submitted("transfer"))
 					else
 					{
 						Alert::error("Auro Transfer", "The Auro transfer has failed.");
+						Database::endTransaction(false);
 					}
 				}
 				
@@ -53,6 +56,7 @@ if(Form::submitted("transfer"))
 					else
 					{
 						Alert::error("Item Transfer", "The item transfer has failed.");
+						Database::endTransaction(false);
 					}
 				}
 				
@@ -66,12 +70,14 @@ if(Form::submitted("transfer"))
 					else
 					{
 						Alert::error("Package Transfer", "The package transfer has failed.");
+						Database::endTransaction(false);
 					}
 				}
 				
 				if(!Alert::hasErrors())
 				{
 					Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
+					Database::endTransaction();
 				}
 			}
 			else
@@ -102,7 +108,7 @@ Alert::display();
 
 echo '
 	<h2>Transfer from Uni5</h2>
-	<p>This will transfer your Auro, items and donation packages.</p>
+	<p>This will transfer your Auro, items and donation packages. Credits need to be transferred in a separate process that can only be done by the admin, so you might not have access to them right away. They are NOT lost.</p>
 	
 	<form class="uniform" method="post">' . Form::prepare("transfer") . '
 		<h4>Uni5 Account Name</h4>

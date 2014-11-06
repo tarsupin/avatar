@@ -12,9 +12,6 @@ This class provides functions to send Auro and items to another user.
 
 AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 AppTrade::sendItem_doTransaction($senderID, $recipientID, $itemID);
-AppTrade::sendAuro_undoTransaction($senderID, $recipientID, $auroAmount);
-AppTrade::sendItem_undoTransaction($senderID, $recipientID, $itemID);
-AppTrade::record($senderID, $otherUser['id'], 123, "Birthday Present");
 
 */
 
@@ -53,35 +50,16 @@ abstract class AppTrade {
 		$success = Database::query("UPDATE user_items SET uni_id=? WHERE uni_id=? and item_id=? LIMIT 1", array($recipientID, $senderID, $itemID));
 		if($success)
 		{
-			$success = self::record($senderID, $recipientID, $itemID, $desc);
+			$success = AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+			
 			// update cached layers
 			Cache::delete("invLayers:" . $senderID);
 			Cache::delete("invLayers:" . $recipientID);
+			
+			// update avatars if necessary
+			AppOutfit::removeFromAvatar($senderID, $itemID);
 		}
 		return $success;
-	}
-	
-	
-/****** Records an item transaction ******/
-	public static function record
-	(
-		$senderID		// <int> The Uni-Account to send item.
-	,	$recipientID	// <int> The Uni-Account to receive the item.
-	,	$itemID			// <int> The item ID.
-	,	$desc = ""		// <str> A brief description about the transaction's purpose.
-	)					// RETURNS <bool> TRUE on success, or FALSE on error.
-	
-	// AppTrade::record($senderID, $otherUser['id'], 123, "Birthday Present");
-	{
-		if($senderID === false or $recipientID === false) { return false; }
-		
-		// Prepare Values
-		$timestamp = time();
-		
-		// Run the record keeping
-		$pass = Database::query("INSERT INTO item_records (description, uni_id, other_id, item_id, date_exchange) VALUES (?, ?, ?, ?, ?)", array(Sanitize::text($desc), $senderID, $recipientID, $itemID, $timestamp));
-		
-		return ($pass);
 	}
 	
 }
