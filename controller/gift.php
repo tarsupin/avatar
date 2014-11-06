@@ -26,7 +26,7 @@ if(isset($_POST['submit']) || isset($_POST['confirm']))
 		else
 		{
 			// For confirmation
-			$_POST['auro'] = round($_POST['auro'], 2);
+			$_POST['auro'] = (float) round($_POST['auro'], 2);
 			
 			$itemsToSend = array();
 			foreach($_POST as $key => $val)

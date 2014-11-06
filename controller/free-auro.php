@@ -18,7 +18,7 @@ if($getLink = Link::clicked() and $getLink == "free-auro")
 	
 	if($balance < 500000)
 	{
-		Currency::add(Me::$id, 100000, "Free Auro");
+		Currency::add(Me::$id, (float) 100000, "Free Auro");
 		
 		Alert::success("Free Auro", "You just got 100,000 free auro!");
 	}

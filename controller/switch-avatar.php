@@ -6,6 +6,12 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/switch-avatar");
 }
 
+$avis = Database::selectMultiple("SELECT avatar_id, name, date_lastUpdate FROM avatars WHERE uni_id=?", array(Me::$id));
+if($avis == array())
+{
+	header("Location: /create-avatar");
+}
+
 $config['pageTitle'] = "Switch Avatar";
 
 // Check if an avatar was chosen
@@ -37,9 +43,9 @@ echo '
 <div id="content">' . Alert::display() . '
 	<h2>Choose Your Avatar</h2>
 	<p>Please select the avatar that you would like to use!</p>';
-$avis = Database::selectMultiple("SELECT avatar_id, name, date_lastUpdate FROM avatars WHERE uni_id=?", array(Me::$id));
 foreach($avis as $avi)
 {
+	$avi['avatar_id'] = (int) $avi['avatar_id'];
 	$data = AppAvatar::avatarData(Me::$id, $avi['avatar_id']);
 	echo '
 	<div style="display:inline-block;text-align:center;"><a href="/switch-avatar/' . $avi['avatar_id'] . '"><img src="' . $data['src'] . (isset($data['date_lastUpdate']) ? '?' . $data['date_lastUpdate'] : "") . '" /></a><br/>' . ($data['name'] != '' ? $data['name'] : '<span style="font-style:italic;">name not set</span>') . '</div>';

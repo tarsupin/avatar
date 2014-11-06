@@ -419,7 +419,7 @@ abstract class AppAvatar {
 				Alert::error("Too Expensive", "You don't have enough to change your base!");
 				return false;
 			}
-			Currency::subtract(Me::$id, $cost, "Changed Base");
+			Currency::subtract(Me::$id, (float) $cost, "Changed Base");
 					
 			// Update the Avatar Image
 			$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
@@ -528,7 +528,7 @@ abstract class AppAvatar {
 		if(self::receiveItem(Me::$id, $itemID, "Purchased from Shop"))
 		{
 			// Spend the currency to purchase this item
-			Currency::subtract(Me::$id, $shop['cost'], "Purchased " . $itemData['title']);
+			Currency::subtract(Me::$id, (float) $shop['cost'], "Purchased " . $itemData['title']);
 			
 			if(!$save)
 			{

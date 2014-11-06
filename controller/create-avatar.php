@@ -13,7 +13,7 @@ $config['pageTitle'] = "Create Avatar";
 $races = array("white", "tan", "pacific", "dark", "light", "gray");
 
 $number = Database::selectOne("SELECT MAX(avatar_id) AS max FROM avatars WHERE uni_id=?", array(Me::$id));
-if($number !== false)
+if($number['max'])
 {
 	Alert::info("Has Avatars", 'You currently have ' . $number['max'] . ' avatars which you can view or activate on <a href="/switch-avatar">this page</a>.<br/>Are you sure you want to create another?');
 }
@@ -24,7 +24,7 @@ if(isset($url[1]) && isset($url[2]))
 	// Check if the values are legitimate
 	if(in_array($url[1], array("male", "female")) && in_array($url[2], $races))
 	{
-		if($number >= 9)
+		if($number['max'] >= 9)
 		{
 			Alert::error("Enough Avatars", "You cannot create more than 9 avatars.");
 		}

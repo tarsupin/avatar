@@ -23,7 +23,7 @@ abstract class AppTrade {
 	(
 		$senderID		// <int> The UniID sending the Auro.
 	,	$recipientID	// <int> The UniID receiving the Auro.
-	,	$auroAmount		// <int> The amount of Auro being sent.
+	,	$auroAmount		// <float> The amount of Auro being sent.
 	,	$desc = "Gift or Trade"		// <str> The description for the log.
 	)					// RETURNS <bool> TRUE if the Auro was sent, FALSE if it failed.
 	

@@ -152,12 +152,11 @@ class AppAvatar_config {
 		
 		if($pass and $pass2 and $pass3)
 		{
-			$pass4 = DatabaseAdmin::columnsExist("avatar_equipped", array("uni_id", "item_id"));
 			$pass5 = DatabaseAdmin::columnsExist("items", array("id", "title", "position"));
 			$pass6 = DatabaseAdmin::columnsExist("shop", array("id", "title"));
 			$pass7 = DatabaseAdmin::columnsExist("shop_inventory", array("shop_id", "item_id", "cost"));
 			
-			$pass = ($pass4 and $pass5 and $pass6 and $pass7);
+			$pass = ($pass5 and $pass6 and $pass7);
 		}
 		else
 		{

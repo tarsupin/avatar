@@ -32,6 +32,7 @@ if(Form::submitted("transfer"))
 				Database::startTransaction();
 			
 				// transfer Auro
+				$pass['auro'] = (float) $pass['auro'];
 				if($pass['auro'] > 0)
 				{
 					if(Currency::add(Me::$id, $pass['auro'], "Transfer from Uni5"))
