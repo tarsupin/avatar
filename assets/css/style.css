@@ -3,53 +3,36 @@
 ************************/
 
 @media screen and (min-width:1421px) {
-	#content { background-color:#d9e8f7; margin-left:260px; max-width:100%; margin-right:325px; padding:22px; }
+	#content { margin-left:260px; max-width:100%; margin-right:325px; padding:22px; }
 	#panel-right { width:300px; }
 }
 
 @media screen and (min-width:1121px) and (max-width:1420px) {
-	#content { background-color:#d9e8f7; margin-left:260px; max-width:100%; margin-right:10px; padding:22px; }
+	#content { margin-left:260px; max-width:100%; margin-right:10px; padding:22px; }
 }
 
 @media screen and (min-width:921px) and (max-width:1120px) {
-	#content { background-color:#d9e8f7; margin-left:260px; margin-right:10px; padding:16px; }
+	#content { margin-left:260px; margin-right:10px; padding:16px; }
 }
 
 @media screen and (min-width:501px) and (max-width:920px) {
-	#content { background-color:#d9e8f7; margin-left:0px; margin-right:10px; padding:12px; }
+	#content { margin-left:0px; margin-right:10px; padding:12px; }
 }
 
 @media screen and (max-width:500px) {
-	#content { background-color:#d9e8f7; margin-left:0px; padding:10px; }
+	#content { margin-left:0px; padding:10px; }
 }
 
 #panel-left { width:245px; }
 
-/******************************
-****** Custom Overwrites ******
-*******************************/
+/**************************
+****** Custom Colors ******
+**************************/
 
-body { background-color:#d9e8f7; color:#1d2f46; }
+html, body, #footer { background-color:#D9EAFF !important; }
 
-#header-wrap
-{
-	box-shadow:0 0 0 2px #a49f95;
-	-moz-box-shadow:0 0 0 2px #a49f95;
-	-webkit-box-shadow:0 0 0 2px #a49f95;
-	background-color:#d9e8f7;	
-	background-image:url('theme-unifaction/headerUF.png');
-	background-size:auto 100px;
-	background-repeat:repeat-x;
-}
-
-.menu-wrap { border-bottom:solid 1px #a49f95; border-left:solid 1px #a49f95; border-right:solid 1px #a49f95; }
-.menu-slot { color:#1d2f46; border-right:solid 1px #a49f95; }
-.menu-slot>a { color:#1d2f46 !important; }
-.menu-slot>ul { background-color:#d9e8f7; border:solid 1px #a49f95; }
-.dropdown-slot { color:#1d2f46; border-bottom:solid 1px #a49f95; }
-.dropdown-slot>a { color:#1d2f46 !important; }
-
-.menu-wrap, .menu-slot>ul, .dragndrop li, .redlinks>a { 
+.menu-wrap, .menu-slot>ul, .redlinks>a, .dragndrop li, .spoiler-header
+{ 
 	background-color:#c7e0ee;	
 	background-image:-linear-gradient(#c7e0ee, #e8eef1);
 	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
@@ -60,8 +43,25 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
 }
 
-.nav-slot { color:#1d2f46; }
-.nav-slot>a { color:#1d2f46 !important; }
+.menu-plain
+{
+	color:#2C7099;
+}
+
+.nav-active, .category-active, .menu-plain:hover
+{
+	background-color:#63beff !important;
+	background-image:none !important;
+	color:white !important;
+}
+
+.spoiler-header:hover, .redlinks>a:hover
+{
+	background-color:#63beff;
+	background-image:none;
+	color:white !important;
+	transition:0.1s ease-in-out;
+}
 
 .uniform input[type=text], .uniform input[type=password], .uniform input[type=number], .uniform select, .uniform textarea, textarea
 {
@@ -73,27 +73,28 @@ body { background-color:#d9e8f7; color:#1d2f46; }
 	background-image:-ms-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
 	background-image:linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
 }
+
+/*****************************************
+****** Custom/Additional Formatting ******
+*****************************************/
+
+.menu-plain { padding:0px 20px 0px 20px; }
+
 .uniform input[type=number] { padding:6px 6px 6px 12px; font-size:16px; color:#475055; border:solid 1px #c0c0c0; }
 
-h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
-
-.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea, textarea  { box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; color:#1d2f46; }
-
-.mod-table tr:nth-child(2n-1) { background-color:#c7e0ee; }
-.mod-table td { padding:3px; border:1px #a49f95 solid; }
-
-#footer { 
-	background-color:#d9e8f7;
-	border-top:solid 1px #a49f95;
-	background-image:url('theme-unifaction/footerUF.png');
-	background-size:auto 40px;
-	background-repeat:repeat-x;
+.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea, textarea
+ {
+	box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		-webkit-box-sizing:border-box;
 }
-#footer-middle>a { color:#1d2f46; }
-#footer-middle>a:hover { color: #1d2f46; }
 
-#friend-button { color:#a49f95; }
-#notif-button { color:#a49f95; }
+.redlinks>a
+{
+	padding:5px;
+	line-height:2.2em;
+	white-space:nowrap;
+}
 
 /***************************
 ****** Dressing Lists ******
@@ -103,7 +104,6 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 {
 	list-style-type:none;
 	overflow:hidden;
-	padding:0px;
 }
 
 .dragndrop li
@@ -127,7 +127,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 
 .close, .buy, .owned
 {
-	color:#a49f95 !important;
+	color:#475055 !important;
 	font-size:0.8em;
 	position:absolute;
 	text-decoration:none;
@@ -136,7 +136,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 
 .left, .right
 {
-	color:#a49f95 !important;
+	color:#475055 !important;
 	font-weight:bold;
 	font-size:0.8em;
 	position:absolute;
@@ -185,30 +185,6 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 	filter:alpha(opacity=0.5);
 }
 
-/*************************
-****** Padded Links ******
-*************************/
-
-.redlinks>a
-{
-	padding:5px;
-	line-height:2.2em;
-	white-space:nowrap;
-}
-.redlinks>a:hover, .redlinks .category-active
-{
-	background-color:#56ccc8;
-	background-image:none;
-	color:white !important;
-}
-
-/*******************************
-****** Plain Text in Menu ******
-*******************************/
-
-.menu-plain { padding:0px 20px 0px 20px; }
-.menu-plain.nav-active, .menu-plain:hover { color:white !important; transition:0.1s ease-in-out; }
-
 /**********************
 ****** Avi Block ******
 ***********************/
@@ -230,13 +206,8 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 
 .spoiler-header
 {
-	border:1px #1d2f46 dotted;
+	border:1px dotted;
 	padding:5px;
-}
-
-.spoiler-header:hover
-{
-	background-color:#56ccc8;
 }
 
 .spoiler-content
@@ -245,5 +216,5 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4 { color:#1d2f46; }
 	box-sizing:border-box;
 		-moz-box-sizing:border-box;
 		-webkit-box-sizing:border-box;
-	border-left:1px #1d2f46 dotted;
+	border-left:1px dotted;
 }

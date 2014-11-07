@@ -262,7 +262,7 @@ abstract class AppAvatar {
 		// If the color cache is stale, retrieve it normally
 		$colorList = array();
 		$files = Dir::getFiles(APP_PATH . "/avatar_items/" . $position . "/" . $title);
-		
+
 		foreach($files as $file)
 		{
 			if(strpos($file, "ale.png") > -1)	// Matches for "_male.png" and "_female.png"
@@ -273,7 +273,7 @@ abstract class AppAvatar {
 				}
 			}
 		}
-		
+		sort($colorList);
 		$colorList = array_unique($colorList);
 		
 		// Remove keys from the list so that JSON value is minimized

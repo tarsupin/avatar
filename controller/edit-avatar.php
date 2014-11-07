@@ -47,7 +47,7 @@ if(isset($url[1]) && isset($url[2]))
 	if(in_array($url[1], array("male", "female")) && in_array($url[2], $races))
 	{
 		// Edit Your Avatar
-		if(AppAvatar::editAvatar(Me::$id, $url[2], $url[1], $activeAvatar))
+		if(AppAvatar::editAvatar(Me::$id, (int) $url[2], (int) $url[1], $activeAvatar))
 		{
 			Alert::saveSuccess("Avatar Edited", "You have switched to a " . $url[1] . " " . $url[2] . " base!");
 			

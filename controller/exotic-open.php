@@ -15,7 +15,7 @@ if(!isset($avatarData['base']))
 // Check that you own the package
 if(isset($url[1]))
 {
-	if(!AppAvatar::checkOwnPackage(Me::$id, $url[1]))
+	if(!AppAvatar::checkOwnPackage(Me::$id, (int) $url[1]))
 	{
 		header("Location: /exotic-open"); exit;
 	}
@@ -113,9 +113,9 @@ if(!isset($url[2]))
 		{
 			// get item data
 			$item = AppAvatar::itemData((int) $cont['item_id'], "id,title,position,gender");
-			
+
 			// Get list of colors
-			$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
+			$colors	= AppAvatar::getItemColors($item['position'], $item['title']);
 			if(!$colors) { continue; }
 			
 			if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
@@ -136,7 +136,7 @@ if(!isset($url[2]))
 				echo '
 		</select>
 		<br/><a href="/exotic-open/' . $package['id'] . '/' . $item['id'] . '">Choose ' . $item['title'] . '</a>';
-			if(AppAvatar::checkOwnItem(Me::$id, $item['id']))
+			if(AppAvatar::checkOwnItem(Me::$id, (int) $item['id']))
 			{
 				echo " [&bull;]";
 			}

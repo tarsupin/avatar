@@ -118,19 +118,19 @@ exit;
 ini_set('max_execution_time', 120);
 
 // Run each directory in avatar_items
-$allItemList = Dir::getFolders(APP_PATH . "/assets/avatar_items/");
+$allItemList = Dir::getFolders(APP_PATH . "/avatar_items/");
 
 foreach($allItemList as $fullL)
 {
 	//if($fullL < "legs") { continue; }
 	
-	$list = Dir::getFolders(APP_PATH . "/assets/avatar_items/" . $fullL);
+	$list = Dir::getFolders(APP_PATH . "/avatar_items/" . $fullL);
 	
 	Database::startTransaction();
 	
 	foreach($list as $l)
 	{
-		$stats = File::read(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/_stats.txt");
+		$stats = File::read(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/_stats.txt");
 		
 		$values = explode(" ", $stats);
 		
@@ -156,7 +156,7 @@ exit;
 ini_set('max_execution_time', 120);
 
 // Run each directory in avatar_items
-$allItemList = Dir::getFolders(APP_PATH . "/assets/avatar_items/");
+$allItemList = Dir::getFolders(APP_PATH . "/avatar_items/");
 
 foreach($allItemList as $fullL)
 {
@@ -167,38 +167,39 @@ foreach($allItemList as $fullL)
 	{
 		// temp is not a layer position, but was used for recoloring purposes
 		// that functionality will be moved elsewhere and important files have been backed up, so this isn't needed
-		if(Dir::exists(APP_PATH . "/assets/avatar_items/" . $fullL))
+		if(Dir::exists(APP_PATH . "/avatar_items/" . $fullL))
 		{
-			Dir::delete(APP_PATH . "/assets/avatar_items/" . $fullL);
+			Dir::delete(APP_PATH . "/avatar_items/" . $fullL);
 		}
 		continue;
 	}
 	
-	$list = Dir::getFolders(APP_PATH . "/assets/avatar_items/" . $fullL);
+	$list = Dir::getFolders(APP_PATH . "/avatar_items/" . $fullL);
 	
 	foreach($list as $l)
 	{
 		// Skip if it already exists
-		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
+		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_male.png"))
 		{
 			continue;
 		}
-		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
+		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_female.png"))
 		{
 			continue;
 		}
 		
 		// Cleanup of previous non-gender-specific default images
-		if(File::exists(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default.png"))
+		if(File::exists(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default.png"))
 		{
-			File::delete(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default.png");
+			File::delete(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default.png");
 		}
 		
 		// Cycle through all of the items and create a default image (max height of 100px and max width of 80)
-		$results = Dir::getFiles(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l);
+		$results = Dir::getFiles(APP_PATH . "/avatar_items/" . $fullL . "/" . $l);
 		
 		if($results)
 		{
+			sort($results);
 			// Find respective first female and male image
 			$has_gender = array("female" => false, "male" => false);
 			foreach($results as $result)
@@ -222,12 +223,12 @@ foreach($allItemList as $fullL)
 			{
 				if($val !== false)
 				{
-					$image = new Image(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/" . $val);
+					$image = new Image(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/" . $val);
 					
 					if($image->height > 100) 		{ $image->autoHeight(100); }
 					if($image->width > 80) 			{ $image->autoWidth(80); }
 					
-					$image->save(APP_PATH . "/assets/avatar_items/" . $fullL . "/" . $l . "/default_" . $key . ".png");
+					$image->save(APP_PATH . "/avatar_items/" . $fullL . "/" . $l . "/default_" . $key . ".png");
 				}
 			}
 			
@@ -473,8 +474,6 @@ foreach($results as $result)
 }
 
 Database::endTransaction();
-
-DatabaseAdmin::dropTable("s4u_account_trackers");
 
 echo "Auro amount has been moved to the _transfer_accounts table.";
 
