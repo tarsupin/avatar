@@ -6,7 +6,7 @@ $urlActive = (isset($url[0]) && $url[0] != "" ? $url[0] : "home");
 if(Me::$loggedIn)
 {
 	WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap">
+<div class="menu-wrap hide-600">
 	<ul class="menu">
 		<li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("create-avatar", "edit-avatar", "switch-avatar")) ? " nav-active" : "") . '">Avatar
 			<ul>
@@ -57,7 +57,7 @@ if(Me::$loggedIn)
 else
 {
 	WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap">
+<div class="menu-wrap hide-600">
 	<ul class="menu">
 		<li class="dropdown-slot' . ($urlActive == "login" ? " nav-active" : "") . '"><a href="/login">Login</a></li>
 	</ul>
