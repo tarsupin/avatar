@@ -292,7 +292,7 @@ echo '
 		// If you have no items, say so
 		if(count($userItems) == 0)
 		{
-			echo "<p>You have no items.</p>";
+			echo "<p>You have no items in " . $_GET['position'] . ".</p>";
 		}
 		
 		foreach($userItems as $key => $item)
