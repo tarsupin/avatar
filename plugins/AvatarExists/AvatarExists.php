@@ -10,7 +10,11 @@ This API verifies whether or not a particular user has an avatar.
 ------ Calling this API ------
 ------------------------------
 	
-	$packet = array("uni_id" => $uniID);
+	// Prepare the packet to send
+	$packet = array(
+		"uni_id"	=> $uniID
+	,	"avi_id"	=> $avatarID		// The ID of the avatar to test for
+	);
 	
 	Connect::to("avatar", "AvatarExists", $packet);
 	
@@ -39,12 +43,12 @@ class AvatarExists extends API {
 	// $this->runAPI()
 	{
 		// Make sure the necessary data was sent
-		if(!isset($this->data['uni_id']))
+		if(!isset($this->data['uni_id']) or !isset($this->data['avi_id']))
 		{
 			return false;
 		}
 		
-		return (bool) Database::selectValue("SELECT uni_id FROM avatars WHERE uni_id=? LIMIT 1", array($this->data['uni_id']));
+		return (bool) Database::selectValue("SELECT uni_id FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($this->data['uni_id'], $this->data['avatar_id']));
 	}
 	
 }
