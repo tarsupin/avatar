@@ -52,7 +52,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 	// get item info
 	foreach($packages as $key => $package)
 	{
-		if($space) { $html .= '<div class="spacer-giant"></div>'; }
+		if($space) { $html .= '<div class="spacer"></div>'; }
 		$space = true;
 
 		$html .= '
@@ -101,7 +101,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 if($url[1] > 2009 or $url[1] < date("Y"))
 {
 	echo '
-<div class="spacer-huge"></div>';
+<div class="spacer"></div>';
 	if($url[1] < date("Y"))
 	{
 		echo '

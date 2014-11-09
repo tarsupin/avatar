@@ -8,45 +8,45 @@ if(Me::$loggedIn)
 	WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap hide-600">
 	<ul class="menu">
-		<li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("create-avatar", "edit-avatar", "switch-avatar")) ? " nav-active" : "") . '">Avatar
+		<li onmouseover="" class="menu-slot' . (in_array($urlActive, array("create-avatar", "edit-avatar", "switch-avatar")) ? " nav-active" : "") . '"><a href="/menu-avatar">Avatar</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/create-avatar">Create Avatar</a></li>
 				<li class="dropdown-slot"><a href="/edit-avatar">Edit Avatar</a></li>
 				<li class="dropdown-slot"><a href="/switch-avatar">Switch Avatar</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("dress-avatar", "outfitcode-real")) ? " nav-active" : "") . '">Outfit
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("dress-avatar", "outfitcode-real")) ? " nav-active" : "") . '"><a href="/menu-outfit">Outfit</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/dress-avatar">Dressing Room</a></li>
 				<li class="dropdown-slot"><a href="/outfitcode-real">Outfit Code</a></li>
-			</ul></li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("preview-avi", "outfitcode-preview")) ? " nav-active" : "") . '">Preview
+			</ul></li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("preview-avi", "outfitcode-preview")) ? " nav-active" : "") . '"><a href="/menu-preview">Preview</a>
 			<ul>
 				<li class="dropdown-slot"><a href="javascript:review_item(0);">Preview Window</a></li>
 				<li class="dropdown-slot"><a href="/outfitcode-preview">Outfit Code</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "wish-list")) ? " nav-active" : "") . '">Shops
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "wish-list")) ? " nav-active" : "") . '"><a href="/menu-shops">Shops</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/shop-list">Shop List</a></li>
 				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
 				<li class="dropdown-slot"><a href="/wish-list">Wish List</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '">Gift &amp; Trade
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '"><a href="/menu-giftandtrade">Gift &amp; Trade</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/gift-trade">Gift &amp; Trade</a></li>
 				<li class="dropdown-slot"><a href="/log-auro">Auro Log</a></li>
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '">EPs
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '"><a href="menu-eps">EPs</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/exotic-open">Open Exotic Package</a></li>
 				<li class="dropdown-slot"><a href="/exotic-list">List of Exotic Packages</a></li>
 				<li class="dropdown-slot"><a href="/exotic-purchase">Purchase Exotic Package</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot menu-plain' . (in_array($urlActive, array("wrapper-open", "wrapper-list")) ? " nav-active" : "") . '">Wrappers
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wrapper-open", "wrapper-list")) ? " nav-active" : "") . '"><a href="menu-wrappers">Wrappers</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/wrapper-open">Open Wrapper</a></li>
 				<li class="dropdown-slot"><a href="/wrapper-list">List of Wrappers</a></li>
 			</ul>
-		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot menu-plain' . ($urlActive == "staff" ? " nav-active" : "") . '">Staff
+		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot' . ($urlActive == "staff" ? " nav-active" : "") . '"><a href="/menu-staff">Staff</a>
 			<ul>
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 			</ul>

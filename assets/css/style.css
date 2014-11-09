@@ -25,87 +25,34 @@
 
 #panel-left { width:245px; }
 
-/**************************
-****** Custom Colors ******
-**************************/
-
-html, body, #footer { background-color:#D9EAFF !important; }
-
-.menu-wrap, .menu-slot>ul, .redlinks>a, .dragndrop li, .spoiler-header
-{ 
-	background-color:#c7e0ee;	
-	background-image:-linear-gradient(#c7e0ee, #e8eef1);
-	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
-	background-image:-ms-linear-gradient(top, #c7e0ee, #e8eef1);
-	background-image:-o-linear-gradient(#c7e0ee, #e8eef1);
-	background-image:-webkit-gradient(linear, left top, left bottom, from(#c7e0ee), to(#e8eef1));
-	background-image:-webkit-linear-gradient(top, #c7e0ee, #e8eef1);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
-}
-
-.menu-plain
-{
-	color:#2C7099;
-}
-
-.nav-active, .category-active, .menu-plain:hover
-{
-	background-color:#63beff !important;
-	background-image:none !important;
-	color:white !important;
-}
-
-.spoiler-header:hover, .redlinks>a:hover
-{
-	background-color:#63beff;
-	background-image:none;
-	color:white !important;
-	transition:0.1s ease-in-out;
-}
-
-.uniform input[type=text], .uniform input[type=password], .uniform input[type=number], .uniform select, .uniform textarea, textarea
-{
-	background-color:#e8eef1;
-	background-image:-moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 100%);
-	background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,0.75)));
-	background-image:-webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
-	background-image:-o-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
-	background-image:-ms-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
-	background-image:linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0.75) 100%);
-}
-
 /*****************************************
-****** Custom/Additional Formatting ******
+****** Custom Colors and Formatting ******
 *****************************************/
 
-.menu-plain { padding:0px 20px 0px 20px; }
+html, body { background-color:#D9EAFF !important; }
 
-.uniform input[type=number] { padding:6px 6px 6px 12px; font-size:16px; color:#475055; border:solid 1px #c0c0c0; }
+.menu-plain { color:#2C7099; padding:0px 20px 0px 20px; }
+.menu-plain:hover { background-color:#63beff !important; background-image:none !important; color:white !important; transition:0.1s ease-in-out; }
+.menu-plain.nav-active { color:white !important; }
 
-.uniform input[type=text], .uniform input[type=password], .uniform select, .uniform textarea, textarea
- {
-	box-sizing:border-box;
-		-moz-box-sizing:border-box;
-		-webkit-box-sizing:border-box;
-}
+input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1px; }
 
-.redlinks>a
-{
-	padding:5px;
-	line-height:2.2em;
-	white-space:nowrap;
-}
+.spacer { height:50px; }
 
-/***************************
-****** Dressing Lists ******
+/****************************
+****** Unique Elements ******
 ****************************/
 
-.dragndrop
-{
-	list-style-type:none;
-	overflow:hidden;
+#aviblock { text-align:center; }
+#aviblock .nav-slot>a { padding-left:0px; }
+@media screen and (min-width:501px) {
+	#aviblock { width:205px; margin-left:5px; float:right; }
+}
+@media screen and (max-width:500px) {
+	#aviblock { margin-bottom:5px; }
 }
 
+.dragndrop { list-style-type:none; overflow:hidden; }
 .dragndrop li
 {
 	box-sizing:border-box;
@@ -120,27 +67,20 @@ html, body, #footer { background-color:#D9EAFF !important; }
 	text-align:center;
 	width:77px;
 }
-
 .dragndrop img { max-height:50px; max-width:100%; }
 .dragndrop select { width:100%; }
 .dragndrop div { height:50px; }
-
 .close, .buy, .owned
 {
-	color:#475055 !important;
 	font-size:0.8em;
 	position:absolute;
-	text-decoration:none;
 	z-index:2;
 }
-
 .left, .right
 {
-	color:#475055 !important;
 	font-weight:bold;
 	font-size:0.8em;
 	position:absolute;
-	text-decoration:none;
 	z-index:2;
 	opacity:0;
 		-khtml-opacity:0;
@@ -148,7 +88,6 @@ html, body, #footer { background-color:#D9EAFF !important; }
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 	filter:alpha(opacity=0);
 }
-
 .left:hover, .right:hover
 {
 	opacity:1;
@@ -157,24 +96,47 @@ html, body, #footer { background-color:#D9EAFF !important; }
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
 	filter:alpha(opacity=1);
 }
-
 .close { right:2px; top:-2px; }
 .buy { right:3px; top:42px; }
 .left { left:3px; top:19px; }
 .right { right:3px; top:19px; }
 .owned { right:1px; top:40px; }
 
-/***********************
-****** Item Block ******
-***********************/
-
 .item_block { display:inline-block; padding:10px; text-align:center; width:135px; }
 .item_block select { width:135px; }
 .item_block img { max-height:100px; max-width:80px; }
 
-/***********************
-****** Faded Out *******
-***********************/
+.redlinks>a { line-height:2.2em; white-space:nowrap; }
+.redlinks>span { padding:5px; white-space:nowrap; }
+.spoiler-header, .redlinks>a, .dragndrop li
+{
+	background-color:#c7e0ee;	
+	background-image:-linear-gradient(#c7e0ee, #e8eef1);
+	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
+	background-image:-ms-linear-gradient(top, #c7e0ee, #e8eef1);
+	background-image:-o-linear-gradient(#c7e0ee, #e8eef1);
+	background-image:-webkit-gradient(linear, left top, left bottom, from(#c7e0ee), to(#e8eef1));
+	background-image:-webkit-linear-gradient(top, #c7e0ee, #e8eef1);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
+	color:#2c7099 !important;
+	padding:5px;
+}
+.spoiler-header { border:1px dotted; }
+.spoiler-header:hover, .redlinks>a:hover
+{
+	background-color:#97d5fb;
+	background-image:none;
+	color:white !important;
+	transition:0.1s ease-in-out;
+}
+.spoiler-content
+{
+	display:none;
+	box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		-webkit-box-sizing:border-box;
+	border-left:1px dotted;
+}
 
 .opaque
 {
@@ -183,38 +145,4 @@ html, body, #footer { background-color:#D9EAFF !important; }
 		-moz-opacity:0.5;
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0.5)";
 	filter:alpha(opacity=0.5);
-}
-
-/**********************
-****** Avi Block ******
-***********************/
-
-#aviblock { text-align:center; }
-#aviblock .nav-slot>a { padding-left:0px; }
-
-@media screen and (min-width:501px) {
-	#aviblock { width:205px; margin-left:5px; float:right; }
-}
-
-@media screen and (max-width:500px) {
-	#aviblock { margin-bottom:5px; }
-}
-
-/********************
-****** Spoiler ******
-********************/
-
-.spoiler-header
-{
-	border:1px dotted;
-	padding:5px;
-}
-
-.spoiler-content
-{
-	display:none;
-	box-sizing:border-box;
-		-moz-box-sizing:border-box;
-		-webkit-box-sizing:border-box;
-	border-left:1px dotted;
 }

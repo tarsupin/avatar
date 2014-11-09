@@ -105,7 +105,7 @@ $space = false;
 // output lists
 foreach($wrappers as $wrap)
 {
-	if($space) { echo '<div class="spacer-giant"></div>'; }
+	if($space) { echo '<div class="spacer"></div>'; }
 	$space = true;
 	
 	echo '
@@ -123,7 +123,7 @@ foreach($wrappers as $wrap)
 	if($url[1] > 0 or isset($wrappers[19]))
 	{
 		echo '
-	<div class="spacer-huge"></div>';
+	<div class="spacer"></div>';
 		if($url[1] > 0)
 		{
 			echo '

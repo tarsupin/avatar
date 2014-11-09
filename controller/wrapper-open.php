@@ -161,7 +161,7 @@ $space = false;
 // output forms
 foreach($owned as $own)
 {
-	if($space) { echo '<div class="spacer-giant"></div>'; }
+	if($space) { echo '<div class="spacer"></div>'; }
 	$space = true;
 	
 	echo '

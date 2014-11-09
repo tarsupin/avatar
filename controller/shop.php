@@ -71,7 +71,7 @@ echo '
 foreach($shops as $key => $shop)
 {
 	echo '
-		<a href="/shop/' . $key . '"' . ($url[1] == $key ? ' class="category-active"' : '') . '>' . $shop . '</a>';
+		' . ($url[1] == $key ? '<span class="nav-active">' : '') . '<a href="/shop/' . $key . '">' . $shop . '</a>' . ($url[1] == $key ? '</span>' : '');
 }
 echo '
 	</div>';

@@ -277,7 +277,7 @@ echo '
 	foreach($positions as $pos)
 	{
 		echo '
-		<a href="/dress-avatar?position=' . $pos . '"' . (isset($_GET['position']) && $_GET['position'] == $pos ? ' class="category-active"' : '') . '>' . $pos . '</a>';
+		' . (isset($_GET['position']) && $_GET['position'] == $pos ? '<span class="nav-active">' : '') . '<a href="/dress-avatar?position=' . $pos . '">' . $pos . '</a>' . (isset($_GET['position']) && $_GET['position'] == $pos ? '</span>' : '');
 	}
 	
 	echo '

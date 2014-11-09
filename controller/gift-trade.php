@@ -44,8 +44,9 @@ if(isset($url[1]) && $url[1] != "new")
 	
 	// search for transaction
 	$mine = false;
-	$users = Database::selectMultiple("SELECT uni_id, has_agreed FROM transactions_users WHERE transaction_id=?", array($url[1]));
+	$users = Database::selectMultiple("SELECT uni_id, has_agreed, message FROM transactions_users WHERE transaction_id=?", array($url[1]));
 	$approval = array();
+	$message = array();
 	foreach($users as $trans)
 	{
 		if((int) $trans['uni_id'] == Me::$id)
@@ -60,6 +61,7 @@ if(isset($url[1]) && $url[1] != "new")
 			$recipientID = $trans['uni_id'];
 			$approval[$recipientID] = (int) $trans['has_agreed'];
 		}
+		$message[$trans['uni_id']] = $trans['message'];
 	}
 	
 	// go to overview if not your transaction
@@ -120,9 +122,9 @@ if(isset($url[1]) && $url[1] != "new")
 			if(!Alert::hasErrors())
 			{
 				// approve own side, check whether trade can complete
+				$approval[Me::$id] = 1;
 				if(Transaction::approve($url[1], Me::$id))
 				{
-					$approval[Me::$id] = 1;
 					Alert::saveSuccess("Trade Completed", "The trade has been successfully completed!");
 					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the <a href="/log-auro">Auro Log</a> or <a href="/log-item">Item Log</a>.');
 					Transaction::delete($url[1]);
@@ -138,6 +140,15 @@ if(isset($url[1]) && $url[1] != "new")
 					Alert::error("Trade Not Sent", "The trade could not be completed. There are one or more entries that cannot be processed. Please make sure that both you and " . $recipient . " have enough Auro and all the items you wish to trade.");
 				}
 			}
+		}
+	}
+	
+	if(Form::submitted("gift-or-trade-message"))
+	{
+		$_POST['message'] = Sanitize::punctuation($_POST['message']);
+		if(Database::query("UPDATE transactions_users SET message=? WHERE transaction_id=? AND uni_id=? LIMIT 1", array($_POST['message'], $url[1], Me::$id)))
+		{
+			$message[Me::$id] = $_POST['message'];
 		}
 	}
 
@@ -159,7 +170,7 @@ if(isset($url[1]) && $url[1] != "new")
 			$balance = Currency::check(Me::$id);
 			if($balance >= $_POST['auro'])
 			{
-				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, $_POST['auro']), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
+				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, $_POST['auro'], "Transaction #" . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
 				{
 					$approval[Me::$id] = 0;
 					$approval[$recipientID] = 0;
@@ -193,7 +204,7 @@ if(isset($url[1]) && $url[1] != "new")
 				$item = AppAvatar::itemData($_GET['add'], "id, title");
 				if($item)
 				{
-					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id']), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
+					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction #" . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
 					{
 						$approval[Me::$id] = 0;
 						$approval[$recipientID] = 0;
@@ -279,7 +290,7 @@ if(!isset($url[1]))
 		<li>After you\'ve made sure that the transaction contains exactly what you want it to, click either the "Gift" or "Trade" button.<br/>- "Gifts" don\'t require any action from the recipient.<br/>- "Trades" need to be updated by the recipient and will then return to you for confirmation.</li>
 		<li>Done! The transaction is on its way to the recipient now. They will receive a notification.</li>
 	</ul></p>
-	<div class="spacer-huge"></div>
+	<div class="spacer"></div>
 	<ul>
 		<li>Please note: This list may contain transactions that are still in the process of being created or updated. You will be notified when a transaction requires your attention.<br/><br/></li>';
 	
@@ -332,12 +343,12 @@ else
 	
 	echo '
 	<div class="redlinks">
-		<a href="/gift-trade/' . $url[1] . '?position=auro"' . (isset($_GET['position']) && $_GET['position'] == 'auro' ? ' class="category-active"' : '') . '>auro</a>';
+		' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '<span class="nav-active">' : '') . '<a href="/gift-trade/' . $url[1] . '?position=auro"' . (isset($_GET['position']) && $_GET['position'] == 'auro' ? ' class="nav-active"' : '') . '>auro</a>' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '</span>' : '');
 	
 		foreach($positions as $pos)
 		{
 			echo '
-		<a href="/gift-trade/' . $url[1] . '?position=' . $pos . '"' . (isset($_GET['position']) && $_GET['position'] == $pos ? ' class="category-active"' : '') . '>' . $pos . '</a>';
+		' . (isset($_GET['position']) && $_GET['position'] == $pos ? '<span class="nav-active">' : '') . '<a href="/gift-trade/' . $url[1] . '?position=' . $pos . '">' . $pos . '</a>' . (isset($_GET['position']) && $_GET['position'] == $pos ? '</span>' : '');
 		}
 	
 	echo '
@@ -348,7 +359,7 @@ else
 	{
 		echo '
 	<br/>
-	<form class="uniform" action="/gift-trade/' . $url[1] . '/' . (isset($_GET['position']) ? '&position=' . $_GET['position'] : '') . '" method="post">' . Form::prepare("auro-transaction") . '
+	<form class="uniform" action="/gift-trade/' . $url[1] . '/' . (isset($_GET['position']) ? '?position=' . $_GET['position'] : '') . '" method="post">' . Form::prepare("auro-transaction") . '
 		<p><input type="number" name="auro" value="0" step="any"/></p>
 		<p><input type="submit" value="Set Auro"/></p>
 	</form>';
@@ -400,10 +411,17 @@ else
 	
 	// save current state in cache since the transaction may have been changed and approved by the other person, but you haven't seen the change and accidentally approve something you may not have wanted
 	Cache::set("transaction-" . $url[1] . "-" . Me::$id, json_encode($transaction), 300);
-	
+
 	// submit options
 	echo '
-	<div class="spacer-huge"></div>
+	<div class="spacer"></div>
+	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-or-trade-message") . '
+		<p>Message from ' . $recipient . ': ' . ($message[$recipientID] != "" ? $message[$recipientID] : '<span style="font-style:italic;">none</span>') . '</p>
+		<p>Message from you:
+		<input type="text" name="message" maxlength="100"' . ($message[Me::$id] != '' ? ' value="' . $message[Me::$id] . '"' : '') . '/> (max 100 characters)</p>
+		<p><input type="submit" value="Set Message"/></p>
+	</form>
+	<div class="spacer"></div>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-or-trade") . '
 		<p><input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/> OR <input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/> OR <input type="submit" name="cancel" value="Cancel Transaction"/></p>		
 	</form>';

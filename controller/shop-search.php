@@ -202,7 +202,7 @@ foreach($positions as $pos)
 }
 echo '
 		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <strong>Select/Deselect All</strong>
-	</form><div class="spacer-huge"></div>';
+	</form><div class="spacer"></div>';
 	
 // check for (non-)owned items
 $checked = array();
@@ -285,7 +285,7 @@ if ($_GET['owned'] == "")
 {
 	if($_GET['start'] > 0 || count($result) == 60)
 	{
-		echo '<div class="spacer-huge"></div>';
+		echo '<div class="spacer"></div>';
 		if($_GET['start'] > 0)
 		{
 			echo '
@@ -302,7 +302,7 @@ else
 {
 	if($_GET['cont'] > 0 || $found % 60 == 0)
 	{
-		echo '<div class="spacer-huge"></div>';
+		echo '<div class="spacer"></div>';
 		if($_GET['cont'] > 0)
 		{
 			echo '

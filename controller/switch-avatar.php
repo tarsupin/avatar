@@ -52,7 +52,7 @@ foreach($avis as $avi)
 }
 
 echo '
-	<div class="spacer-huge"></div>
+	<div class="spacer"></div>
 	<p>You can also <a href="/create-avatar">create another avatar</a>!</p>
 </div>';
 

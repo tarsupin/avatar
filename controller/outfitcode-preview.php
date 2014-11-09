@@ -67,22 +67,21 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/><textarea onclick="$(this).select();">';
+	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/>';
 // Show equipped items in human-readable form
 foreach($outfitArray as $oa)
 {
 	if($oa[0] == 0) { continue; }
 	$itemData = AppAvatar::itemData($oa[0], "title");
-	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "\n";
+	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "<br/>";
 }
-echo '</textarea></div>
+echo '</div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '
 		<p>To save a list of your preview outfit, copy and save the content of the following textbox.</p>
-		<textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea>
-		<br/><br/>
+		<p><textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea></p>
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.</p>
-		<textarea name="saved"></textarea>
-		<br/><input type="submit" name="submit" value="Update Preview Avatar"/>
+		<p><textarea name="saved"></textarea></p>
+		<p><input type="submit" name="submit" value="Update Preview Avatar"/></p>
 	</form>
 </div>';
 
