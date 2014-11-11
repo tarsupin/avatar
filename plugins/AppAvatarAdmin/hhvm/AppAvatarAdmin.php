@@ -43,7 +43,7 @@ abstract class AppAvatarAdmin {
 		if(!isSanitized::variable($title, " ")) { return false; }
 		
 		// Position - Test Legitimacy
-		$positionsAllowed = self::positions();
+		$positionsAllowed = AppAvatar::positions();
 		
 		if(!in_array($position, $positionsAllowed)) { return false; }
 		
@@ -62,13 +62,13 @@ abstract class AppAvatarAdmin {
 		}
 		
 		// Coordinates - Test Legitimacy
-		if(!is_numeric($coordX) or !is_numeric($coordY) or $coordX < 0 or $coordY < 0)
+		if(!is_numeric($coordXMale) or !is_numeric($coordYMale) or $coordXMale < 0 or $coordYMale < 0 or !is_numeric($coordXFemale) or !is_numeric($coordYFemale) or $coordXFemale < 0 or $coordYFemale < 0)
 		{
 			return false;
 		}
 		
 		// Insert the item into the database
-		return Database::query("INSERT INTO `items` (title, position, gender, coord_x_male, coord_y_male, coord_x_female, coord_y_female, rarity_level) VALUES (?, ?, ?, ?, ?, ?)", array($title, $position, $gender, $coordXMale, $coordYMale, $coordXFemale, $coordYFemale, $rarityLevel));
+		return Database::query("INSERT INTO `items` (title, position, gender, coord_x_male, coord_y_male, coord_x_female, coord_y_female, rarity_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($title, $position, $gender, $coordXMale, $coordYMale, $coordXFemale, $coordYFemale, $rarityLevel));
 	}
 	
 	

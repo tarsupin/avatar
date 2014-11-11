@@ -32,7 +32,7 @@
 html, body { background-color:#D9EAFF !important; }
 
 .menu-plain { color:#2C7099; padding:0px 20px 0px 20px; }
-.menu-plain:hover { background-color:#63beff !important; background-image:none !important; color:white !important; transition:0.1s ease-in-out; }
+.menu-plain:hover { background-color:#97d5fb !important; background-image:none !important; color:white !important; transition:0.1s ease-in-out; }
 .menu-plain.nav-active { color:white !important; }
 
 input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1px; }

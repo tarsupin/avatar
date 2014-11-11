@@ -18,7 +18,7 @@ if(Form::submitted("transfer"))
 	if(FormValidate::pass())
 	{
 		$_POST['account'] = Sanitize::variable($_POST['account'], ".");
-		$_POST['password'] = Sanitize::variable($_POST['password']);
+		$_POST['password'] = trim($_POST['password']);
 		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
 		if(!$pass)
 		{
@@ -78,6 +78,7 @@ if(Form::submitted("transfer"))
 				if(!Alert::hasErrors())
 				{
 					Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
+					Cache::delete("invLayers:" . Me::$id);
 					Database::endTransaction();
 				}
 			}
