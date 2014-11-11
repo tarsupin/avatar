@@ -14,8 +14,8 @@ if(Me::$clearance < 5)
 
 if(!isset($url[2]))	{ header("Location: /"); exit; }
 
-if(!$itemData = AppAvatar::itemData($url[2]))	{ header("Location: /"); exit; }
 $url[2] = (int) $url[2];
+if(!$itemData = AppAvatar::itemData($url[2]))	{ header("Location: /"); exit; }
 
 if(isset($_GET['delete']))
 {
@@ -288,7 +288,7 @@ echo '
 $files = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title']);
 foreach($files as $file)
 {
-	if(strpos($file, "default_") === false)
+	if(strpos($file, "default_") === false && $file != "_stats.txt")
 	{
 		echo '
 	<a href="/staff/item-edit/' . $url[2] . '?delete=' . substr($file, 0, -4) . '" onclick="return confirm(\'Are you sure you want to delete this file?\');">&#10006;</a> ' . $file . "<br/>";

@@ -12,7 +12,7 @@ if(!$itemData = AppAvatar::itemData((int) $_GET['item']))
 }
 
 // Prepare the Preview Avatar
-$order = ($itemData['max_order'] > 0 ? 1 : $itemData['max_order']);
+$order = ($itemData['max_order'] > 0 ? 2 : $itemData['max_order']);
 $files = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title']);
 foreach($files as $file)
 {

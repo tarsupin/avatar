@@ -448,6 +448,7 @@ abstract class AppOutfit {
 			// Get the source path and item data
 			if($start != 0)
 			{
+				$content[0] = (int) $content[0];
 				$itemData = AppAvatar::itemData($content[0]);
 				$path = APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'] . "/" . $content[1] . "_" . $gender . ".png";
 				$itemData = Database::selectOne("SELECT title, position, " . $cX . ", " . $cY . " FROM items WHERE id=? LIMIT 1", array($content[0]));
