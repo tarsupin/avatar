@@ -201,7 +201,7 @@ foreach($positions as $pos)
 	echo '<div style="width:8em; display:inline-block;"><input type="checkbox" name="' . $pos . '"' . (isset($_GET[$pos]) ? " checked" : "") . '/> ' . $pos . "</div>";
 }
 echo '
-		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:45px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <strong>Select/Deselect All</strong>
+		<br/><br/><input type="submit" name="submit" value="Search"/> <input onclick="var ins = $(\'input[type=checkbox]\'); if (this.checked) { for (var i=0; i<ins.length-1; i++) { ins[i].checked=true; } } else { for (var i=0; i<ins.length-1; i++) { ins[i].checked=false; } }" name="checkall" type="checkbox" style="margin-left:43px;"' . (isset($_GET['checkall']) ? " checked" : "") . '/ > <strong>Select/Deselect All</strong>
 	</form><div class="spacer"></div>';
 	
 // check for (non-)owned items
@@ -211,6 +211,7 @@ if($_GET['owned'] != "")
 	$todo = array();
 	foreach($result as $item)
 	{
+		$item['id'] = (int) $item['id'];
 		if(AppAvatar::checkOwnItem(Me::$id, $item['id']))
 		{
 			$checked[$item['id']] = true;
@@ -228,6 +229,7 @@ if($_GET['owned'] != "")
 $found = 0;
 foreach($result as $item)
 {
+	$item['id'] = (int) $item['id'];
 	if($_GET['owned'] != "" && !in_array($item['id'], $todo))	{ continue; }	
 	$found++;
 	if($found <= $_GET['cont']*60) { continue; }

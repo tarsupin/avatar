@@ -64,10 +64,11 @@ foreach($transactions as $t)
 		$other = $other['handle'];
 	}
 	
-	$itemData = AppAvatar::itemData($t['item_id'], "title");
-	
-	// Display Row
-	echo '
+	$itemData = AppAvatar::itemData((int) $t['item_id'], "title");
+	if($itemData)
+	{
+		// Display Row
+		echo '
 		<tr>
 			<td>' . ($t['other_id'] != Me::$id ? $itemData['title'] . (in_array($t['item_id'], $wrappers) ? " (Wrapper)" : "") : '&nbsp;') . '</td>
 			<td>' . ($t['other_id'] == Me::$id ? $itemData['title'] . (in_array($t['item_id'], $wrappers) ? " (Wrapper)" : "") : '&nbsp;') . '</td>
@@ -75,6 +76,7 @@ foreach($transactions as $t)
 			<td>' . $t['description'] . '</td>
 			<td>' . Time::fuzzy((int) $t['date_exchange']) . '</td>
 		</tr>';
+	}
 }
 
 echo '

@@ -22,7 +22,7 @@ if(Form::submitted("transfer"))
 		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
 		if(!$pass)
 		{
-			Alert::error("Wrong Username", "The user " . $pass['account'] . " does not exist on Uni5, or you have already transferred.");
+			Alert::error("Wrong Username", "The user " . $_POST['account'] . " does not exist on Uni5, or you have already transferred.");
 		}
 		else
 		{

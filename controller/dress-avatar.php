@@ -75,7 +75,7 @@ else if($getLink == "unequipAll")
 // If we're moving something left
 else if(isset($_GET['left']))
 {
-	$outfitArray = AppOutfit::move($outfitArray, $_GET['left'], "left");
+	$outfitArray = AppOutfit::move($outfitArray, (int) $_GET['left'], "left");
 	
 	// Update your avatar's image
 	$aviData = Avatar::imageData(Me::$id, $activeAvatar);
@@ -88,7 +88,7 @@ else if(isset($_GET['left']))
 // If we're moving something right
 else if(isset($_GET['right']))
 {
-	$outfitArray = AppOutfit::move($outfitArray, $_GET['right'], "right");
+	$outfitArray = AppOutfit::move($outfitArray, (int) $_GET['right'], "right");
 	
 	// Update your avatar's image
 	$aviData = Avatar::imageData(Me::$id, $activeAvatar);
@@ -144,7 +144,7 @@ else if(isset($_POST['order']))
 	foreach($outfitArray as $key => $oa)
 	{
 		if($oa[0] == 0)	{ continue; }
-		if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
+		if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 		{
 			$itemData = AppAvatar::itemData($oa[0], "title");
 			Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");

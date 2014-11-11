@@ -29,6 +29,7 @@ if(!$item = AppAvatar::getShopItems($shopID, $url[1]))
 }
 
 // Check if you own the item
+$item['id'] = (int) $item['id'];
 $ownItem = AppAvatar::checkOwnItem(Me::$id, $item['id']);
 
 // If you own the item, announce it here

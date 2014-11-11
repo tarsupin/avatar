@@ -17,16 +17,16 @@ if(Form::submitted("outfitcode-preview"))
 {
 	if(FormValidate::pass())
 	{
-		$outfitArray = @unserialize($_POST['saved']);
-		if($outfitArray !== false)
+		$outfitArray =  json_decode($_POST['saved'], true);	
+		if($outfitArray === NULL)
 		{
+			$outfitArray = unserialize($_POST['saved']);
 			// Uni5 code, need to index properly
 			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 		}
 		else
 		{
-			// Uni6 code
-			$outfitArray = json_decode($_POST['saved'], true);
+			// Uni6 code, done above
 		}
 		
 		// Save the changes
@@ -72,8 +72,8 @@ echo '
 foreach($outfitArray as $oa)
 {
 	if($oa[0] == 0) { continue; }
-	$itemData = AppAvatar::itemData($oa[0], "title");
-	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "<br/>";
+	$itemData = AppAvatar::itemData((int) $oa[0], "title");
+	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]) ? " [&bull;]" : "") . "<br/>";
 }
 echo '</div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '

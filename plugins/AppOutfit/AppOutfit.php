@@ -630,7 +630,7 @@ abstract class AppOutfit {
 		foreach($avis as $avi)
 		{
 			$clean = true;
-			$outfitArray = get_object_vars(json_decode($avi['outfit_json']));
+			$outfitArray = json_decode($avi['outfit_json'], true);
 			foreach($outfitArray as $key => $oa)
 			{
 				if($oa[0] == $itemID)

@@ -95,6 +95,7 @@ echo '
 		</tr>';
 foreach ($wished as $itemData)
 {
+	$itemData['item_id'] = (int) $itemData['item_id'];
 	$own = AppAvatar::checkOwnItem(Me::$id, $itemData['item_id']);
 	$package = Database::selectOne("SELECT title, year FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE item_id=? LIMIT 1", array($itemData['item_id']));
 	echo '

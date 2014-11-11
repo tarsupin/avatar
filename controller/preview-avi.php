@@ -29,7 +29,7 @@ if(isset($_GET['equip']) && $_GET['color'])
 	$itemData = AppAvatar::itemData($_GET['equip']);
 	
 	// Equip your item
-	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color'], "preview");
+	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
 	
 	// Save the changes
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
@@ -56,7 +56,7 @@ else if($getLink == "unequipAll")
 // If we're moving something left
 else if(isset($_GET['left']))
 {
-	$outfitArray = AppOutfit::move($outfitArray, $_GET['left'], "left");
+	$outfitArray = AppOutfit::move($outfitArray, (int) $_GET['left'], "left");
 
 	// Save the outfit
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
@@ -65,7 +65,7 @@ else if(isset($_GET['left']))
 // If we're moving something right
 else if(isset($_GET['right']))
 {
-	$outfitArray = AppOutfit::move($outfitArray, $_GET['right'], "right");
+	$outfitArray = AppOutfit::move($outfitArray, (int) $_GET['right'], "right");
 
 	// Save the outfit
 	AppOutfit::save(Me::$id, "preview", $outfitArray);

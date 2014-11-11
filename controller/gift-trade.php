@@ -28,7 +28,7 @@ if(Form::submitted("initialize-transaction"))
 	// prepare transaction
 	else
 	{
-		$recipientID = $recipientID['uni_id'];		
+		$recipientID = (int) $recipientID['uni_id'];		
 		$transactionID = Transaction::create("Gift/Trade " . Me::$id . " to " . $recipientID);
 		Transaction::addUser($transactionID, Me::$id);
 		Transaction::addUser($transactionID, $recipientID);
@@ -58,7 +58,7 @@ if(isset($url[1]) && $url[1] != "new")
 		{
 			$recipient = User::get($trans['uni_id'], "handle");
 			$recipient = $recipient['handle'];
-			$recipientID = $trans['uni_id'];
+			$recipientID = (int) $trans['uni_id'];
 			$approval[$recipientID] = (int) $trans['has_agreed'];
 		}
 		$message[$trans['uni_id']] = $trans['message'];
@@ -162,6 +162,7 @@ if(isset($url[1]) && $url[1] != "new")
 			// check for previous Auro entries and remove if necessary
 			if($transaction = Database::selectOne("SELECT id, process_method FROM transactions_entries WHERE transaction_id=? AND uni_id=? AND process_method=? LIMIT 1", array($url[1], Me::$id, "sendAuro_doTransaction")))
 			{
+				$transaction['id'] = (int) $transaction['id'];
 				Transaction::removeEntry($transaction['id']);
 				$approval[Me::$id] = 0;
 				$approval[$recipientID] = 0;
@@ -249,7 +250,7 @@ if(isset($url[1]) && $url[1] != "new")
 	<ul>';
 	foreach($transaction as $trans)
 	{
-		$details = get_object_vars(json_decode($trans['display']));
+		$details = json_decode($trans['display'], true);
 		$info .= '
 		<li>' . ($trans['uni_id'] == Me::$id ? '<a href="/gift-trade/' . $url[1] . '?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'remove=' . $trans['id'] . '" onclick="alert(\'Are you sure you want to remove this entry?\');">&#10006;</a> ' : '') . $details['description'] . '</li>';
 	}
@@ -297,6 +298,7 @@ if(!isset($url[1]))
 	$pending = Database::selectMultiple("SELECT transaction_id FROM transactions_users WHERE uni_id=?", array(Me::$id));
 	foreach($pending as $pend)
 	{
+		$pend['transaction_id'] = (int) $pend['transaction_id'];
 		// blend out transactions that have been approved by neither side (still being created)
 		$approved = Database::selectOne("SELECT uni_id FROM transactions_users WHERE transaction_id=? AND has_agreed=? LIMIT 1", array($pend['transaction_id'], 1));
 		echo '

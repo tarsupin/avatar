@@ -120,7 +120,7 @@ abstract class AppAvatar {
 	
 /****** Return list of valid avatar positions ******/
 	public static function wrappers (
-	): array <int, str>				// RETURNS <int:str> list of wrapper IDs
+	): array <int, int>				// RETURNS <int:int> list of wrapper IDs
 	
 	// $wrappers = AppAvatar::wrappers();
 	{
@@ -128,7 +128,7 @@ abstract class AppAvatar {
 		$wrappers = array();
 		foreach($wrap as $w)
 		{
-			$wrappers[] = $w['id'];
+			$wrappers[] = (int) $w['id'];
 		}
 		return $wrappers;
 	}
@@ -226,7 +226,7 @@ abstract class AppAvatar {
 	(
 		int $itemID				// <int> The ID of the item to get the data from.
 	,	bool $allShops = false	// <bool> Whether the function should include shops inaccessible to the user.
-	): array <str, mixed>						// RETURNS <str:mixed> data of the item, or FALSE if failed.
+	): float						// RETURNS <float> data of the item, or FALSE if failed.
 	
 	// $itemData = AppAvatar::itemMinCost($itemID);
 	{
@@ -238,7 +238,7 @@ abstract class AppAvatar {
 	
 		if($shop['m'])
 		{
-			return $shop['m'];
+			return (float) $shop['m'];
 		}
 		return false;
 	}
@@ -532,12 +532,13 @@ abstract class AppAvatar {
 			
 			if(!$save)
 			{
-				Alert::success($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
+				Alert::success($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
 			}
 			else
 			{
-				Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '! <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>');
+				Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
 			}
+			Cache::delete("invLayers:" . Me::$id);
 			return true;
 		}
 
@@ -559,6 +560,7 @@ abstract class AppAvatar {
 		if($result)
 		{
 			self::record(0, $uniID, $itemID, $desc);
+			Cache::delete("invLayers:" . $uniID);
 		}
 		return $result;
 	}
@@ -581,6 +583,7 @@ abstract class AppAvatar {
 			self::record($uniID, 0, $itemID, $desc);
 			// remove from outfits
 			AppOutfit::removeFromAvatar($uniID, $itemID);
+			Cache::delete("invLayers:" . $uniID);
 		}
 		
 		return $result;

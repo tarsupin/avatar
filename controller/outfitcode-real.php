@@ -17,16 +17,18 @@ if(Form::submitted("outfitcode-real"))
 {
 	if(FormValidate::pass())
 	{
-		$outfitArray = @unserialize($_POST['saved']);
-		if($outfitArray !== false)
+		$outfitArray = json_decode($_POST['saved'], true);
+		if($outfitArray === NULL)
 		{
+			$outfitArray = unserialize($_POST['saved']);
 			// Uni5 code, need to index properly; existence is automatically checked
 			// check ownership
 			foreach($outfitArray as $key => $oa)
 			{
-				if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
+				if($oa[0] == 0) { continue; }
+				if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 				{
-					$itemData = AppAvatar::itemData($oa[0], "title");
+					$itemData = AppAvatar::itemData((int) $oa[0], "title");
 					Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
 					unset($outfitArray[$key]);
 				}
@@ -37,11 +39,10 @@ if(Form::submitted("outfitcode-real"))
 		else
 		{
 			// Uni6 code
-			$outfitArray = json_decode($_POST['saved'], true);
 			foreach($outfitArray as $key => $oa)
 			{
 				// check existence
-				$itemData = AppAvatar::itemData($oa[0], "title");
+				$itemData = AppAvatar::itemData((int) $oa[0], "title");
 				if(!$itemData)
 				{
 					unset($outfitArray[$key]);
@@ -50,7 +51,7 @@ if(Form::submitted("outfitcode-real"))
 				else
 				{
 					// check ownership
-					if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
+					if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 					{
 						Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
 						unset($outfitArray[$key]);
@@ -105,8 +106,8 @@ echo '
 foreach($outfitArray as $oa)
 {
 	if($oa[0] == 0) { continue; }
-	$itemData = AppAvatar::itemData($oa[0], "title");
-	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, $oa[0]) ? " [&bull;]" : "") . "<br/>";
+	$itemData = AppAvatar::itemData((int) $oa[0], "title");
+	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]) ? " [&bull;]" : "") . "<br/>";
 }
 echo '</div>
 	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-real") . '

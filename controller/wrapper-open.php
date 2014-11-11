@@ -65,38 +65,43 @@ if(Form::submitted("wrapper-open"))
 		}
 		else
 		{
+			Database::startTransaction();
 			// give content
 			foreach($detail['content'] as $item)
 			{
-				$item = $details[$item];
-				if(AppAvatar::receiveItem(Me::$id, $item['id'], "Opened Wrapper"))
+				if(!AppAvatar::receiveItem(Me::$id, (int) $item, "Opened Wrapper"))
 				{
-					Alert::success("Received " . $item['title'], 'You have received ' . $item['title'] . '! [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']');
-				}
-				else
-				{
-					Alert::error("Not Received " . $item['title'], "Something went wrong. You did not receive " . $item['title'] . ".");
+					Database::endTransaction(false);
+					Alert::error("Wrapper Not Opened", "The wrapper could not be opened.");
+					break;
 				}
 			}
 			// remove wrapper
+			if(!AppAvatar::dropItem(Me::$id, $_POST['id'], "Opened Wrapper"))
+			{
+				Database::endTransaction(false);
+				Alert::error("Wrapper Not Opened", "The wrapper could not be opened.");
+			}
+			// complete or cancel transaction
 			if(!Alert::hasErrors())
 			{
-				if(AppAvatar::dropItem(Me::$id, $_POST['id'], "Opened Wrapper"))
+				Database::endTransaction();
+				
+				foreach($detail['content'] as $item)
 				{
-					foreach($owned as $key => $own)
-					{
-						if($own['id'] == $_POST['id'])
-						{
-							if($own['c'] < 2)	{ unset($owned[$key]); }
-							else				{ $owned[$key]['c'] -= 1; }
-							break;
-						}
-					}		
-					Alert::info("Wrapper Removed", "The wrapper has been removed from your inventory.");
+					$item = $details[$item];
+					Alert::success("Received " . $item['title'], 'You have received ' . $item['title'] . '! [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']');
 				}
-				else
+				Alert::info("Wrapper Removed", "The wrapper has been removed from your inventory.");
+				
+				foreach($owned as $key => $own)
 				{
-					Alert::error("Wrapper Not Removed", "Something went wrong. The wrapper could not be removed from your inventory.");
+					if($own['id'] == $_POST['id'])
+					{
+						if($own['c'] < 2)	{ unset($owned[$key]); }
+						else				{ $owned[$key]['c'] -= 1; }
+						break;
+					}
 				}
 			}
 		}
