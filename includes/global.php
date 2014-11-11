@@ -49,6 +49,7 @@ if(Me::$loggedIn)
 		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot' . ($urlActive == "staff" ? " nav-active" : "") . '"><a href="/menu-staff">Staff</a>
 			<ul>
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
+				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
 			</ul>
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li>
 	</ul>

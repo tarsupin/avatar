@@ -114,7 +114,16 @@ abstract class AppAvatarAdmin {
 		
 		if(!in_array($position, $positionsAllowed)) { return false; }
 		
-		return Database::query("UPDATE `items` SET position=? WHERE itemID=? LIMIT 1", array($position, $itemID));
+		$itemData = AppAvatar::itemData($itemID);
+		if($position != $itemData['position'])
+		{
+			if(Dir::move(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'], APP_PATH . "/avatar_items/" . $position . "/" . $itemData['title']))
+			{
+				return Database::query("UPDATE `items` SET position=? WHERE itemID=? LIMIT 1", array($position, $itemID));
+			}
+			return false;
+		}
+		return true;
 	}
 	
 	

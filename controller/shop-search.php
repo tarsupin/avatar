@@ -257,6 +257,7 @@ foreach($result as $item)
 		
 	echo '
 		</select>
+		' . (Me::$clearance >= 5 ? '<br/><a href="/staff/item-edit/' . $item['id'] . '">Edit Item</a>' : '') . '
 		<br/><a href="/wish-list?add=' . $item['id'] . '">Wish</a>';
 	if($item['rarity_level'] != 0 || Me::$clearance >= 5)
 	{
