@@ -55,12 +55,12 @@ foreach($transactions as $t)
 	$other = "";
 	if($t['other_id'] != Me::$id && $t['other_id'] != 0)
 	{
-		$other = User::get($t['other_id'], "handle");
+		$other = User::get((int) $t['other_id'], "handle");
 		$other = $other['handle'];
 	}
 	elseif($t['other_id'] == Me::$id && $t['uni_id'] != 0)
 	{
-		$other = User::get($t['uni_id'], "handle");
+		$other = User::get((int) $t['uni_id'], "handle");
 		$other = $other['handle'];
 	}
 	

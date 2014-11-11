@@ -56,9 +56,9 @@ if(isset($url[1]) && $url[1] != "new")
 		}
 		else
 		{
-			$recipient = User::get($trans['uni_id'], "handle");
-			$recipient = $recipient['handle'];
 			$recipientID = (int) $trans['uni_id'];
+			$recipient = User::get($recipientID, "handle");
+			$recipient = $recipient['handle'];
 			$approval[$recipientID] = (int) $trans['has_agreed'];
 		}
 		$message[$trans['uni_id']] = $trans['message'];
@@ -91,7 +91,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if($pass)
 				{
 					Alert::saveSuccess("Gift Sent", "Your gift has been sent to " . $recipient . "!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . $sender . '! Check the <a href="/log-auro">Auro Log</a> or <a href="/log-item">Item Log</a>.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . $sender . '! Check the Auro Log or Item Log.');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -126,7 +126,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if(Transaction::approve($url[1], Me::$id))
 				{
 					Alert::saveSuccess("Trade Completed", "The trade has been successfully completed!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the <a href="/log-auro">Auro Log</a> or <a href="/log-item">Item Log</a>.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the Auro Log or Item Log.');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -171,7 +171,7 @@ if(isset($url[1]) && $url[1] != "new")
 			$balance = Currency::check(Me::$id);
 			if($balance >= $_POST['auro'])
 			{
-				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, $_POST['auro'], "Transaction #" . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
+				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, number_format($_POST['auro'], 2), "Transaction #" . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
 				{
 					$approval[Me::$id] = 0;
 					$approval[$recipientID] = 0;
@@ -205,6 +205,7 @@ if(isset($url[1]) && $url[1] != "new")
 				$item = AppAvatar::itemData($_GET['add'], "id, title");
 				if($item)
 				{
+					$item['id'] = (int) $item['id'];
 					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction #" . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
 					{
 						$approval[Me::$id] = 0;

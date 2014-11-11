@@ -29,7 +29,12 @@ abstract class AppTrade {
 	
 	// AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 	{
-		return Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
+		$return = Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
+		if($return === false)
+		{
+			return false;
+		}
+		return true;
 	}
 	
 /****** Exchange an item between two users ******/
