@@ -76,7 +76,7 @@ if(Form::submitted("transfer"))
 				}
 				
 				// transfer extra avatar slots
-				if(Alert::hasErrors())
+				if(!Alert::hasErrors())
 				{
 					if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account'])))
 					{
