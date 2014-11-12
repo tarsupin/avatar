@@ -29,6 +29,7 @@ abstract class AppTrade {
 	
 	// AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 	{
+		$auroAmount = round($auroAmount, 2);
 		$return = Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
 		if($return === false)
 		{

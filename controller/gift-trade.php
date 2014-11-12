@@ -71,14 +71,14 @@ if(isset($url[1]) && $url[1] != "new")
 	$sender = Me::$vals['handle'];
 	
 	// submit gift or trade
-	if(Form::submitted("gift-or-trade"))
+	if(Form::submitted("gift-trade"))
 	{
 		if(isset($_POST['cancel']))
 		{
 			Transaction::delete($url[1]);
 			Notifications::create($recipientID, SITE_URL . "/dress-avatar", $sender . ' has cancelled a transaction with you.');
 			Alert::saveSuccess("Cancelled", "You have cancelled the transaction with " . $recipient . ".");
-			header("Location: /gift-or-trade"); exit;
+			header("Location: /gift-trade"); exit;
 		}
 	
 		elseif(isset($_POST['gift']))
@@ -143,7 +143,7 @@ if(isset($url[1]) && $url[1] != "new")
 		}
 	}
 	
-	if(Form::submitted("gift-or-trade-message"))
+	if(Form::submitted("gift-trade-message"))
 	{
 		$_POST['message'] = Sanitize::punctuation($_POST['message']);
 		if(Database::query("UPDATE transactions_users SET message=? WHERE transaction_id=? AND uni_id=? LIMIT 1", array($_POST['message'], $url[1], Me::$id)))
@@ -171,7 +171,8 @@ if(isset($url[1]) && $url[1] != "new")
 			$balance = Currency::check(Me::$id);
 			if($balance >= $_POST['auro'])
 			{
-				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, number_format($_POST['auro'], 2), "Transaction #" . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
+				// the .001 is needed to make sure it's a float; it doesn't actually get sent
+				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, ($_POST['auro'] + 0.001), "Transaction " . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
 				{
 					$approval[Me::$id] = 0;
 					$approval[$recipientID] = 0;
@@ -206,7 +207,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if($item)
 				{
 					$item['id'] = (int) $item['id'];
-					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction #" . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
+					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction " . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
 					{
 						$approval[Me::$id] = 0;
 						$approval[$recipientID] = 0;
@@ -418,14 +419,14 @@ else
 	// submit options
 	echo '
 	<div class="spacer"></div>
-	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-or-trade-message") . '
+	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade-message") . '
 		<p>Message from ' . $recipient . ': ' . ($message[$recipientID] != "" ? $message[$recipientID] : '<span style="font-style:italic;">none</span>') . '</p>
 		<p>Message from you:
 		<input type="text" name="message" maxlength="100"' . ($message[Me::$id] != '' ? ' value="' . $message[Me::$id] . '"' : '') . '/> (max 100 characters)</p>
 		<p><input type="submit" value="Set Message"/></p>
 	</form>
 	<div class="spacer"></div>
-	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-or-trade") . '
+	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade") . '
 		<p><input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/> OR <input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/> OR <input type="submit" name="cancel" value="Cancel Transaction"/></p>		
 	</form>';
 }
