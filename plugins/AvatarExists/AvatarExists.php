@@ -48,7 +48,7 @@ class AvatarExists extends API {
 			return false;
 		}
 		
-		return (bool) Database::selectValue("SELECT uni_id FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($this->data['uni_id'], $this->data['avatar_id']));
+		return (bool) Database::selectValue("SELECT uni_id FROM avatars WHERE uni_id=? AND avatar_id=? LIMIT 1", array($this->data['uni_id'], $this->data['avi_id']));
 	}
 	
 }
