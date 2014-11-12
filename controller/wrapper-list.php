@@ -20,32 +20,31 @@ else				{ $url[1] = (int) $url[1]; }
 $wrappers = Database::selectMultiple("SELECT id, content, replacement FROM wrappers ORDER BY id DESC LIMIT " . (20*$url[1]) . ", 20", array());
 
 // get item info
-// doing this here to avoid potential duplicates
-$details = array();
+$ids = array();
 foreach($wrappers as $key => $wrap)
 {
-	$wrap['id'] = (int) $wrap['id'];
-	$wrap['replacement'] = (int) $wrap['replacement'];
-	if(!isset($details[$wrap['id']]))
-	{
-		$details[$wrap['id']] = AppAvatar::itemData($wrap['id'], "id,title,position,gender");
-	}
+	$ids[] = (int) $wrap['id'];
 	$wrap['content'] = explode(",", $wrap['content']);
 	if($wrap['replacement'] != 0)
 	{
 		$wrap['content'][] = $wrap['replacement'];
 	}
 	unset($wrappers[$key]['replacement']);
-	$wrappers[$key]['content'] = $wrap['content'];
 	foreach($wrap['content'] as $cont)
 	{
-		$cont = (int) $cont;
-		if(!isset($details[$cont]))
-		{
-			$details[$cont] = AppAvatar::itemData($cont, "id,title,position,gender");
-		}
-	}
+		$ids[] = (int) $cont;
+	}	
+	$wrappers[$key]['content'] = $wrap['content'];
 }
+$ids = array_unique($ids);
+
+$details = array();
+$details2 = Database::selectMultiple("SELECT id, title, position, gender FROM items WHERE id IN (" . implode(",", $ids) . ")", array());
+foreach($details2 as $val)
+{
+	$details[$val['id']] = $val;
+}
+unset($details2);
 
 // Set page title
 $config['pageTitle'] = "List of Wrappers";

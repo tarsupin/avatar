@@ -217,6 +217,26 @@ echo '
 	ksort($outfitArray);
 
 	$outfitArray = array_reverse($outfitArray);
+	
+	// get item data all at once for speed
+	$ids = array();
+	foreach($outfitArray as $oa)
+	{
+		if($oa[0] != 0)
+		{
+			$ids[] = $oa[0];
+		}
+	}
+	$details = array();
+	if($ids != array())
+	{
+		$details2 = Database::selectMultiple("SELECT id, title, position, gender FROM items WHERE id IN (" . implode(",", $ids) . ")", array());
+		foreach($details2 as $val)
+		{
+			$details[$val['id']] = $val;
+		}
+		unset($details2);
+	}
 
 	// Gather your list of equipped items
 	foreach($outfitArray as $pos => $item)
@@ -224,7 +244,7 @@ echo '
 		// Get Items
 		if($item[0] != 0)
 		{
-			$eItem = Database::selectOne("SELECT id, title, position FROM items WHERE id=?", array($item[0]));
+			$eItem = $details[$item[0]];
 			
 			// Recognize Integers
 			$eItem['id'] = (int) $eItem['id'];
@@ -291,7 +311,7 @@ echo '
 	</div>';
 	
 	if(isset($_GET['position']))
-	{		
+	{
 		// Show the items within the category selected
 		$userItems = AppAvatar::getUserItems(Me::$id, $_GET['position']);
 		$userItemsOther = array();

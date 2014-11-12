@@ -25,12 +25,23 @@ abstract class AppTrade {
 	,	int $recipientID	// <int> The UniID receiving the Auro.
 	,	float $auroAmount		// <float> The amount of Auro being sent.
 	,	string $desc = "Gift or Trade"		// <str> The description for the log.
+	,	bool $anon = false	// <bool> Whether to show it as anonymous or not.
 	): bool					// RETURNS <bool> TRUE if the Auro was sent, FALSE if it failed.
 	
 	// AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 	{
 		$auroAmount = round($auroAmount, 2);
-		$return = Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
+		if(!$anon)
+		{
+			$return = Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
+		}
+		else
+		{
+			$recipient = User::get($recipientID, "handle");
+			$pass1 = Currency::add($recipientID, $auroAmount, "Anonymous Gift");
+			$pass2 = Currency::subtract($senderID, $auroAmount, "Anonymous Gift to " . $recipient['handle']);
+			$return = ($pass1 !== false && $pass2 !== false ? true : false);
+		}
 		if($return === false)
 		{
 			return false;
@@ -45,6 +56,7 @@ abstract class AppTrade {
 	,	int $recipientID	// <int> The UniID receiving the item.
 	,	int $itemID			// <int> The ID of the item that the sender is exchanging.
 	,	string $desc = "Gift or Trade"		// <str> The description for the log.
+	,	bool $anon = false	// <bool> Whether to show it as anonymous or not.
 	): bool					// RETURNS <bool> TRUE if the item was sent, FALSE if it failed.
 	
 	// AppTrade::sendItem_doTransaction($senderID, $recipientID, $itemID);
@@ -56,7 +68,17 @@ abstract class AppTrade {
 		$success = Database::query("UPDATE user_items SET uni_id=? WHERE uni_id=? and item_id=? LIMIT 1", array($recipientID, $senderID, $itemID));
 		if($success)
 		{
-			$success = AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+			if(!$anon)
+			{
+				$success = AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+			}
+			else
+			{
+				$recipient = User::get($recipientID, "handle");
+				$pass1 = AppAvatar::receiveItem($recipientID, $itemID, "Anonymous Gift");
+				$pass2 = AppAvatar::dropItem($senderID, $itemID, "Anonymous Gift to " . $recipient['handle']);
+				$success = ($pass1 !== false && $pass2 !== false ? true : false);
+			}
 			
 			// update cached layers
 			Cache::delete("invLayers:" . $senderID);

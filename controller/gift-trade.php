@@ -67,6 +67,14 @@ if(isset($url[1]) && $url[1] != "new")
 	// go to overview if not your transaction
 	if(!$mine)	{ header("Location: /gift-trade"); exit; }
 	
+	// go to overview if this transaction isn't meant for your viewing
+	$approved = Database::selectOne("SELECT uni_id FROM transactions_users WHERE transaction_id=? AND has_agreed=? LIMIT 1", array($url[1], 1));
+	if(!$approved)
+	{
+		$contrib = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], Me::$id));
+	}
+	if(!$approved && !$contrib)	{ header("Location: /gift-trade"); exit; }
+	
 	// get user name
 	$sender = Me::$vals['handle'];
 	
@@ -81,17 +89,47 @@ if(isset($url[1]) && $url[1] != "new")
 			header("Location: /gift-trade"); exit;
 		}
 	
-		elseif(isset($_POST['gift']))
-		{		
+		elseif(isset($_POST['gift']) || isset($_POST['gift_anon']))
+		{
 			// check that it is indeed a gift and the other person has not added anything
 			if(!Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], $recipientID)))
 			{
+				$entries = Database::selectMultiple("SELECT id, process_parameters FROM transactions_entries WHERE transaction_id=?", array($url[1]));
+				// set all entries to anonymous
+				if(isset($_POST['gift_anon']))
+				{
+					foreach($entries as $entry)
+					{
+						$entry['process_parameters'] = json_decode($entry['process_parameters'], true);
+						if(count($entry['process_parameters']) < 5)
+						{
+							$entry['process_parameters'][] = true;
+							$entry['process_parameters'] = json_encode($entry['process_parameters']);
+							Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
+						}
+					}
+				}
+				// set all entries to normal
+				else
+				{
+					foreach($entries as $entry)
+					{
+						$entry['process_parameters'] = json_decode($entry['process_parameters'], true);
+						if(count($entry['process_parameters']) == 5)
+						{
+							unset($entry['process_parameters'][4]);
+							$entry['process_parameters'] = json_encode($entry['process_parameters']);
+							Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
+						}
+					}
+				}
+				
 				Transaction::approve($url[1], $recipientID);
 				$pass = Transaction::approve($url[1], Me::$id);
 				if($pass)
 				{
 					Alert::saveSuccess("Gift Sent", "Your gift has been sent to " . $recipient . "!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . $sender . '! Check the Auro Log or Item Log.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '! Check the Auro Log or Item Log.');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -294,8 +332,7 @@ if(!isset($url[1]))
 		<li>Done! The transaction is on its way to the recipient now. They will receive a notification.</li>
 	</ul></p>
 	<div class="spacer"></div>
-	<ul>
-		<li>Please note: This list may contain transactions that are still in the process of being created or updated. You will be notified when a transaction requires your attention.<br/><br/></li>';
+	<ul>';
 	
 	$pending = Database::selectMultiple("SELECT transaction_id FROM transactions_users WHERE uni_id=?", array(Me::$id));
 	foreach($pending as $pend)
@@ -303,19 +340,27 @@ if(!isset($url[1]))
 		$pend['transaction_id'] = (int) $pend['transaction_id'];
 		// blend out transactions that have been approved by neither side (still being created)
 		$approved = Database::selectOne("SELECT uni_id FROM transactions_users WHERE transaction_id=? AND has_agreed=? LIMIT 1", array($pend['transaction_id'], 1));
-		echo '
+		// don't blend out transactions that you contribute to
+		if(!$approved)
+		{
+			$contrib = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($pend['transaction_id'], Me::$id));
+		}
+		if($approved || $contrib)
+		{
+			echo '
 		<li><a href="/gift-trade/' . $pend['transaction_id'] . '"' . (!$approved ? ' class="opaque"' : '') . '>Transaction #' . $pend['transaction_id'];
 		$users = Transaction::getUsers($pend['transaction_id']);
-		foreach($users as $user)
-		{
-			if($user != Me::$id)
+			foreach($users as $user)
 			{
-				$other = User::get($user, "handle");
-				echo ' with ' . $other['handle'];
-				break;
+				if($user != Me::$id)
+				{
+					$other = User::get($user, "handle");
+					echo ' with ' . $other['handle'];
+					break;
+				}
 			}
+			echo '</a></li>';
 		}
-		echo '</a></li>';
 	}
 	echo '
 	</ul>';
@@ -425,7 +470,7 @@ else
 	</form>
 	<div class="spacer"></div>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade") . '
-		<p><input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/> OR <input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/> OR <input type="submit" name="cancel" value="Cancel Transaction"/></p>		
+		<p><input class="button" type="submit" name="gift_anon" value="Gift anonymously to ' . $recipient . '"/> OR <input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/> OR <input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/> OR <input type="submit" name="cancel" value="Cancel Transaction"/></p>		
 	</form>';
 }
 

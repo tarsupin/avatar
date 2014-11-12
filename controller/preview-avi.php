@@ -22,24 +22,17 @@ if(!$getLink = Link::clicked())
 }
 
 // If we're adding an item
-if(isset($_GET['equip']) && $_GET['color'])
+if(isset($_GET['equip']) && isset($_GET['color']))
 {
 	$_GET['equip'] = (int) $_GET['equip'];
 	
 	$itemData = AppAvatar::itemData($_GET['equip']);
 	
-	if($colors != array())
-	{
-		// Equip your item
-		$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
-		
-		// Save the changes
-		AppOutfit::save(Me::$id, "preview", $outfitArray);
-	}
-	else
-	{
-		Alert::error("No Color", "This item does not seem to exist for " . $avatarData['gender_full'] . " avatars.");
-	}
+	// Equip your item
+	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
+	
+	// Save the changes
+	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 
 // If we're unequipping something
