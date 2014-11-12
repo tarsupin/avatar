@@ -97,7 +97,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 		if(!in_array($item['gender'], array("b", $avatarData['gender']))) { continue; }
 
 		// Get list of colors
-		$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
+		$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);				
 		if(!$colors) { continue; }
 		
 		// Display the Item					

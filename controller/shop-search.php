@@ -239,7 +239,7 @@ foreach($result as $item)
 	if(!in_array($item['gender'], array("b", $avatarData['gender']))) { $gender = ($avatarData['gender_full'] == "male" ? "female" : "male"); }
 
 	// Get list of colors
-	$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
+	$colors = AppAvatar::getItemColors($item['position'], $item['title'], (in_array($item['gender'], array($avatarData['gender'], "b")) ? $avatarData['gender'] : ($avatarData['gender'] == "m" ? "f" : "m")));
 	if(!$colors) { continue; }
 	
 	// Display the Item					

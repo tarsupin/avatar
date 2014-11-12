@@ -39,7 +39,7 @@ echo '
 	<p>Click on the text with the dotted border to toggle the package\'s content in/out of view.</p>';
 
 // Attempt to load the cached version of this page
-$cachedPage = "exotic_" . $url[1];
+$cachedPage = "exotic_" . $url[1] . "_" . $avatarData['gender'];
 
 if(CacheFile::load($cachedPage, 86400, true) === false)
 {
@@ -67,7 +67,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 			$item = AppAvatar::itemData((int) $cont['item_id'], "id,title,position,gender");
 			
 			// Get list of colors
-			$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
+			$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);				
 			if(!$colors) { continue; }
 			
 			if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }

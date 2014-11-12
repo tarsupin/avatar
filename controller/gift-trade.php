@@ -401,8 +401,6 @@ else
 
 		foreach($userItemsOther as $item)
 		{			
-			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
-			
 			// Display the item block
 			echo '
 			<div class="item_block opaque">

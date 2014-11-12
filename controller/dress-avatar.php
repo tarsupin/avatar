@@ -22,22 +22,29 @@ if(isset($_GET['equip']))
 		$itemData = AppAvatar::itemData($_GET['equip']);
 
 		// If a color was not provided (or is invalid), choose the first one
-		$colors = AppAvatar::getItemColors($itemData['position'], $itemData['title']);
+		$colors = AppAvatar::getItemColors($itemData['position'], $itemData['title'], $avatarData['gender']);
 
-		if(!isset($_GET['color']) or !in_array($_GET['color'], $colors))
+		if($colors != array())
 		{
-			$_GET['color'] = $colors[0];
-		}
+			if(!isset($_GET['color']) or !in_array($_GET['color'], $colors))
+			{
+				$_GET['color'] = $colors[0];
+			}
+				
+			// Equip your item
+			$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
 			
-		// Equip your item
-		$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
-		
-		// Update your avatar's image
-		$aviData = Avatar::imageData(Me::$id, $activeAvatar);
-		AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
-		
-		// Save the changes
-		AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
+			// Update your avatar's image
+			$aviData = Avatar::imageData(Me::$id, $activeAvatar);
+			AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+			
+			// Save the changes
+			AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
+		}
+		else
+		{
+			Alert::error("No Color", "This item does not seem to exist for " . $avatarData['gender_full'] . " avatars.");
+		}
 	}
 	else
 	{
@@ -230,7 +237,7 @@ echo '
 			<a class="close" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'unequip=' . $eItem['id'] . '">&#10006;</a>
 			<select id="color_' . $eItem['id'] . '">';
 			
-			$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title']);
+			$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title'], $avatarData['gender']);
 			
 			foreach($colors as $color)
 			{
@@ -304,7 +311,7 @@ echo '
 				continue;
 			}
 			
-			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
+			$colors = AppAvatar::getItemColors($_GET['position'], $item['title'], $avatarData['gender']);
 			
 			// Display the item block
 			echo '
@@ -327,7 +334,7 @@ echo '
 
 		foreach($userItemsOther as $item)
 		{			
-			$colors = AppAvatar::getItemColors($_GET['position'], $item['title']);
+			$colors = AppAvatar::getItemColors($_GET['position'], $item['title'], ($avatarData['gender'] == "m" ? "f" : "m"));
 			
 			// Display the item block
 			echo '

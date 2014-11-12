@@ -132,7 +132,7 @@ foreach($details as $key => $item)
 	$html = '';
 
 	// Get list of colors
-	$colors	= AppAvatar::getItemColors($item['position'], $item['title']);				
+	$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);				
 	if(!$colors) { continue; }
 	
 	if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }

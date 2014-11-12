@@ -249,40 +249,77 @@ abstract class AppAvatar {
 	(
 		string $position		// <str> The position of the item (e.g. "hair", "chest", etc).
 	,	string $title			// <str> The title of the item.
+	,	string $gender = "b"	// <str> The gender to get a list of colors for. Items may have different colors for male and female.
 	): array					// RETURNS <array> a list of the item's colors, or empty array if none.
 	
 	// $colors = AppAvatar::getItemColors($position, $title);
 	{
+		$gender = $gender[0];
 		// Get the cached color list (since this is much faster than a directory call)
 		if($colorList = Cache::get("color:" . substr(md5($position . $title), 0, 20)))
 		{
-			return json_decode($colorList, true);
+			$colorList = json_decode($colorList, true);
+			if(isset($colorList["b"]))
+			{
+				$uniqueList = $colorList["b"];
+				if($gender != "f")
+				{
+					$uniqueList = array_merge($uniqueList, $colorList["m"]);
+				}
+				if($gender != "m")
+				{
+					$uniqueList = array_merge($uniqueList, $colorList["f"]);
+				}
+				sort($uniqueList);
+				
+				return $uniqueList;
+			}
+			return $colorList;
 		}
 		
 		// If the color cache is stale, retrieve it normally
-		$colorList = array();
+		$colorList = array("b" => array(), "m" => array(), "f" => array());
 		$files = Dir::getFiles(APP_PATH . "/avatar_items/" . $position . "/" . $title);
 
+		// gather colors for male and female
 		foreach($files as $file)
 		{
-			if(strpos($file, "ale.png") > -1)	// Matches for "_male.png" and "_female.png"
+			if(strpos($file, "default") !== false) { continue; }	// Skip the default image
+			
+			if(strpos($file, "_male.png") > -1)
 			{
-				if(strpos($file, "default") === false)	// Skip the default image
-				{
-					$colorList[] = substr($file, 0, strpos($file, "_"));
-				}
+				$colorList["m"][] = substr($file, 0, strpos($file, "_"));
+			}
+			elseif(strpos($file, "_female.png") > -1)
+			{
+				$colorList["f"][] = substr($file, 0, strpos($file, "_"));
 			}
 		}
-		sort($colorList);
-		$colorList = array_unique($colorList);
+		$colorList["m"] = array_unique($colorList["m"]);
+		$colorList["f"] = array_unique($colorList["f"]);
+		
+		// move duplicates to "b"
+		$colorList["b"] = array_intersect($colorList["m"], $colorList["f"]);
+		$colorList["m"] = array_diff($colorList["m"], $colorList["b"]);
+		$colorList["f"] = array_diff($colorList["f"], $colorList["b"]);
 		
 		// Remove keys from the list so that JSON value is minimized
 		// In other words, it ends up like ['Blue','Green'] instead of {'0':'Blue','2':'Green'}
-		$uniqueList = array();
-		foreach($colorList as $c)
+		$colorList["b"] = array_values($colorList["b"]);
+		$colorList["m"] = array_values($colorList["m"]);
+		$colorList["f"] = array_values($colorList["f"]);
+		
+		// combine lists for both and the wanted gender(s)
+		$uniqueList = $colorList["b"];
+		if($gender != "f")
 		{
-			$uniqueList[] = $c;
+			$uniqueList = array_merge($uniqueList, $colorList["m"]);
 		}
+		if($gender != "m")
+		{
+			$uniqueList = array_merge($uniqueList, $colorList["f"]);
+		}
+		sort($uniqueList);
 		
 		Cache::set("color:" . substr(md5($position . $title), 0, 20), json_encode($uniqueList), 60 * 48);
 		

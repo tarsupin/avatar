@@ -28,11 +28,18 @@ if(isset($_GET['equip']) && $_GET['color'])
 	
 	$itemData = AppAvatar::itemData($_GET['equip']);
 	
-	// Equip your item
-	$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
-	
-	// Save the changes
-	AppOutfit::save(Me::$id, "preview", $outfitArray);
+	if($colors != array())
+	{
+		// Equip your item
+		$outfitArray = AppOutfit::equip($outfitArray, $_GET['equip'], $avatarData['gender'], $_GET['color']);
+		
+		// Save the changes
+		AppOutfit::save(Me::$id, "preview", $outfitArray);
+	}
+	else
+	{
+		Alert::error("No Color", "This item does not seem to exist for " . $avatarData['gender_full'] . " avatars.");
+	}
 }
 
 // If we're unequipping something
@@ -119,7 +126,7 @@ else if($getLink == "randomize")
 	foreach($outfitArray as $key => $oa)
 	{
 		$item = AppAvatar::itemData($oa[0]);
-		$colors = AppAvatar::getItemColors($item['position'], $item['title']);
+		$colors = AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);
 		shuffle($colors);
 		while(true && $colors != array())
 		{
@@ -194,7 +201,7 @@ foreach($outfitArray as $pos => $item)
 		<a id="link_' . $eItem['id'] . '" class="close" href="/preview-avi?unequip=' . $eItem['id'] . '">&#10006;</a>
 		<select id="color_' . $eItem['id'] . '">';
 		
-		$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title']);
+		$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title'], $avatarData['gender']);
 		
 		foreach($colors as $color)
 		{
