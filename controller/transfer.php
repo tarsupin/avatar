@@ -75,6 +75,23 @@ if(Form::submitted("transfer"))
 					}
 				}
 				
+				// transfer extra avatar slots
+				if(Alert::hasErrors())
+				{
+					if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account'])))
+					{
+						if(!Database::query("INSERT INTO user_max_avatars VALUES (?, ?)", array(Me::$id, (int) $max['max'])))
+						{
+							Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
+							Database::endTransaction(false);
+						}
+						else
+						{
+							Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
+						}
+					}
+				}
+				
 				if(!Alert::hasErrors())
 				{
 					Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
@@ -110,7 +127,7 @@ Alert::display();
 
 echo '
 	<h2>Transfer from Uni5</h2>
-	<p>This will transfer your Auro, items and donation packages. Credits need to be transferred in a separate process that can only be done by the admin, so you might not have access to them right away. They are NOT lost.</p>
+	<p>This will transfer your Auro, items, donation packages and additional avatar slots (if applicable). Credits need to be transferred in a separate process that can only be done by the admin, so you might not have access to them right away. They are NOT lost.</p>
 	
 	<form class="uniform" method="post">' . Form::prepare("transfer") . '
 		<h4>Uni5 Account Name</h4>
