@@ -23,9 +23,10 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="javascript:review_item(0);">Preview Window</a></li>
 				<li class="dropdown-slot"><a href="/outfitcode-preview">Outfit Code</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "wish-list")) ? " nav-active" : "") . '"><a href="/menu-shops">Shops</a>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "exotic-purchase", "wish-list")) ? " nav-active" : "") . '"><a href="/menu-shops">Shops</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/shop-list">Shop List</a></li>
+				<li class="dropdown-slot"><a href="/exotic-purchase">Exotic Items</a></li>
 				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
 				<li class="dropdown-slot"><a href="/wish-list">Wish List</a></li>
 			</ul>
@@ -36,11 +37,10 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
 				<li class="dropdown-slot"><a href="/log-package">EP Log</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '"><a href="menu-eps">EPs</a>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("exotic-open", "exotic-list")) ? " nav-active" : "") . '"><a href="menu-eps">EPs</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/exotic-open">Open Exotic Package</a></li>
 				<li class="dropdown-slot"><a href="/exotic-list">List of Exotic Packages</a></li>
-				<li class="dropdown-slot"><a href="/exotic-purchase">Purchase Exotic Item</a></li>
 			</ul>
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wrapper-open", "wrapper-list")) ? " nav-active" : "") . '"><a href="menu-wrappers">Wrappers</a>
 			<ul>
@@ -52,7 +52,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
 			</ul>
-		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li>
+		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>
 </div>');
 }

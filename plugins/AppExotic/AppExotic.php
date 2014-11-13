@@ -70,7 +70,9 @@ abstract class AppExotic {
 		{
 			$item = $content[rand(0, count($content)-1)]['item_id'];
 			$item = AppAvatar::itemData((int) $item, "id, title, position, gender");
-			$cost = round(2.75 * (1 + 0.25*$age), 2);
+			$cost = 2.75 * (1 + 0.25*$age);
+			// round to nearest .05
+			$cost = round($cost * 2, 1) / 2;
 			return array("itemData" => $item, "stock" => $stock, "expire" => $expire, "cost" => $cost, "month" => $month, "year" => $year);
 		}
 		return false;
@@ -119,7 +121,7 @@ abstract class AppExotic {
 			Database::startTransaction();
 			$success1 = Credits::chargeInstant(Me::$id, (float) $exist['cost'], "Purchased " . $itemData['title']);
 			$success2 = AppAvatar::receiveItem(Me::$id, $itemID, "Purchased from Exotic Shop");
-			$success3 = Database::query("UPDATE exotic_shop SET stock=stock-? WHERE slot=? AND item=? LIMIT 1", array(1, $slotID));
+			$success3 = Database::query("UPDATE shop_exotic SET stock=stock-? WHERE slot=? AND item=? LIMIT 1", array(1, $slotID, $itemID));
 			if($success1 && $success2 && $success3)
 			{
 				Database::endTransaction();

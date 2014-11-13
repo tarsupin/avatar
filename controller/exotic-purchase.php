@@ -12,18 +12,13 @@ if(!isset($avatarData['base']))
 	header("Location: /create-avatar"); exit;
 }
 
-if(Me::$clearance < 8)
-{
-	die("Sorry, this page is not available yet!");
-}
-
 // purchase item
 if(Form::submitted("purchase-exotic"))
 {
 	if(AppExotic::buyItem((int) $_POST['slot'], (int) $_POST['item']))
 	{
 		$itemData = AppAvatar::itemData((int) $_POST['item'], "title");
-		Alert::success("Purchased Item", "You have purchased " . $itemData . ". Thank you for giving to UniFaction!");
+		Alert::success("Purchased Item", "You have purchased " . $itemData['title'] . ". Thank you for giving to UniFaction!");
 	}
 	else
 	{
@@ -95,7 +90,7 @@ for($i=0; $i<4; $i++)
 		}
 			
 		echo '
-			</select>' . (float) $slot['cost'] . ' Credits';
+			</select>' . $slot['cost'] . ' Credits';
 		if(AppAvatar::checkOwnItem(Me::$id, (int) $slot['itemData']['id']))
 		{
 			echo ' [&bull;]';
@@ -107,6 +102,13 @@ for($i=0; $i<4; $i++)
 				<input type="hidden" name="item" value="' . $slot['itemData']['id'] . '"/>
 				<input type="submit" value="Purchase" onclick="return confirm(\'Are you sure you want to purchase ' . $slot['itemData']['title'] . '?\');"/>
 			</form>
+		</div>';
+	}
+	else
+	{
+		echo '
+		<div class="item_block opaque">
+			Item coming soon.
 		</div>';
 	}
 }

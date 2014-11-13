@@ -488,11 +488,11 @@ abstract class AppAvatar {
 		{
 			if(!$save)
 			{
-				Alert::error($itemData['title'] . " Does Not Exist", "" . $itemData['title'] . " does not exist.");
+				Alert::error($itemData['title'] . " Does Not Exist", $itemData['title'] . " does not exist.");
 			}
 			else
 			{
-				Alert::saveError($itemData['title'] . "  Does Not Exist", "" . $itemData['title'] . " does not exist.");
+				Alert::saveError($itemData['title'] . "  Does Not Exist", $itemData['title'] . " does not exist.");
 			}
 			return false;
 		}

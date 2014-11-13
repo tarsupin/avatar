@@ -18,7 +18,6 @@ echo '
 	' . Alert::display() . '
 	<p><a href="/exotic-open">Open Exotic Package</a></p>
 	<p><a href="/exotic-list">List of Exotic Packages</a></p>
-	<p><a href="/exotic-purchase">Purchase Exotic Package</a></p>
 </div>';
 
 // Display the Footer

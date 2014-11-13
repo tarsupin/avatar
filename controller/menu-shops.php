@@ -17,6 +17,7 @@ echo '
 <div id="content">
 	' . Alert::display() . '
 	<p><a href="/shop-list">Shop List</a></p>
+	<p><a href="/exotic-purchase">Exotic Items</a></p>
 	<p><a href="/shop-search">Shop Search</a></p>
 	<p><a href="/wish-list">Wish List</a></p>
 </div>';
