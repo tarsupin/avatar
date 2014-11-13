@@ -32,6 +32,7 @@ AppAvatar::purchaseItem($itemID);
 AppAvatar::receiveItem($uniID, $itemID);
 AppAvatar::dropItem($uniID, $itemID);
 AppAvatar::record($senderID, $recipientID, 123, "Birthday Present");
+AppAvatar::recordPackage($senderID, $recipientID, 5, "Birthday Present");
 AppAvatar::receivePackage($uniID, $packageID);
 AppAvatar::dropPackage($uniID, $packageID);
 
@@ -653,12 +654,18 @@ abstract class AppAvatar {
 	public static function receivePackage
 	(
 		int $uniID			// <int> The Uni-Account to receive a package.
-	,	int $packageID			// <int> The package to provide (based on ID).
+	,	int $packageID		// <int> The package to provide (based on ID).
+	,	string $desc = ""		// <str> A brief description about the transaction's purpose.
 	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::receivePackage($uniID, $packageID);
 	{
-		return Database::query("INSERT INTO `user_packages` (uni_id, package_id) VALUES (?, ?)", array($uniID, $packageID));
+		$success = Database::query("INSERT INTO `user_packages` (uni_id, package_id) VALUES (?, ?)", array($uniID, $packageID));
+		if($success)
+		{
+			self::recordPackage(0, $uniID, $packageID, Sanitize::safeword($desc));
+		}
+		return $success;
 	}
 	
 	
@@ -667,11 +674,40 @@ abstract class AppAvatar {
 	(
 		int $uniID			// <int> The Uni-Account to drop the package from.
 	,	int $packageID		// <int> The package to drop (based on ID).
+	,	string $desc = ""		// <str> A brief description about the transaction's purpose.
 	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::dropPackage($uniID, $itemID);
 	{
-		return Database::query("DELETE FROM `user_packages` WHERE uni_id=? AND package_id=? LIMIT 1", array($uniID, $packageID));
+		$success = Database::query("DELETE FROM `user_packages` WHERE uni_id=? AND package_id=? LIMIT 1", array($uniID, $packageID));
+		if($success)
+		{
+			self::recordPackage($uniID, 0, $packageID, Sanitize::safeword($desc));
+		}
+		return $success;
+	}
+	
+	
+/****** Records an item transaction ******/
+	public static function recordPackage
+	(
+		int $senderID		// <int> The Uni-Account to send item. 0 if given by the system.
+	,	int $recipientID	// <int> The Uni-Account to receive the item. 0 if removed from the system.
+	,	int $packageID		// <int> The package ID.
+	,	string $desc = ""		// <str> A brief description about the transaction's purpose.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE on error.
+	
+	// AppAvatar::recordPackage($senderID, $recipientID, 5, "Birthday Present");
+	{
+		if($senderID === false or $recipientID === false) { return false; }
+		
+		// Prepare Values
+		$timestamp = time();
+		
+		// Run the record keeping
+		$pass = Database::query("INSERT INTO package_records (description, uni_id, other_id, package_id, date_exchange) VALUES (?, ?, ?, ?, ?)", array(Sanitize::text($desc), $senderID, $recipientID, $packageID, $timestamp));
+		
+		return ($pass);
 	}
 	
 	

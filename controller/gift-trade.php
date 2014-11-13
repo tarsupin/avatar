@@ -60,6 +60,11 @@ if(isset($url[1]) && $url[1] != "new")
 			$recipient = User::get($recipientID, "handle");
 			$recipient = $recipient['handle'];
 			$approval[$recipientID] = (int) $trans['has_agreed'];
+			
+			if($trans['message'] != "")
+			{
+				Alert::info("Message", "Message from " . $recipient . ":<br/>" . $trans['message']);
+			}
 		}
 		$message[$trans['uni_id']] = $trans['message'];
 	}
@@ -121,7 +126,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if($pass)
 				{
 					Alert::saveSuccess("Gift Sent", "Your gift has been sent to " . $recipient . "!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '! Check the Auro Log or Item Log.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '! Check the logs for details.');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -156,7 +161,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if(Transaction::approve($url[1], Me::$id))
 				{
 					Alert::saveSuccess("Trade Completed", "The trade has been successfully completed!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the Auro Log or Item Log.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the logs for details.');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -229,29 +234,59 @@ if(isset($url[1]) && $url[1] != "new")
 		if($link == "add-" . $_GET['add'])
 		{
 			$_GET['add'] = (int) $_GET['add'];
-			// check ownership
-			if(AppAvatar::checkOwnItem(Me::$id, $_GET['add']))
+			if(!isset($_GET['position']) || $_GET['position'] != "ep")
 			{
-				// check item data
-				$item = AppAvatar::itemData($_GET['add'], "id, title");
-				if($item)
+				// check ownership
+				if(AppAvatar::checkOwnItem(Me::$id, $_GET['add']))
 				{
-					$item['id'] = (int) $item['id'];
-					if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction " . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
+					// check item data
+					$item = AppAvatar::itemData($_GET['add'], "id, title");
+					if($item)
 					{
-						$approval[Me::$id] = 0;
-						$approval[$recipientID] = 0;
-						Alert::success("Entry Added", "The item has been added to the transaction.");
+						$item['id'] = (int) $item['id'];
+						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction " . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
+						{
+							$approval[Me::$id] = 0;
+							$approval[$recipientID] = 0;
+							Alert::success("Entry Added", "The item has been added to the transaction.");
+						}
+						else
+						{
+							Alert::error("Not Added", "The entry could not be added to the transaction.");
+						}
 					}
-					else
-					{
-						Alert::error("Not Added", "The entry could not be added to the transaction.");
-					}
+				}
+				else
+				{
+					Alert::error("Not Owned", "You do not own this item.");
 				}
 			}
 			else
 			{
-				Alert::error("Not Owned", "You do not own this item.");
+				// check ownership
+				if(AppAvatar::checkOwnPackage(Me::$id, $_GET['add']))
+				{
+					// check package data
+					$package = Database::selectOne("SELECT id, title, year FROM packages WHERE id=? LIMIT 1", array($_GET['add']));
+					if($package)
+					{
+						$package['id'] = (int) $package['id'];
+						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendPackage", array(Me::$id, $recipientID, $package['id'], "Transaction " . $url[1]), array("image" => "package.png", "caption" => $_GET['add'] . " " . $package['title'], "description" => $sender . " sends " . $package['title'] . " (" . $package['year'] . ") to " . $recipient . ".")))
+						{
+							$approval[Me::$id] = 0;
+							$approval[$recipientID] = 0;
+							Alert::success("Entry Added", "The package has been added to the transaction.");
+						}
+						else
+						{
+							Alert::error("Not Added", "The entry could not be added to the transaction.");
+						}
+					}
+				}
+				else
+				{
+					Alert::error("Not Owned", "You do not own this package.");
+				}
 			}
 		}
 	}
@@ -377,14 +412,15 @@ else
 	// Show Auro and the layers you have access to
 	$positions = AppAvatar::getInvPositions(Me::$id);
 	
-	if(!isset($_GET['position']) || !in_array($_GET['position'], $positions))
+	if(!isset($_GET['position']) || (!in_array($_GET['position'], $positions) && $_GET['position'] != "ep"))
 	{
 		$_GET['position'] = "auro";
 	}
 	
 	echo '
 	<div class="redlinks">
-		' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '<span class="nav-active">' : '') . '<a href="/gift-trade/' . $url[1] . '?position=auro"' . (isset($_GET['position']) && $_GET['position'] == 'auro' ? ' class="nav-active"' : '') . '>auro</a>' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '</span>' : '');
+		' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '<span class="nav-active">' : '') . '<a href="/gift-trade/' . $url[1] . '?position=auro"' . (isset($_GET['position']) && $_GET['position'] == 'auro' ? ' class="nav-active"' : '') . '>auro</a>' . (isset($_GET['position']) && $_GET['position'] == "auro" ? '</span>' : '') . '
+		' .	(isset($_GET['position']) && $_GET['position'] == "ep" ? '<span class="nav-active">' : '') . '<a href="/gift-trade/' . $url[1] . '?position=ep"' . (isset($_GET['position']) && $_GET['position'] == 'ep' ? ' class="nav-active"' : '') . '>ep</a>' . (isset($_GET['position']) && $_GET['position'] == "ep" ? '</span>' : '');
 	
 		foreach($positions as $pos)
 		{
@@ -404,6 +440,23 @@ else
 		<p><input type="number" name="auro" value="0" step="any"/></p>
 		<p><input type="submit" value="Set Auro"/></p>
 	</form>';
+	}
+	// Packages
+	elseif($_GET['position'] == "ep")
+	{
+		// get packages
+		$packages = Database::selectMultiple("SELECT id, title, year, month, COUNT(uni_id) as count FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? GROUP BY id", array(Me::$id));
+
+		// get item info
+		foreach($packages as $key => $package)
+		{
+			echo '
+			<div class="item_block">
+				<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/>
+				<br/>' . $package['title'] . ' (' . $package['year'] . ')' . ($package['count'] > 1 ? ' (' . $package['count'] . ')' : "") . '
+				<br /><a id="link_' . $package['id'] . '" href="/gift-trade/' . $url[1] . '?position=' . $_GET['position'] . '&add=' . $package['id'] . '&' . Link::prepare("add-" . $package['id']) . '">Add to Transaction</a>
+			</div>';
+		}
 	}
 	// Items
 	else
@@ -454,10 +507,9 @@ else
 	// submit options
 	echo '
 	<div class="spacer"></div>
+	<p>If you are trading, your trade partner can see a message from you. Would you like to set one?</p>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade-message") . '
-		<p>Message from ' . $recipient . ': ' . ($message[$recipientID] != "" ? $message[$recipientID] : '<span style="font-style:italic;">none</span>') . '</p>
-		<p>Message from you:
-		<input type="text" name="message" maxlength="100"' . ($message[Me::$id] != '' ? ' value="' . $message[Me::$id] . '"' : '') . '/> (max 100 characters)</p>
+		<p><input type="text" name="message" maxlength="100"' . ($message[Me::$id] != '' ? ' value="' . $message[Me::$id] . '"' : '') . '/> (max 100 characters)</p>
 		<p><input type="submit" value="Set Message"/></p>
 	</form>
 	<div class="spacer"></div>

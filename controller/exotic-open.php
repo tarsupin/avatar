@@ -51,8 +51,11 @@ if(isset($url[2]))
 			// give item
 			if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
 			{
+				// get wrappers
+				$wrappers = AppAvatar::wrappers();
+			
 				// remove package
-				AppAvatar::dropPackage(Me::$id, $url[1]);
+				AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : ""));
 				Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . ".");
 				header("Location:/dress-avatar?position=" . $item['position']); exit;
 			}
@@ -89,15 +92,15 @@ if(!isset($url[2]))
 	if(!isset($url[1]))
 	{
 		// get packages
-		$packages = Database::selectMultiple("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? ORDER BY package_id DESC", array(Me::$id));
+		$packages = Database::selectMultiple("SELECT id, title, year, month, COUNT(uni_id) AS count FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? GROUP BY id", array(Me::$id));
 
 		// get item info
 		foreach($packages as $key => $package)
 		{
-			if($space) { echo '<div class="spacer-giant"></div>'; }
+			if($space) { echo '<div class="spacer"></div>'; }
 			$space = true;
 			
-			echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')</h3>
+			echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')' . ($package['count'] > 1 ? ' (' . $package['count'] . ')' : "") . '</h3>
 	<a href="/exotic-open/' . $package['id'] . '"><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/></a>';
 		}
 	}

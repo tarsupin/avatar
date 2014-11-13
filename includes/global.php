@@ -34,6 +34,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="/gift-trade">Gift &amp; Trade</a></li>
 				<li class="dropdown-slot"><a href="/log-auro">Auro Log</a></li>
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
+				<li class="dropdown-slot"><a href="/log-package">EP Log</a></li>
 			</ul>
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("exotic-open", "exotic-list", "exotic-purchase")) ? " nav-active" : "") . '"><a href="menu-eps">EPs</a>
 			<ul>
