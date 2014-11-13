@@ -19,6 +19,7 @@ echo '
 	<p><a href="/gift-trade">Gift &amp; Trade</a></p>
 	<p><a href="/log-auro">Auro Log</a></p>
 	<p><a href="/log-item">Item Log</a></p>
+	<p><a href="/log-item">EP Log</a></p>
 </div>';
 
 // Display the Footer

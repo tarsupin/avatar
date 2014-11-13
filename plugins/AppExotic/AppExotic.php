@@ -9,11 +9,25 @@ This class provides handling of the Exotic Item Shop.
 -------------------------------
 ------ Methods Available ------
 -------------------------------
-$slot = AppExotic::chooseItem($slotID);		// choose an item for one of the 4 shop slots
+$slot =		AppExotic::getItem($slotID);			// get the slot's current content
+$slot =		AppExotic::chooseItem($slotID);			// choose an item for one of the 4 shop slots
+			AppExotic::saveSlot($slotID, $data); 	// save slot to database
+$success =	AppExotic::buyItem($slotID, $itemID); 	// purchase an available item
 
 */
 
 abstract class AppExotic {
+
+/****** Get Slot ******/
+	public static function getSlot
+	(
+		$slotID			// <int> The shop slot.
+	)					// RETURNS <str:mixed> on success, or FALSE if failed.
+	
+	//	AppExotic::getSlot($slotID);
+	{
+		return Database::selectOne("SELECT item, stock, cost, expire FROM shop_exotic WHERE slot=? AND stock>? AND expire>=? LIMIT 1", array($slotID, 0, time()));
+	}
 
 /****** Choose Item ******/
 	public static function chooseItem
@@ -63,14 +77,62 @@ abstract class AppExotic {
 	}
 	
 /****** Save Chosen Item ******/
-public static function saveSlot
+	public static function saveSlot
 	(
-		$data			// <str:mixed> The data of the item to put into this slot.
+		$slotID			// <int> The shop slot.
+	,	$data			// <str:mixed> The data of the item to put into this slot.
 	)					// RETURNS TRUE on success, or FALSE if failed.
 	
-	//	$slot = AppExotic::saveSlot($slotID);
+	//	AppExotic::saveSlot($slotID, $data);
 	{
+		$exist = Database::selectOne("SELECT slot FROM shop_exotic WHERE slot=? LIMIT 1", array($slotID));
+		if($exist != array())
+		{
+			$success = Database::query("UPDATE shop_exotic SET item=?, stock=?, cost=?, expire=? WHERE slot=? LIMIT 1", array((int) $data['itemData']['id'], (int) $data['stock'], (float) $data['cost'], (int) $data['expire'], $slotID));
+		}
+		else
+		{
+			$success = Database::query("INSERT INTO shop_exotic VALUES (?, ?, ?, ?, ?)", array($slotID, (int) $data['itemData']['id'], (int) $data['stock'], (float) $data['cost'], (int) $data['expire']));
+		}
+		return $success;
+	}
+	
+/****** Buy Chosen Item ******/
+	public static function buyItem
+	(
+		$slotID			// <int> The shop slot.
+	,	$itemID			// <int> The ID of the item you are purchasing.
+	)					// RETURNS TRUE on success, or FALSE if failed.
+	
+	//	AppExotic::buyItem($slotID, $itemID);
+	{
+		$exist = Database::selectOne("SELECT stock, cost, expire FROM shop_exotic WHERE slot=? AND item=? LIMIT 1", array($slotID, $itemID));
+		if($exist != array())
+		{
+			// item has expired or run out of stock
+			if($exist['stock'] == 0 || $exist['expire'] < time())
+			{
+				return false;
+			}
+			// try to purchase
+			$itemData = AppAvatar::itemData($itemID, "title");
+			Database::startTransaction();
+			$success1 = Credits::chargeInstant(Me::$id, (float) $exist['cost'], "Purchased " . $itemData['title']);
+			$success2 = AppAvatar::receiveItem(Me::$id, $itemID, "Purchased from Exotic Shop");
+			$success3 = Database::query("UPDATE exotic_shop SET stock=stock-? WHERE slot=? AND item=? LIMIT 1", array(1, $slotID));
+			if($success1 && $success2 && $success3)
+			{
+				Database::endTransaction();
+				return true;
+			}
+			else
+			{
+				Database::endTransaction(false);
+				return false;
+			}
+		}
 		
+		return false;
 	}
 	
 }

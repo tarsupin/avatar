@@ -69,7 +69,10 @@ abstract class AppTrade {
 		if(!$anon)
 		{
 			$success = Database::query("UPDATE user_items SET uni_id=? WHERE uni_id=? and item_id=? LIMIT 1", array($recipientID, $senderID, $itemID));
-			AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+			if($success)
+			{
+				AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+			}
 		}
 		else
 		{
@@ -108,7 +111,10 @@ abstract class AppTrade {
 		if(!$anon)
 		{
 			$success = Database::query("UPDATE user_packages SET uni_id=? WHERE uni_id=? and package_id=? LIMIT 1", array($recipientID, $senderID, $packageID));
-			AppAvatar::recordPackage($senderID, $recipientID, $packageID, $desc);
+			if($success)
+			{
+				AppAvatar::recordPackage($senderID, $recipientID, $packageID, $desc);
+			}
 		}
 		else
 		{
