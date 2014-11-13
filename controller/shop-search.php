@@ -138,7 +138,7 @@ if(isset($_GET['submit']))
 	}
 	
 	// build query
-	$result = Database::selectMultiple("SELECT id, title, position, gender, rarity_level, shop_id FROM items INNER JOIN shop_inventory ON items.id=shop_inventory.item_id " . ($sqlwhere != "" || $disallow != "" ? " WHERE " : "") . ($sqlwhere != "" ? $sqlwhere : "") . ($disallow != "" && $sqlwhere != "" ? " AND " : "") . ($disallow != "" ? "shop_id NOT IN (" . $disallow . ")" : "") . $sqlorder . ($_GET['owned'] == "" ? " LIMIT " . ($_GET['start']*60) . ", 60" : ""), $questionmarks);
+	$result = Database::selectMultiple("SELECT id, title, position, gender, rarity_level, shop_id, cost FROM items INNER JOIN shop_inventory ON items.id=shop_inventory.item_id " . ($sqlwhere != "" || $disallow != "" ? " WHERE " : "") . ($sqlwhere != "" ? $sqlwhere : "") . ($disallow != "" && $sqlwhere != "" ? " AND " : "") . ($disallow != "" ? "shop_id NOT IN (" . $disallow . ")" : "") . $sqlorder . ($_GET['owned'] == "" ? " LIMIT " . ($_GET['start']*60) . ", 60" : ""), $questionmarks);
 }
 
 // Set page title
@@ -245,7 +245,7 @@ foreach($result as $item)
 	// Display the Item					
 	echo '
 	<div class="item_block' . ($avatarData['gender_full'] != $gender ? " opaque" : "") . '">
-		<a href="javascript:review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
+		' . ($avatarData['gender_full'] == $gender ? '<a href="javascript:review_item(\'' . $item['id'] . '\');">' : '') . '<img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" />' . ($avatarData['gender_full'] == $gender ? '</a>' : '') . '<br />
 		' . $item['title'] . '<br /><span style="font-size:0.6em;"><a href="/shop-search?submit=Search&' . $item['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">' . $item['position'] . '</a>, ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . '<br/><a href="/shop/' . $item['shop_id'] . '">' . $shops[$item['shop_id']] . '</a></span><br />
 		<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 		
@@ -257,16 +257,25 @@ foreach($result as $item)
 		
 	echo '
 		</select>
-		' . (Me::$clearance >= 5 ? '<br/><a href="/staff/item-edit/' . $item['id'] . '">Edit Item</a>' : '') . '
-		<br/><a href="/wish-list?add=' . $item['id'] . '">Wish</a>';
-	if($item['rarity_level'] != 0 || Me::$clearance >= 5)
+		<br/><a href="/wish-list?add=' . $item['id'] . '">Add to Wishlist</a><br/>';
+	if($item['rarity_level'] == 0 || Me::$clearance >= 5)
 	{
 		echo '
-		 | <a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy</a>';
+		<a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy for ' . (float) $item['cost'] . '</a>';
+	}
+	else
+	{
+		echo '
+		Preview Only';
 	}
 	if((isset($checked[$item['id']]) && $checked[$item['id']] == true) || AppAvatar::checkOwnItem(Me::$id, $item['id']))
 	{
 		echo ' [&bull;]';
+	}
+	if(Me::$clearance >= 5)
+	{
+		echo '
+		<br/><a href="/staff/item-edit/' . $item['id'] . '">Edit Item</a>';
 	}
 	echo '
 	</div>';

@@ -596,7 +596,7 @@ abstract class AppAvatar {
 		$result = Database::query("INSERT INTO `user_items` (uni_id, item_id) VALUES (?, ?)", array($uniID, $itemID));
 		if($result)
 		{
-			self::record(0, $uniID, $itemID, $desc);
+			self::record(0, $uniID, $itemID, Sanitize::safeword($desc));
 			Cache::delete("invLayers:" . $uniID);
 		}
 		return $result;

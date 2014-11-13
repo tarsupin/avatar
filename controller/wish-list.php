@@ -14,7 +14,7 @@ if(isset($_GET['add']))
 {
 	$_GET['add'] = (int) $_GET['add'];
 	// check item data
-	if($itemData = AppAvatar::itemData($_GET['add'], "title, rarity_level"))
+	if($itemData = AppAvatar::itemData($_GET['add'], "title"))
 	{
 		if(Database::query("REPLACE INTO user_wish VALUES (?, ?)", array(Me::$id, $_GET['add'])))
 		{
@@ -34,6 +34,16 @@ if(isset($_GET['remove']))
 		{
 			Alert::success("Item Removed", $itemData['title'] . " has been removed from your wish list.");
 		}
+	}
+}
+
+// Buy an item
+if($link = Link::clicked())
+{
+	if($link == "purchase-wish" && isset($_GET['buy']))
+	{
+		$_GET['buy'] = (int) $_GET['buy'];
+		AppAvatar::purchaseItem($_GET['buy']);
 	}
 }
 
@@ -72,13 +82,13 @@ echo '
 Alert::display();
 
 // Page Display
-$wished = Database::selectMultiple("SELECT item_id, title, position, gender FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
+$wished = Database::selectMultiple("SELECT item_id, title, position, gender, rarity_level FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
 echo '
 	<h2>Wish List</h2>
 	<table class="mod-table">
 		<tr>
 			<td>&nbsp;</td>';
-foreach (array("title", "position", "gender") as $col)
+foreach(array("title", "position", "gender") as $col)
 {
 	if (isset($_GET['sort']) && $_GET['sort'] == $col && !isset($_GET['reverse']))
 		echo "
@@ -91,6 +101,7 @@ foreach (array("title", "position", "gender") as $col)
 			<td>" . ucfirst($col) . " <a href='/wish-list?sort=" . $col . "'>&#9651;</a></td>";
 }
 echo '
+			<td>Cost</td>
 			<td>Package</td>
 		</tr>';
 foreach ($wished as $itemData)
@@ -98,12 +109,18 @@ foreach ($wished as $itemData)
 	$itemData['item_id'] = (int) $itemData['item_id'];
 	$own = AppAvatar::checkOwnItem(Me::$id, $itemData['item_id']);
 	$package = Database::selectOne("SELECT title, year FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE item_id=? LIMIT 1", array($itemData['item_id']));
+	$cost = false;
+	if($itemData['rarity_level'] == 0 || Me::$clearance >= 5)
+	{
+		$cost = AppAvatar::itemMinCost($itemData['item_id']);
+	}
 	echo '
 		<tr' . ($own ? ' class="opaque"' : "") . '>
 			<td><a href="/wish-list?remove=' . $itemData['item_id'] . '">&#10006;</a></td>
 			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>
+			<td>' . ($cost !== false ? '<a href="/wish-list?buy=' . $itemData['item_id'] . '&' . Link::prepare("purchase-wish") . '" onclick="return confirm(\'Are you sure you want to buy ' . $itemData['title'] . '?\');">' . $cost . ' Auro</a>' : 'Preview Only') . '</td>
 			<td>' . ($package ? $package['title'] . " (" . $package['year'] . ")" : "&nbsp;") . '</td>
 		</tr>';
 }

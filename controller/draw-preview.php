@@ -14,6 +14,7 @@ if(!$itemData = AppAvatar::itemData((int) $_GET['item']))
 // Prepare the Preview Avatar
 $order = ($itemData['max_order'] > 0 ? 2 : $itemData['max_order']);
 $files = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title']);
+sort($files);
 foreach($files as $file)
 {
 	$pos = strpos($file, "_" . $_GET['gender'] . ".png");

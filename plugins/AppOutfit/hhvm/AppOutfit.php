@@ -386,6 +386,7 @@ abstract class AppOutfit {
 		}
 		
 		// Remove unneeded entries
+		$done = array();
 		foreach($toerase[$gender] as $position => $te)
 		{
 			foreach($te as $key => $val)
@@ -396,8 +397,12 @@ abstract class AppOutfit {
 					// Rectangle described by $val2 is completely contained in $val
 					if($val[0] <= $val2[0] && $val[1] <= $val2[1] && $val[0]+$val[2] >= $val2[0]+$val2[2] && $val[1]+$val[3] >= $val2[1]+$val2[3])
 					{
-						unset($toerase[$gender][$position][$key2]);
-						unset($te[$key2]);
+						if(!in_array($key . "_" . $key2, $done))
+						{
+							unset($toerase[$gender][$position][$key2]);
+							unset($te[$key2]);
+						}
+						$done[] = $key2 . "_" . $key;
 					}
 				}
 			}

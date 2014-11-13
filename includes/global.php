@@ -39,7 +39,7 @@ if(Me::$loggedIn)
 			<ul>
 				<li class="dropdown-slot"><a href="/exotic-open">Open Exotic Package</a></li>
 				<li class="dropdown-slot"><a href="/exotic-list">List of Exotic Packages</a></li>
-				<li class="dropdown-slot"><a href="/exotic-purchase">Purchase Exotic Package</a></li>
+				<li class="dropdown-slot"><a href="/exotic-purchase">Purchase Exotic Item</a></li>
 			</ul>
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wrapper-open", "wrapper-list")) ? " nav-active" : "") . '"><a href="menu-wrappers">Wrappers</a>
 			<ul>

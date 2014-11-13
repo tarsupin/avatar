@@ -56,9 +56,17 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 		$space = true;
 
 		$html .= '
-		<h3>' . $package['title'] . '</h3>
-		If you own this package, you can <a href="/exotic-open/' . $package['id'] . '">open it here</a>.<br/>
-		<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">can be opened to pick one of these items:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
+		<h3>' . ($package['id'] <= 65 ? $package['title'] : date("F", mktime(0, 0, 0, $package['month'], 1))) . '</h3>';
+		if($package['id'] <= 65)
+		{
+			$html .= '
+			If you own this package, you can <a href="/exotic-open/' . $package['id'] . '">open it here</a>.<br/><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">can be opened to pick one of these items:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
+		}
+		else
+		{
+			$html .= '
+			<span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">The following items ' . ($package['year'] != date("Y") || $package['month'] != date("n") ? 'have been' : 'are') . ' available:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
+		}		
 	
 		$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($package['id']));
 		foreach($content as $cont)

@@ -170,7 +170,7 @@ abstract class AppAvatarAdmin {
 	(
 		int $shopID			// <int> The ID of the shop to add an item to.
 	,	int $itemID			// <int> The ID of the item to add to the shop.
-	,	int $cost			// <int> The cost (in standard currency) to purchase the item.
+	,	float $cost			// <float> The cost (in standard currency) to purchase the item.
 	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatarAdmin::addShopItem($shopID, $itemID, $cost);

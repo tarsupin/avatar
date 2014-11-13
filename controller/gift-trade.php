@@ -67,14 +67,6 @@ if(isset($url[1]) && $url[1] != "new")
 	// go to overview if not your transaction
 	if(!$mine)	{ header("Location: /gift-trade"); exit; }
 	
-	// go to overview if this transaction isn't meant for your viewing
-	$approved = Database::selectOne("SELECT uni_id FROM transactions_users WHERE transaction_id=? AND has_agreed=? LIMIT 1", array($url[1], 1));
-	if(!$approved)
-	{
-		$contrib = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], Me::$id));
-	}
-	if(!$approved && !$contrib)	{ header("Location: /gift-trade"); exit; }
-	
 	// get user name
 	$sender = Me::$vals['handle'];
 	
@@ -171,7 +163,7 @@ if(isset($url[1]) && $url[1] != "new")
 				elseif($approval[$recipientID] == 0)
 				{
 					Alert::success("Trade Waiting", 'The trade has been successfully updated and now requires confirmation or updating from ' . $recipient . '!');
-					Notifications::create($recipientID, SITE_URL . "/gift-trade/" . $url[1], $sender . ' has updated a trade with you!');
+					Notifications::create($recipientID, SITE_URL . "/gift-trade/" . $url[1], $sender . ' has started or updated a trade with you!');
 				}
 				else
 				{

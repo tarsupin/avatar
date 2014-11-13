@@ -286,6 +286,7 @@ echo '
 	
 // display file list to remove from
 $files = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title']);
+sort($files);
 foreach($files as $file)
 {
 	if(strpos($file, "default_") === false && $file != "_stats.txt")

@@ -116,11 +116,16 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 			$html .= '
 			</select>';
 			
-			$html .= '<br /><a href="/wish-list?add=' . $item['id'] . '">Wish</a>';
-			if((int) $item['rarity_level'] == 0)
+			$html .= '<br /><a href="/wish-list?add=' . $item['id'] . '">Add to Wishlist</a>';
+			if($item['rarity_level'] == 0)
 			{
 				$html .= '
-			 | <a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy</a>';
+			<br/><a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy for ' . (float) $item['cost'] . '</a>';
+			}
+			else
+			{
+				$html .= '
+				Preview Only';
 			}
 		$html .= '
 		</div>';
@@ -143,12 +148,11 @@ if(Me::$clearance >= 5)
 	{
 		var html = $(this).html();
 		html = html.trim();
-		if (html.substr(html.length-7) != "Buy</a>")
+		if (html.indexOf("Preview Only") > 0)
 		{
 			var id = $(this).children("select").attr("id");
-			id = id.substr(id.indexOf("_")+1);
-			html = html + ' | <a href="/purchase-item/' + id + '?shopID=' + <?php echo $url[1]; ?> + '">Buy</a>';
-			$(this).html(html);
+			id = id.substr(id.indexOf("_")+1);			
+			$(this).html(html.replace('Preview Only', '<br/><a href="/purchase-item/' + id + '?shopID=' + <?php echo $url[1]; ?> + '">Buy</a>'));
 		}
 	});
 </script>

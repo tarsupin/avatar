@@ -17,8 +17,6 @@ $activeAvatar = (int) $activeAvatar['avatar_opt'];
 // Get the user's avatar
 $avatarData = AppAvatar::avatarData(Me::$id, $activeAvatar);
 
-// Get the user's active avatar
-
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");
 

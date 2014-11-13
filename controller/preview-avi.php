@@ -212,8 +212,12 @@ foreach($outfitArray as $pos => $item)
 		}
 		elseif($eItem['rarity_level'] == 0 || Me::$clearance >= 5)
 		{
-			echo '
-			<a class="buy" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+			$cost = AppAvatar::itemMinCost($eItem['id']);
+			if($cost !== false)
+			{
+				echo '
+			<a class="buy" title="Buy for ' . AppAvatar::itemMinCost($eItem['id']) . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+			}
 		}
 
 		if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
