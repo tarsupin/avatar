@@ -13,7 +13,7 @@ if(!isset($avatarData['base']))
 }
 
 // purchase item
-if(Form::submitted("purchase-exotic"))
+if(Form::submitted("purchase-exotic-item"))
 {
 	if(AppExotic::buyItem((int) $_POST['slot'], (int) $_POST['item']))
 	{
@@ -23,6 +23,23 @@ if(Form::submitted("purchase-exotic"))
 	else
 	{
 		Alert::error("Not Available", "Sorry, this item is no longer available!");
+	}
+}
+
+if(Form::submitted("purchase-exotic-package"))
+{
+	if(AppExotic::buyPackage((int) $_POST['package']))
+	{
+		$exist = Database::selectOne("SELECT title FROM packages WHERE id=? AND year=? AND month=?", array((int) $_POST['package'], (int) date("Y"), (int) date("n")));
+		if($exist['title'] == '')
+		{
+			$exist['title'] = date("F") . ' Package';
+		}
+		Alert::success("Purchased Item", "You have purchased " . $exist['title'] . ". Thank you for giving to UniFaction!");
+	}
+	else
+	{
+		Alert::error("Not Available", "Sorry, this package is no longer available!");
 	}
 }
 
@@ -44,19 +61,78 @@ echo '
 <div id="content">' .
 Alert::display() . '
 <h2>Purchase Exotic Item</h2>
-<p>The items available in this shop rotate as indicated by the timer and stock below each one. All prices are in Credits (<a href="http://unijoule.com/' . Me::$slg . '">UniJoule</a>).</p>';
+<p>The items available in this shop rotate as indicated by the timer and stock below each one. All prices are in Credits (<a href="http://unijoule.com/' . Me::$slg . '">UniJoule</a>).<br/>You will be notified when an item on your wishlist rotates in.</p>';
+
+// current package		
+$exist = Database::selectOne("SELECT id, title FROM packages WHERE year=? AND month=?", array((int) date("Y"), (int) date("n")));
+if($exist != array())
+{
+	$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($exist['id']));
+	if($content != array())
+	{
+		echo '
+	<div class="item_block">
+		' .  (File::exists('assets/exotic_packages/' . lcfirst(date("F")) . '_' . date("Y") . '.png') ? '<img src="assets/exotic_packages/' . lcfirst(date("F")) . '_' . date("Y") . '.png"/>' : '<span class="opaque">Image coming soon.</span>') . '<br/>' . $exist['title'] . '<br/><span style="font-size:0.6em;">' . date("F") . ' ' . date("Y") . '<br/>leaves ' . Time::fuzzy((int) (mktime(0, 0, 0, date("n")+1, 1)-1)) . '<br/>Stock: unlimited</span>
+		<select disabled><option value=""></option></select>
+		<br/><a href="/exotic-list">View Content</a>
+		<br/>3.50 Credits';
+		if(AppAvatar::checkOwnPackage(Me::$id, (int) $exist['id']))
+		{
+			echo ' [&bull;]';
+		}
+		echo '
+		<br/><br/>
+		<form class="uniform" method="post">' . Form::prepare("purchase-exotic-package") . '
+			<input type="hidden" name="slot" value="0"/>
+			<input type="hidden" name="package" value="' . $exist['id'] . '"/>
+			<input type="submit" value="Purchase" onclick="return confirm(\'Are you sure you want to purchase ' . $exist['title'] . '?\');"/>
+		</form>
+	</div>';
+	}
+	else
+	{
+		echo '
+	<div class="item_block opaque">
+		EP coming soon.
+	</div>';
+	}
+}
+else
+{
+	echo '
+	<div class="item_block opaque">
+		EP coming soon.
+	</div>';
+}	
 
 // determine items for slots and display
-for($i=0; $i<4; $i++)
+for($i=1; $i<5; $i++)
 {
 	$slot = AppExotic::getSlot($i);
 
 	if($slot == array())
 	{
-		$slot = AppExotic::chooseItem($i);
+		// make exception for November 2014 (late package)
+		if($i == 1 && date("Y") == 2014 && date("n") == 11)
+		{
+			// assuming 16th as release date
+			$slot = AppExotic::chooseItem($i, 16);
+		}
+		else
+		{
+			$slot = AppExotic::chooseItem($i);
+		}
 		if($slot !== false)
 		{
+			// save new item
 			AppExotic::saveSlot($i, $slot);
+			
+			// notify people who have it on their wishlist
+			$wish = Database::selectMultiple("SELECT uni_id FROM user_wish WHERE item_id=?", array($slot['itemData']['id']));
+			foreach($wish as $w)
+			{
+				Notifications::create((int) $w['uni_id'], SITE_URL . "/exotic-purchase", $slot['itemData']['title'] . " has rotated into the Exotic Shop.");
+			}
 		}
 	}
 	else
@@ -79,37 +155,39 @@ for($i=0; $i<4; $i++)
 		
 		// Display the Item					
 		echo '
-		<div class="item_block' . ($avatarData['gender_full'] != $gender ? " opaque" : "") . '">
-			' . ($avatarData['gender_full'] == $gender ? '<a href="javascript:review_item(\'' . $slot['itemData']['id'] . '\');">' : '') . '<img id="img_' . $slot['itemData']['id'] . '" src="/avatar_items/' . $slot['itemData']['position'] . '/' . $slot['itemData']['title'] . '/default_' . $gender . '.png" />' . ($avatarData['gender_full'] == $gender ? '</a>' : '') . '<br />' . $slot['itemData']['title'] . '<br/><span style="font-size:0.6em;">' . date("F", mktime(0, 0, 0, $slot['month'])) . ' ' . $slot['year'] . '<br/>leaves ' . Time::fuzzy((int) $slot['expire']) . '<br/>Stock: ' . $slot['stock'] . '</span>
-			<select id="item_' . $slot['itemData']['id'] . '" onChange="switch_item(\'' . $slot['itemData']['id'] . '\', \'' . $slot['itemData']['position'] . '\', \'' . $slot['itemData']['title'] . '\', \'' . $gender . '\');">';
+	<div class="item_block' . ($avatarData['gender_full'] != $gender ? " opaque" : "") . '">
+		' . ($avatarData['gender_full'] == $gender ? '<a href="javascript:review_item(\'' . $slot['itemData']['id'] . '\');">' : '') . '<img id="img_' . $slot['itemData']['id'] . '" src="/avatar_items/' . $slot['itemData']['position'] . '/' . $slot['itemData']['title'] . '/default_' . $gender . '.png" />' . ($avatarData['gender_full'] == $gender ? '</a>' : '') . '<br />' . $slot['itemData']['title'] . '<br/><span style="font-size:0.6em;">' . date("F", mktime(0, 0, 0, $slot['month'])) . ' ' . $slot['year'] . '<br/>leaves ' . Time::fuzzy((int) $slot['expire']) . '<br/>Stock: ' . ($slot['stock'] == 0 ? 'unlimited' : $slot['stock']) . '</span>
+		<select id="item_' . $slot['itemData']['id'] . '" onChange="switch_item(\'' . $slot['itemData']['id'] . '\', \'' . $slot['itemData']['position'] . '\', \'' . $slot['itemData']['title'] . '\', \'' . $gender . '\');">';
 			
 		foreach($colors as $color)
 		{
 			echo '
-				<option name="' . $color . '">' . $color . '</option>';
+			<option name="' . $color . '">' . $color . '</option>';
 		}
 			
 		echo '
-			</select>' . $slot['cost'] . ' Credits';
+		</select>
+		<br/><a href="' . SITE_URL . '/wish-list?add=' . $slot['itemData']['id'] . '"/>Add to Wishlist</a>
+		<br/>' . number_format($slot['cost'], 2) . ' Credits';
 		if(AppAvatar::checkOwnItem(Me::$id, (int) $slot['itemData']['id']))
 		{
 			echo ' [&bull;]';
 		}
 		echo '
-			<br/><br/>
-			<form class="uniform" method="post">' . Form::prepare("purchase-exotic") . '
-				<input type="hidden" name="slot" value="' . $i . '"/>
-				<input type="hidden" name="item" value="' . $slot['itemData']['id'] . '"/>
-				<input type="submit" value="Purchase" onclick="return confirm(\'Are you sure you want to purchase ' . $slot['itemData']['title'] . '?\');"/>
-			</form>
-		</div>';
+		<br/><br/>
+		<form class="uniform" method="post">' . Form::prepare("purchase-exotic-item") . '
+			<input type="hidden" name="slot" value="' . $i . '"/>
+			<input type="hidden" name="item" value="' . $slot['itemData']['id'] . '"/>
+			<input type="submit" value="Purchase" onclick="return confirm(\'Are you sure you want to purchase ' . $slot['itemData']['title'] . '?\');"/>
+		</form>
+	</div>';
 	}
 	else
 	{
 		echo '
-		<div class="item_block opaque">
-			Item coming soon.
-		</div>';
+	<div class="item_block opaque">
+		Item coming soon.
+	</div>';
 	}
 }
 

@@ -101,7 +101,7 @@ if(!isset($url[2]))
 			$space = true;
 			
 			echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')' . ($package['count'] > 1 ? ' (' . $package['count'] . ')' : "") . '</h3>
-	<a href="/exotic-open/' . $package['id'] . '"><img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/></a>';
+	<a href="/exotic-open/' . $package['id'] . '">' . (File::exists('assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png') ? '<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/>' : '<span class="opaque">Image coming soon.</span>') . '</a>';
 		}
 	}
 	else
@@ -109,7 +109,7 @@ if(!isset($url[2]))
 		$package = Database::selectOne("SELECT id, title, year, month FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? AND id=?", array(Me::$id, (int) $url[1]));
 	
 		echo '<h3>' . $package['title'] . ' (' . $package['year'] . ')</h3>
-	<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/> can be opened to pick one of these items:<br/>';
+	' . (File::exists('assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png') ? '<img src="assets/exotic_packages/' . lcfirst(date('F', mktime(0, 0, 0, $package['month'], 1, 1))) . '_' . $package['year'] . '.png"/>' : 'This package') . ' can be opened to pick one of these items:<br/>';
 		
 		$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($package['id']));
 		foreach($content as $cont)

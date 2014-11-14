@@ -1,4 +1,4 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+<?hh if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
 
 ----------------------------------------
 ------ About the AppExotic Plugin ------
@@ -22,8 +22,8 @@ abstract class AppExotic {
 /****** Get Slot ******/
 	public static function getSlot
 	(
-		$slotID				// <int> The shop slot.
-	)						// RETURNS <str:mixed> on success, or FALSE if failed.
+		int $slotID				// <int> The shop slot.
+	): array <str, mixed>						// RETURNS <str:mixed> on success, or FALSE if failed.
 	
 	//	AppExotic::getSlot($slotID);
 	{
@@ -37,9 +37,9 @@ abstract class AppExotic {
 /****** Choose Item ******/
 	public static function chooseItem
 	(
-		$slotID			// <int> The shop slot.
-	,	$exception = 0	// <int> The day of release if the package was late.
-	)					// RETURNS <str:mixed> the item data, or FALSE if failed.
+		int $slotID			// <int> The shop slot.
+	,	int $exception = 0	// <int> The day of release if the package was late.
+	): array <str, mixed>					// RETURNS <str:mixed> the item data, or FALSE if failed.
 	
 	//	$slot = AppExotic::chooseItem($slotID);
 	{
@@ -126,8 +126,8 @@ abstract class AppExotic {
 /****** Save Chosen Item ******/
 	public static function saveSlot
 	(
-		$slotID			// <int> The shop slot.
-	,	$data			// <str:mixed> The data of the item to put into this slot.
+		int $slotID			// <int> The shop slot.
+	,	array <str, mixed> $data			// <str:mixed> The data of the item to put into this slot.
 	)					// RETURNS TRUE on success, or FALSE if failed.
 	
 	//	AppExotic::saveSlot($slotID, $data);
@@ -147,8 +147,8 @@ abstract class AppExotic {
 /****** Buy Chosen Item ******/
 	public static function buyItem
 	(
-		$slotID			// <int> The shop slot.
-	,	$itemID			// <int> The ID of the item you are purchasing.
+		int $slotID			// <int> The shop slot.
+	,	int $itemID			// <int> The ID of the item you are purchasing.
 	)					// RETURNS TRUE on success, or FALSE if failed.
 	
 	//	AppExotic::buyItem($slotID, $itemID);
@@ -190,7 +190,7 @@ abstract class AppExotic {
 /****** Buy Current Package ******/
 	public static function buyPackage
 	(
-		$packageID		// <int> The ID of the package you are purchasing.
+		int $packageID		// <int> The ID of the package you are purchasing.
 	)					// RETURNS TRUE on success, or FALSE if failed.
 	
 	//	AppExotic::buyPackage($packageID);

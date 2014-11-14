@@ -20,7 +20,7 @@ if($runLink = Link::clicked() && isset($_GET['refresh']))
 	{
 		touch("cache/shop_" . $_GET['refresh'] . "_m.html", time()-86401);
 		touch("cache/shop_" . $_GET['refresh'] . "_f.html", time()-86401);
-		Alert::success("Shop Refreshed", AppAvatar::getShopTitle($_GET['refresh']) . " has been refreshed.");
+		Alert::success("Shop Refreshed", AppAvatar::getShopTitle((int) $_GET['refresh']) . " has been refreshed.");
 	}
 }
 

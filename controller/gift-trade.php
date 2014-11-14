@@ -353,6 +353,7 @@ if(!isset($url[1]))
 	<p><ul style="list-style-type:decimal;margin-left:1em;">
 		<li><a href="/gift-trade/new">Start a new transaction</a> or click on a pending one in the list below.</li>
 		<li>Add Auro to the transaction (if applicable).</li>
+		<li>Add Exotic Packages to the transaction (if applicable).</li>
 		<li>Layer by layer, add the items you wish to send (if applicable).</li>
 		<li>There will be a list detailing what is part of the transaction. You can remove Auro and items from it.</li>
 		<li>After you\'ve made sure that the transaction contains exactly what you want it to, click either the "Gift" or "Trade" button.<br/>- "Gifts" don\'t require any action from the recipient.<br/>- "Trades" need to be updated by the recipient and will then return to you for confirmation.</li>
