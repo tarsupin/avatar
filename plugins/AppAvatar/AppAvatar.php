@@ -260,22 +260,18 @@ abstract class AppAvatar {
 		if($colorList = Cache::get("color:" . substr(md5($position . $title), 0, 20)))
 		{
 			$colorList = json_decode($colorList, true);
-			if(isset($colorList["b"]))
+			$uniqueList = $colorList["b"];
+			if($gender != "f")
 			{
-				$uniqueList = $colorList["b"];
-				if($gender != "f")
-				{
-					$uniqueList = array_merge($uniqueList, $colorList["m"]);
-				}
-				if($gender != "m")
-				{
-					$uniqueList = array_merge($uniqueList, $colorList["f"]);
-				}
-				sort($uniqueList);
-				
-				return $uniqueList;
+				$uniqueList = array_merge($uniqueList, $colorList["m"]);
 			}
-			return $colorList;
+			if($gender != "m")
+			{
+				$uniqueList = array_merge($uniqueList, $colorList["f"]);
+			}
+			sort($uniqueList);
+			
+			return $uniqueList;
 		}
 		
 		// If the color cache is stale, retrieve it normally
@@ -310,6 +306,8 @@ abstract class AppAvatar {
 		$colorList["m"] = array_values($colorList["m"]);
 		$colorList["f"] = array_values($colorList["f"]);
 		
+		Cache::set("color:" . substr(md5($position . $title), 0, 20), json_encode($colorList), 60 * 48);
+		
 		// combine lists for both and the wanted gender(s)
 		$uniqueList = $colorList["b"];
 		if($gender != "f")
@@ -321,8 +319,6 @@ abstract class AppAvatar {
 			$uniqueList = array_merge($uniqueList, $colorList["f"]);
 		}
 		sort($uniqueList);
-		
-		Cache::set("color:" . substr(md5($position . $title), 0, 20), json_encode($uniqueList), 60 * 48);
 		
 		return $uniqueList;
 	}

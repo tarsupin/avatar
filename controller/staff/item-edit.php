@@ -76,7 +76,11 @@ if(Form::submitted("upload-item"))
 		foreach($_FILES['image'] as $key => $val)
 		{
 			$image[$key] = $val[$i];
-		}	
+		}
+		if(File::exists(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'] . "/" . $image['name']))
+		{
+			File::delete(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'] . "/" . $image['name']);
+		}		
 		$imageUpload = new ImageUpload($image);
 		$imageUpload->minHeight = 0;
 		$imageUpload->minWidth = 0;
@@ -203,7 +207,7 @@ foreach($shops as $shop)
 }
 echo '
 	<form class="uniform" action="/staff/item-edit/' . $url[2] . '" method="post">' . Form::prepare("shop-item") . '
-		<p>The availability/Auro cost in different shops. Set to 0 if not available in the shop.<br/>The Wrappers shop is not listed here because it is handled automatically.</p>
+		<p>The availability/Auro cost in different shops. Set to 0 if not available in the shop.</p>
 		<p><input type="number" name="shop_1" step="any" value="' . (isset($costs[1]) ? $costs[1] : 0) .  '"/> A Cut Above<br/>
 		<input type="number" name="shop_4" step="any" value="' . (isset($costs[4]) ? $costs[4] : 0) .  '"/> Pr&ecirc;t &agrave; Porter<br/>
 		<input type="number" name="shop_7" step="any" value="' . (isset($costs[7]) ? $costs[7] : 0) .  '"/> Haute Couture<br/>
@@ -222,6 +226,7 @@ echo '
 		<p><input type="number" name="shop_13" step="any" value="' . (isset($costs[13]) ? $costs[13] : 0) .  '"/> Archive<br/>
 		<input type="number" name="shop_16" step="any" value="' . (isset($costs[16]) ? $costs[16] : 0) .  '"/> Staff Shop<br/>
 		<input type="number" name="shop_17" step="any" value="' . (isset($costs[17]) ? $costs[17] : 0) .  '"/> Test Shop</p>
+		<input type="number" name="shop_19" step="any" value="' . (isset($costs[19]) ? $costs[19] : 0) .  '"/> Wrappers</p>
 		<p><input type="submit" value="Set"/></p>
 	</form>
 	<div class="spacer"></div>';
@@ -286,7 +291,7 @@ $files = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/"
 sort($files);
 foreach($files as $file)
 {
-	if(strpos($file, "default_") === false && $file != "_stats.txt")
+	if(strpos($file, "default_") === false && substr($file, -4) == ".png")
 	{
 		echo '
 	<a href="/staff/item-edit/' . $url[2] . '?delete=' . substr($file, 0, -4) . '" onclick="return confirm(\'Are you sure you want to delete this file?\');">&#10006;</a> ' . $file . "<br/>";

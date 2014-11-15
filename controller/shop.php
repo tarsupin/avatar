@@ -116,7 +116,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 			$html .= '
 			</select>';
 			
-			$html .= '<br /><a href="/wish-list?add=' . $item['id'] . '">Add to Wishlist</a>';
+			$html .= '<br /><a href="/wish-list?add=' . $item['id'] . '">Add to Wish List</a>';
 			if($item['rarity_level'] == 0)
 			{
 				$html .= '

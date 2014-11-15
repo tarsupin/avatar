@@ -27,14 +27,19 @@ abstract class AppTransfer {
 		
 		foreach($list as $item)
 		{
-			if(Database::query("INSERT INTO user_items (uni_id, item_id) VALUES (?, ?)", array($uniID, (int) $item['clothingID'])))
+			if(AppAvatar::receiveItem($uniID, (int) $item['clothingID'], "Transfer from Uni5"))
 			{
 				Database::query("DELETE FROM _transfer_items WHERE id=? AND account=? LIMIT 1", array((int) $item['id'], $oldUsername));
-				AppAvatar::record(0, $uniID, (int) $item['clothingID'], "Transfer from Uni5");
+			}
+			else
+			{
+				Database::endTransaction(false);
+				return false;
 			}
 		}
 		
-		return Database::endTransaction();
+		Database::endTransaction();
+		return true;
 	}
 	
 
@@ -54,14 +59,19 @@ abstract class AppTransfer {
 		
 		foreach($list as $package)
 		{
-			if(Database::query("INSERT INTO user_packages (uni_id, package_id) VALUES (?, ?)", array($uniID, (int) $package['packageID'])))
-			{
-				AppAvatar::receivePackage($uniID, (int) $package['packageID'], "Transfer from Uni5");
+			if(AppAvatar::receivePackage($uniID, (int) $package['packageID'], "Transfer from Uni5"))
+			{				
 				Database::query("DELETE FROM _transfer_packages WHERE id=? AND account=? LIMIT 1", array((int) $package['id'], $oldUsername));
 			}
+			else
+			{
+				Database::endTransaction(false);
+				return false;
+			}
 		}
-		
-		return Database::endTransaction();
+
+		Database::endTransaction();
+		return true;
 	}
 	
 }

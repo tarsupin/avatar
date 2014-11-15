@@ -257,7 +257,7 @@ foreach($result as $item)
 		
 	echo '
 		</select>
-		<br/><a href="/wish-list?add=' . $item['id'] . '">Add to Wishlist</a><br/>';
+		<br/><a href="/wish-list?add=' . $item['id'] . '">Add to Wish List</a><br/>';
 	if($item['rarity_level'] == 0 || Me::$clearance >= 5)
 	{
 		echo '
