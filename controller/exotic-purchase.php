@@ -122,7 +122,7 @@ for($i=1; $i<5; $i++)
 		{
 			$slot = AppExotic::chooseItem($i);
 		}
-		if($slot !== false)
+		if($slot != array())
 		{
 			// save new item
 			AppExotic::saveSlot($i, $slot);

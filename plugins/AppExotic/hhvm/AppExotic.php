@@ -39,7 +39,7 @@ abstract class AppExotic {
 	(
 		int $slotID			// <int> The shop slot.
 	,	int $exception = 0	// <int> The day of release if the package was late.
-	): array <str, mixed>					// RETURNS <str:mixed> the item data, or FALSE if failed.
+	): array <str, mixed>					// RETURNS <str:mixed> the item data.
 	
 	//	$slot = AppExotic::chooseItem($slotID);
 	{
@@ -55,7 +55,7 @@ abstract class AppExotic {
 				$content = Database::selectMultiple("SELECT item_id FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE year=? AND month=? ORDER BY item_id", array((int) date("Y"), (int) date("n")));
 				if($content == array())
 				{
-					return false;
+					return array();
 				}
 				// choose based on last used item
 				$last = self::getSlot(1);
@@ -120,7 +120,7 @@ abstract class AppExotic {
 			$cost = round($cost * 2, 1) / 2;
 			return array("itemData" => $item, "stock" => $stock, "expire" => $expire, "cost" => $cost, "month" => $month, "year" => $year);
 		}
-		return false;
+		return array();
 	}
 	
 /****** Save Chosen Item ******/

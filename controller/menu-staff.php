@@ -30,6 +30,7 @@ echo '
 	' . Alert::display() . '
 	<p><a href="staff/shop-refresh">Refresh Shops</a></p>
 	<p><a href="staff/item-create">Create Item</a></p>
+	<p><a href="staff/transfer">Transfer</a></p>
 </div>';
 
 // Display the Footer

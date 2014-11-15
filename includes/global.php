@@ -51,6 +51,7 @@ if(Me::$loggedIn)
 			<ul>
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
+				<li class="dropdown-slot"><a href="staff/transfer">Transfer</a></li>
 			</ul>
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>

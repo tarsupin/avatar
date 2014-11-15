@@ -158,7 +158,7 @@ html,body { background-color:white; }
 	<li class="nav-slot"><a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Current</a></li>
 	<li class="nav-slot"><a href="/preview-avi?unequipAll&' . Link::prepare("unequipAll") . '">Unequip All</a></li>
 	<li class="nav-slot"><a href="/preview-avi?randomize&' . Link::prepare("randomize") . '">Randomize Colors</a></a></li>
-	<li class="nav-slot"><a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a></a></li>
+	<li class="nav-slot"><a href="/preview-avi?buyAll&' . Link::prepare("buyAll") . '" id="totalcost" onclick="return confirm(\'Do you really want to buy all these items? This will not repurchase items you already have.\');">Buy Missing Items</a></a></li>
 </ul></div>
 ';
 
@@ -174,6 +174,7 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 $outfitArray = array_reverse($outfitArray);
+$totalmissingcost = 0;
 
 // Gather your list of equipped items
 foreach($outfitArray as $pos => $item)
@@ -215,8 +216,10 @@ foreach($outfitArray as $pos => $item)
 			$cost = AppAvatar::itemMinCost($eItem['id']);
 			if($cost !== false)
 			{
+				$itemcost = AppAvatar::itemMinCost($eItem['id']);
+				$totalmissingcost += $itemcost;
 				echo '
-			<a class="buy" title="Buy for ' . AppAvatar::itemMinCost($eItem['id']) . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+			<a class="buy" title="Buy for ' . $itemcost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
 			}
 		}
 
@@ -253,6 +256,6 @@ echo '
 ?>
 
 <script src="/assets/scripts/reorder.js" type="text/javascript" charset="utf-8"></script>
-
+<script>$(function() { $("#totalcost").attr("title", "<?php echo $totalmissingcost; ?> Auro"); });</script>
 </body>
 </html>

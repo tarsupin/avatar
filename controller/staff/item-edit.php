@@ -85,10 +85,7 @@ if(Form::submitted("upload-item"))
 		$imageUpload->maxFilesize = 1024 * 1000;
 		$imageUpload->save(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'] . "/" . $imageUpload->filename . "." . $imageUpload->extension, ImageUpload::MODE_OVERWRITE);
 	}
-}
 
-if(isset($_GET['delete']) || Form::submitted("upload-item"))
-{
 	$results = Dir::getFiles(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title']);
 	if($results)
 	{
