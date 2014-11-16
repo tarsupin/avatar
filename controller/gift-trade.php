@@ -190,7 +190,7 @@ if(isset($url[1]) && $url[1] != "new")
 	// add Auro
 	if(Form::submitted("auro-transaction"))
 	{
-		$_POST['auro'] = (int) max(0, round($_POST['auro']));
+		$_POST['auro'] = max(0, round($_POST['auro']));
 		
 		if($_POST['auro'] > 0)
 		{

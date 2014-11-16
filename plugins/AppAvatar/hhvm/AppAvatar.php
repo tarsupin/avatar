@@ -430,6 +430,8 @@ abstract class AppAvatar {
 	
 	// AppAvatar::editAvatar($uniID, $base, $gender);
 	{
+		global $config;
+	
 		$gender = ($gender == "male" ? "male" : "female");
 		
 		// Compare with current data to determine cost
@@ -473,6 +475,8 @@ abstract class AppAvatar {
 	
 	// AppAvatar::purchaseItem($itemID);
 	{
+		global $config;
+	
 		// Make sure the item exists
 		if(!$itemData = self::itemData($itemID))
 		{

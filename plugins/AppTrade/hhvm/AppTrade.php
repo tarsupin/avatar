@@ -31,6 +31,8 @@ abstract class AppTrade {
 	
 	// AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 	{
+		global $config;
+		
 		$auroAmount = round($auroAmount, 2);
 		if(!$anon)
 		{

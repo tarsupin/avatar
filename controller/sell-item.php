@@ -47,7 +47,7 @@ if(Form::submitted("sell-item") && !Alert::hasErrors())
 			// get wrappers
 			$wrappers = AppAvatar::wrappers();
 
-			Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']);
+			Auro::grant(Me::$id, round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']);
 			Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . ($item['cost']/2) . ' Auro.');
 			header("Location: /dress-avatar?position=" . $item['position']); exit;	
 		}
