@@ -447,23 +447,18 @@ abstract class AppAvatar {
 		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array($base, $gender[0], $uniID, $aviID)))
 		{
 			// Pay cost
-			$balance = Currency::check(Me::$id);
-			if($balance < $cost)
+			if(Auro::spend(Me::$id, (float) $cost, "Changed Base", $config['site-name']))
 			{
-				Alert::error("Too Expensive", "You don't have enough to change your base!");
-				return false;
+				// Update the Avatar Image
+				$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
+				$outfitArray[0] = array(0, $base);
+				$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 1 ? "real" : "real" . $aviID));
+				$aviData = Avatar::imageData(Me::$id, $aviID);
+				AppOutfit::draw($base, $gender[0], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+				AppOutfit::save($uniID, ($aviID == 1 ? "real" : "real" . $aviID), $outfitArray);
+				return true;
 			}
-			Currency::subtract(Me::$id, (float) $cost, "Changed Base");
-					
-			// Update the Avatar Image
-			$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
-			$outfitArray[0] = array(0, $base);
-			$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 1 ? "real" : "real" . $aviID));
-			$aviData = Avatar::imageData(Me::$id, $aviID);
-			AppOutfit::draw($base, $gender[0], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
-			AppOutfit::save($uniID, ($aviID == 1 ? "real" : "real" . $aviID), $outfitArray);
-			return true;
-		}		
+		}
 		
 		return false;
 	}
@@ -474,7 +469,6 @@ abstract class AppAvatar {
 	(
 		int $itemID			// <int> The item to provide (based on ID).
 	,	int $shopID = 0		// <int> The ID of the shop this item is from.
-	,	bool $save = false	// <bool> Whether to display the messages on the same page (FALSE) or the next one (TRUE).
 	): bool					// RETURNS <bool> TRUE on success, or FALSE if failed.
 	
 	// AppAvatar::purchaseItem($itemID);
@@ -482,14 +476,7 @@ abstract class AppAvatar {
 		// Make sure the item exists
 		if(!$itemData = self::itemData($itemID))
 		{
-			if(!$save)
-			{
-				Alert::error($itemData['title'] . " Does Not Exist", $itemData['title'] . " does not exist.");
-			}
-			else
-			{
-				Alert::saveError($itemData['title'] . "  Does Not Exist", $itemData['title'] . " does not exist.");
-			}
+			Alert::saveError($itemData['title'] . "  Does Not Exist", $itemData['title'] . " does not exist.");
 			return false;
 		}
 		
@@ -497,14 +484,7 @@ abstract class AppAvatar {
 		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
 		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
 		{
-			if(!$save)
-			{
-				Alert::error($itemData['title'] . " Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
-			}
-			else
-			{
-				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
-			}
+			Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
 			return false;
 		}
 		
@@ -513,14 +493,7 @@ abstract class AppAvatar {
 		{
 			if(!$shop['cost'] = self::itemMinCost($itemID))
 			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
-				}
+				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
 				return false;
 			}
 		}
@@ -529,49 +502,19 @@ abstract class AppAvatar {
 		{
 			if(!$item = self::getShopItems($shopID, $itemID))
 			{
-				if(!$save)
-				{
-					Alert::error($itemData['title'] . " Wrong Shop", $itemData['title'] . " is not available in this shop.");
-				}
-				else
-				{
-					Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
-				}
+				Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
 				return false;
 			}
 			$shop['cost'] = $item['cost'];
 		}
-	
-		$balance = Currency::check(Me::$id);
-	
-		// Make sure your balance exceeds the item's cost
-		if($balance < $shop['cost'])
-		{
-			if(!$save)
-			{
-				Alert::error($itemData['title'] . " Too Expensive", "You don't have enough to purchase " . $itemData['title'] . "!");
-			}
-			else
-			{
-				Alert::saveError($itemData['title'] . " Too Expensive", "You don't have enough to purchase " . $itemData['title'] . "!");
-			}
-			return false;
-		}
 		
-		// Add this item to your inventory
-		if(self::receiveItem(Me::$id, $itemID, "Purchased from Shop"))
+		// Spend the currency to purchase this item
+		if(Auro::spend(Me::$id, (float) $shop['cost'], "Purchased " . $itemData['title'], $config['site-name']))
 		{
-			// Spend the currency to purchase this item
-			Currency::subtract(Me::$id, (float) $shop['cost'], "Purchased " . $itemData['title']);
+			// Add this item to your inventory
+			self::receiveItem(Me::$id, $itemID, "Purchased from Shop");
 			
-			if(!$save)
-			{
-				Alert::success($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
-			}
-			else
-			{
-				Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
-			}
+			Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
 			Cache::delete("invLayers:" . Me::$id);
 			return true;
 		}

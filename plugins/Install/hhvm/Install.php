@@ -10,6 +10,7 @@ abstract class Install extends Installation {
 	public static array <str, bool> $addonPlugins = array(	// <str:bool>
 		"Avatar"			=> true
 	,	"Currency"			=> true
+	,	"Auro"				=> true
 	,	"Friends"			=> true
 	,	"Notifications"		=> true
 	,	"Transactions"		=> true

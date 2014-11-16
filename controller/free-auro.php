@@ -14,17 +14,9 @@ if(!Me::$loggedIn)
 // Run Action to get Free Auro
 if($getLink = Link::clicked() and $getLink == "free-auro")
 {
-	$balance = Currency::check(Me::$id);
-	
-	if($balance < 500000)
+	if(Auro::grant(Me::$id, (float) 100000, "Free Auro", $config['site-name']))
 	{
-		Currency::add(Me::$id, (float) 100000, "Free Auro");
-		
 		Alert::success("Free Auro", "You just got 100,000 free auro!");
-	}
-	else
-	{
-		Alert::error("Free Auro", "You probably have enough Auro now &gt;.&gt;", 7);
 	}
 }
 

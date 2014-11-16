@@ -203,24 +203,16 @@ if(isset($url[1]) && $url[1] != "new")
 				$approval[$recipientID] = 0;
 			}
 		
-			$balance = Currency::check(Me::$id);
-			if($balance >= $_POST['auro'])
+			// the .001 is needed to make sure it's a float; it doesn't actually get sent
+			if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, ($_POST['auro'] + 0.001), "Transaction " . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
 			{
-				// the .001 is needed to make sure it's a float; it doesn't actually get sent
-				if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, ($_POST['auro'] + 0.001), "Transaction " . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
-				{
-					$approval[Me::$id] = 0;
-					$approval[$recipientID] = 0;
-					Alert::success("Entry Added", "The Auro have been added to the transaction.");
-				}
-				else
-				{
-					Alert::error("Not Added", "The entry could not be added to the transaction.");
-				}
+				$approval[Me::$id] = 0;
+				$approval[$recipientID] = 0;
+				Alert::success("Entry Added", "The Auro have been added to the transaction.");
 			}
 			else
 			{
-				Alert::error("Not Enough Auro", "You do not have enough Auro.");
+				Alert::error("Not Added", "The entry could not be added to the transaction.");
 			}
 		}
 	}

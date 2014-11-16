@@ -25,7 +25,7 @@ abstract class AppTrade {
 		int $senderID		// <int> The UniID sending the Auro.
 	,	int $recipientID	// <int> The UniID receiving the Auro.
 	,	float $auroAmount		// <float> The amount of Auro being sent.
-	,	string $desc = "Gift or Trade"		// <str> The description for the log.
+	,	string $desc = ""		// <str> The description for the log.
 	,	bool $anon = false	// <bool> Whether to show it as anonymous or not.
 	): bool					// RETURNS <bool> TRUE if the Auro was sent, FALSE if it failed.
 	
@@ -34,13 +34,13 @@ abstract class AppTrade {
 		$auroAmount = round($auroAmount, 2);
 		if(!$anon)
 		{
-			$return = Currency::exchange($senderID, $recipientID, $auroAmount, $desc);
+			$return = Auro::exchange($senderID, $recipientID, $auroAmount, ($desc != "" ? $desc . ": " : "") . "Gift or Trade", $config['site-name']);
 		}
 		else
 		{
 			$recipient = User::get($recipientID, "handle");
-			$pass1 = Currency::add($recipientID, $auroAmount, "Anonymous Gift");
-			$pass2 = Currency::subtract($senderID, $auroAmount, "Anonymous Gift to " . $recipient['handle']);
+			$pass1 = Auro::grant($recipientID, $auroAmount, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift", $config['site-name']);
+			$pass2 = Auro::spend($senderID, $auroAmount, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift to " . $recipient['handle'], $config['site-name']);
 			$return = ($pass1 !== false && $pass2 !== false ? true : false);
 		}
 		if($return === false)
@@ -56,7 +56,7 @@ abstract class AppTrade {
 		int $senderID		// <int> The UniID sending the item.
 	,	int $recipientID	// <int> The UniID receiving the item.
 	,	int $itemID			// <int> The ID of the item that the sender is exchanging.
-	,	string $desc = "Gift or Trade"		// <str> The description for the log.
+	,	string $desc = ""		// <str> The description for the log.
 	,	bool $anon = false	// <bool> Whether to show it as anonymous or not.
 	): bool					// RETURNS <bool> TRUE if the item was sent, FALSE if it failed.
 	
@@ -71,14 +71,14 @@ abstract class AppTrade {
 			$success = Database::query("UPDATE user_items SET uni_id=? WHERE uni_id=? and item_id=? LIMIT 1", array($recipientID, $senderID, $itemID));
 			if($success)
 			{
-				AppAvatar::record($senderID, $recipientID, $itemID, $desc);
+				AppAvatar::record($senderID, $recipientID, $itemID, ($desc != "" ? $desc . ": " : "") . "Gift or Trade");
 			}
 		}
 		else
 		{
 			$recipient = User::get($recipientID, "handle");
-			$pass1 = AppAvatar::receiveItem($recipientID, $itemID, "Anonymous Gift");
-			$pass2 = AppAvatar::dropItem($senderID, $itemID, "Anonymous Gift to " . $recipient['handle']);
+			$pass1 = AppAvatar::receiveItem($recipientID, $itemID, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift");
+			$pass2 = AppAvatar::dropItem($senderID, $itemID, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift to " . $recipient['handle']);
 			$success = ($pass1 !== false && $pass2 !== false ? true : false);
 		}
 		
@@ -98,7 +98,7 @@ abstract class AppTrade {
 		int $senderID		// <int> The UniID sending the item.
 	,	int $recipientID	// <int> The UniID receiving the item.
 	,	int $packageID		// <int> The ID of the item that the sender is exchanging.
-	,	string $desc = "Gift or Trade"		// <str> The description for the log.
+	,	string $desc = ""		// <str> The description for the log.
 	,	bool $anon = false	// <bool> Whether to show it as anonymous or not.
 	): bool					// RETURNS <bool> TRUE if the item was sent, FALSE if it failed.
 	
@@ -113,14 +113,14 @@ abstract class AppTrade {
 			$success = Database::query("UPDATE user_packages SET uni_id=? WHERE uni_id=? and package_id=? LIMIT 1", array($recipientID, $senderID, $packageID));
 			if($success)
 			{
-				AppAvatar::recordPackage($senderID, $recipientID, $packageID, $desc);
+				AppAvatar::recordPackage($senderID, $recipientID, $packageID, ($desc != "" ? $desc . ": " : "") . "Gift or Trade");
 			}
 		}
 		else
 		{
 			$recipient = User::get($recipientID, "handle");
-			$pass1 = AppAvatar::receivePackage($recipientID, $packageID, "Anonymous Gift");
-			$pass2 = AppAvatar::dropPackage($senderID, $packageID, "Anonymous Gift to " . $recipient['handle']);
+			$pass1 = AppAvatar::receivePackage($recipientID, $packageID, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift");
+			$pass2 = AppAvatar::dropPackage($senderID, $packageID, ($desc != "" ? $desc . ": " : "") . "Anonymous Gift to " . $recipient['handle']);
 			$success = ($pass1 !== false && $pass2 !== false ? true : false);
 		}
 

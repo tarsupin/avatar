@@ -10,6 +10,15 @@ require(SYS_PATH . "/phpTesla.php");
 // Initialize Active User
 Me::initialize();
 
+if(isset($_SESSION['u6access']) || isset($_GET['u6access']))
+{
+	$_SESSION['u6access'] = 1;
+}
+else
+{
+	die("The avatar site is temporarily down for changes in the Auro system. We apologize for any inconvenience caused.");
+}
+
 // Get the user's active avatar
 $activeAvatar = Database::selectOne("SELECT avatar_opt FROM users WHERE uni_id=? LIMIT 1", array(Me::$id));
 $activeAvatar = (int) $activeAvatar['avatar_opt'];

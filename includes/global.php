@@ -33,7 +33,6 @@ if(Me::$loggedIn)
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '"><a href="/menu-giftandtrade">Gift &amp; Trade</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/gift-trade">Gift &amp; Trade</a></li>
-				<li class="dropdown-slot"><a href="/log-auro">Auro Log</a></li>
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
 				<li class="dropdown-slot"><a href="/log-package">EP Log</a></li>
 			</ul>
@@ -53,7 +52,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer">Transfer</a></li>
 			</ul>
-		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain">' . Currency::check(Me::$id) . ' Auro</li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
+		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>
 </div>');
 }

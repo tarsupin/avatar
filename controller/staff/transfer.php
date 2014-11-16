@@ -35,7 +35,7 @@ if(Form::submitted("transfer-staff"))
 				$pass['auro'] = (float) $pass['auro'];
 				if($pass['auro'] > 0)
 				{
-					if(Currency::add($recipient, $pass['auro'], "Transfer from Uni5"))
+					if(Auro::grant($recipient, $pass['auro'], "Transfer from Uni5", $config['site-name']))
 					{
 						Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array(0, $pass['account']));
 						Alert::success("Auro Transfer", $pass['auro'] . " Auro have been transferred.");
