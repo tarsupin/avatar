@@ -33,7 +33,7 @@ abstract class AppTrade {
 	{
 		global $config;
 		
-		$auroAmount = round($auroAmount, 2);
+		$auroAmount = (int) round($auroAmount);
 		if(!$anon)
 		{
 			$return = Auro::exchange($senderID, $recipientID, $auroAmount, ($desc != "" ? $desc . ": " : "") . "Gift or Trade", $config['site-name']);

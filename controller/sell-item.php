@@ -42,12 +42,12 @@ if(Form::submitted("sell-item") && !Alert::hasErrors())
 {
 	if(FormValidate::pass())
 	{
-		if(AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop"))
+		// get wrappers
+		$wrappers = AppAvatar::wrappers();
+			
+		if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']))
 		{
-			// get wrappers
-			$wrappers = AppAvatar::wrappers();
-
-			Auro::grant(Me::$id, round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']);
+			AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop");
 			Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . ($item['cost']/2) . ' Auro.');
 			header("Location: /dress-avatar?position=" . $item['position']); exit;	
 		}
@@ -88,7 +88,7 @@ echo '
 	if(!Alert::hasErrors())
 	{
 	echo '
-	<p>Are you sure you want to sell ' . $item['title'] . ' for ' . ($item['cost']/2) . ' Auro?</p>';
+	<p>Are you sure you want to sell ' . $item['title'] . ' for ' . round($item['cost']/2) . ' Auro?</p>';
 	
 	// Get some of the items
 	$images = Dir::getFiles(APP_PATH . "/avatar_items/" . $item['position'] . '/' . $item['title'] . '/');
