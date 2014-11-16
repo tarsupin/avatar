@@ -120,7 +120,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 			if($item['rarity_level'] == 0)
 			{
 				$html .= '
-			<br/><a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy for ' . (float) $item['cost'] . '</a>';
+			<br/><a href="/purchase-item/' . $item['id'] . '?shopID=' . $shopID . '">Buy for ' . (int) $item['cost'] . '</a>';
 			}
 			else
 			{

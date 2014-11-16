@@ -190,7 +190,7 @@ if(isset($url[1]) && $url[1] != "new")
 	// add Auro
 	if(Form::submitted("auro-transaction"))
 	{
-		$_POST['auro'] = (float) max(0, round($_POST['auro'], 2));
+		$_POST['auro'] = (int) max(0, round($_POST['auro']));
 		
 		if($_POST['auro'] > 0)
 		{
@@ -203,8 +203,7 @@ if(isset($url[1]) && $url[1] != "new")
 				$approval[$recipientID] = 0;
 			}
 		
-			// the .001 is needed to make sure it's a float; it doesn't actually get sent
-			if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, ($_POST['auro'] + 0.001), "Transaction " . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
+			if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendAuro", array(Me::$id, $recipientID, $_POST['auro'], "Transaction " . $url[1]), array("image" => "gold.png", "caption" => $_POST['auro'] . " Auro", "description" => $sender . " sends " . $_POST['auro'] . " Auro to " . $recipient . ".")))
 			{
 				$approval[Me::$id] = 0;
 				$approval[$recipientID] = 0;

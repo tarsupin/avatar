@@ -134,7 +134,7 @@ if(Form::submitted("shop-item"))
 	{
 		if(substr($key, 0, 5) == "shop_")
 		{
-			$val = (float) $val;
+			$val = (int) $val;
 			$shop = (int) substr($key, strpos($key, "_") + 1);
 			AppAvatarAdmin::deleteShopItem($shop, $url[2]);
 			if($val > 0)
@@ -208,25 +208,25 @@ foreach($shops as $shop)
 echo '
 	<form class="uniform" action="/staff/item-edit/' . $url[2] . '" method="post">' . Form::prepare("shop-item") . '
 		<p>The availability/Auro cost in different shops. Set to 0 if not available in the shop.</p>
-		<p><input type="number" name="shop_1" step="any" value="' . (isset($costs[1]) ? $costs[1] : 0) .  '"/> A Cut Above<br/>
-		<input type="number" name="shop_4" step="any" value="' . (isset($costs[4]) ? $costs[4] : 0) .  '"/> Pr&ecirc;t &agrave; Porter<br/>
-		<input type="number" name="shop_7" step="any" value="' . (isset($costs[7]) ? $costs[7] : 0) .  '"/> Haute Couture<br/>
-		<input type="number" name="shop_10" step="any" value="' . (isset($costs[10]) ? $costs[10] : 0) .  '"/> Time Capsule<br/>
-		<input type="number" name="shop_2" step="any" value="' . (isset($costs[2]) ? $costs[2] : 0) .  '"/> All That Glitters<br/>
-		<input type="number" name="shop_5" step="any" value="' . (isset($costs[5]) ? $costs[5] : 0) .  '"/> Body Shop<br/>
-		<input type="number" name="shop_8" step="any" value="' . (isset($costs[8]) ? $costs[8] : 0) .  '"/> Junk Drawer<br/>
-		<input type="number" name="shop_11" step="any" value="' . (isset($costs[11]) ? $costs[11] : 0) .  '"/> Under Dressed<br/>
-		<input type="number" name="shop_3" step="any" value="' . (isset($costs[3]) ? $costs[3] : 0) .  '"/> Heart and Sole<br/>
-		<input type="number" name="shop_6" step="any" value="' . (isset($costs[6]) ? $costs[6] : 0) .  '"/> Finishing Touch<br/>
-		<input type="number" name="shop_9" step="any" value="' . (isset($costs[9]) ? $costs[9] : 0) .  '"/> Looking Glass<br/>
-		<input type="number" name="shop_12" step="any" value="' . (isset($costs[12]) ? $costs[12] : 0) .  '"/> Vogue Veneers</p>
-		<p><input type="number" name="shop_15" step="any" value="' . (isset($costs[15]) ? $costs[15] : 0) .  '"/> Avatar Museum<br/>
-		<input type="number" name="shop_18" step="any" value="' . (isset($costs[18]) ? $costs[18] : 0) .  '"/> Credit Shop<br/>
-		<input type="number" name="shop_14" step="any" value="' . (isset($costs[14]) ? $costs[14] : 0) .  '"/> Exotic Exhibit</p>
-		<p><input type="number" name="shop_13" step="any" value="' . (isset($costs[13]) ? $costs[13] : 0) .  '"/> Archive<br/>
-		<input type="number" name="shop_16" step="any" value="' . (isset($costs[16]) ? $costs[16] : 0) .  '"/> Staff Shop<br/>
-		<input type="number" name="shop_17" step="any" value="' . (isset($costs[17]) ? $costs[17] : 0) .  '"/> Test Shop</p>
-		<input type="number" name="shop_19" step="any" value="' . (isset($costs[19]) ? $costs[19] : 0) .  '"/> Wrappers</p>
+		<p><input type="number" name="shop_1" value="' . (isset($costs[1]) ? $costs[1] : 0) .  '"/> A Cut Above<br/>
+		<input type="number" name="shop_4" value="' . (isset($costs[4]) ? $costs[4] : 0) .  '"/> Pr&ecirc;t &agrave; Porter<br/>
+		<input type="number" name="shop_7" value="' . (isset($costs[7]) ? $costs[7] : 0) .  '"/> Haute Couture<br/>
+		<input type="number" name="shop_10" value="' . (isset($costs[10]) ? $costs[10] : 0) .  '"/> Time Capsule<br/>
+		<input type="number" name="shop_2" value="' . (isset($costs[2]) ? $costs[2] : 0) .  '"/> All That Glitters<br/>
+		<input type="number" name="shop_5" value="' . (isset($costs[5]) ? $costs[5] : 0) .  '"/> Body Shop<br/>
+		<input type="number" name="shop_8" value="' . (isset($costs[8]) ? $costs[8] : 0) .  '"/> Junk Drawer<br/>
+		<input type="number" name="shop_11" value="' . (isset($costs[11]) ? $costs[11] : 0) .  '"/> Under Dressed<br/>
+		<input type="number" name="shop_3" value="' . (isset($costs[3]) ? $costs[3] : 0) .  '"/> Heart and Sole<br/>
+		<input type="number" name="shop_6" value="' . (isset($costs[6]) ? $costs[6] : 0) .  '"/> Finishing Touch<br/>
+		<input type="number" name="shop_9" value="' . (isset($costs[9]) ? $costs[9] : 0) .  '"/> Looking Glass<br/>
+		<input type="number" name="shop_12" value="' . (isset($costs[12]) ? $costs[12] : 0) .  '"/> Vogue Veneers</p>
+		<p><input type="number" name="shop_15" value="' . (isset($costs[15]) ? $costs[15] : 0) .  '"/> Avatar Museum<br/>
+		<input type="number" name="shop_18" value="' . (isset($costs[18]) ? $costs[18] : 0) .  '"/> Credit Shop<br/>
+		<input type="number" name="shop_14" value="' . (isset($costs[14]) ? $costs[14] : 0) .  '"/> Exotic Exhibit</p>
+		<p><input type="number" name="shop_13" value="' . (isset($costs[13]) ? $costs[13] : 0) .  '"/> Archive<br/>
+		<input type="number" name="shop_16" value="' . (isset($costs[16]) ? $costs[16] : 0) .  '"/> Staff Shop<br/>
+		<input type="number" name="shop_17" value="' . (isset($costs[17]) ? $costs[17] : 0) .  '"/> Test Shop</p>
+		<input type="number" name="shop_19" value="' . (isset($costs[19]) ? $costs[19] : 0) .  '"/> Wrappers</p>
 		<p><input type="submit" value="Set"/></p>
 	</form>
 	<div class="spacer"></div>';

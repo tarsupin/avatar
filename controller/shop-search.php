@@ -261,7 +261,7 @@ foreach($result as $item)
 	if($item['rarity_level'] == 0 || Me::$clearance >= 5)
 	{
 		echo '
-		<a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy for ' . (float) $item['cost'] . '</a>';
+		<a href="/purchase-item/' . $item['id'] . '?shopID=' . $item['shop_id'] . '">Buy for ' . (int) $item['cost'] . '</a>';
 	}
 	else
 	{

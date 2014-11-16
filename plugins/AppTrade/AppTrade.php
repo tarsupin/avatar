@@ -24,13 +24,15 @@ abstract class AppTrade {
 	(
 		$senderID		// <int> The UniID sending the Auro.
 	,	$recipientID	// <int> The UniID receiving the Auro.
-	,	$auroAmount		// <float> The amount of Auro being sent.
+	,	$auroAmount		// <int> The amount of Auro being sent.
 	,	$desc = ""		// <str> The description for the log.
 	,	$anon = false	// <bool> Whether to show it as anonymous or not.
 	)					// RETURNS <bool> TRUE if the Auro was sent, FALSE if it failed.
 	
 	// AppTrade::sendAuro_doTransaction($senderID, $recipientID, $auroAmount);
 	{
+		global $config;
+		
 		$auroAmount = round($auroAmount, 2);
 		if(!$anon)
 		{

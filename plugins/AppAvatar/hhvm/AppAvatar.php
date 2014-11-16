@@ -227,7 +227,7 @@ abstract class AppAvatar {
 	(
 		int $itemID				// <int> The ID of the item to get the data from.
 	,	bool $allShops = false	// <bool> Whether the function should include shops inaccessible to the user.
-	): float						// RETURNS <float> data of the item, or FALSE if failed.
+	): int						// RETURNS <int> data of the item, or FALSE if failed.
 	
 	// $itemData = AppAvatar::itemMinCost($itemID);
 	{
@@ -239,7 +239,7 @@ abstract class AppAvatar {
 	
 		if($shop['m'])
 		{
-			return (float) $shop['m'];
+			return (int) $shop['m'];
 		}
 		return false;
 	}
@@ -447,7 +447,7 @@ abstract class AppAvatar {
 		if(Database::query("UPDATE avatars SET base=?, gender=? WHERE uni_id=? AND avatar_id=? LIMIT 1", array($base, $gender[0], $uniID, $aviID)))
 		{
 			// Pay cost
-			if(Auro::spend(Me::$id, (float) $cost, "Changed Base", $config['site-name']))
+			if(Auro::spend(Me::$id, (int) $cost, "Changed Base", $config['site-name']))
 			{
 				// Update the Avatar Image
 				$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
@@ -509,7 +509,7 @@ abstract class AppAvatar {
 		}
 		
 		// Spend the currency to purchase this item
-		if(Auro::spend(Me::$id, (float) $shop['cost'], "Purchased " . $itemData['title'], $config['site-name']))
+		if(Auro::spend(Me::$id, (int) $shop['cost'], "Purchased " . $itemData['title'], $config['site-name']))
 		{
 			// Add this item to your inventory
 			self::receiveItem(Me::$id, $itemID, "Purchased from Shop");

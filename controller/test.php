@@ -16,8 +16,9 @@ Database::startTransaction();
 $ok = true;
 foreach($local as $l)
 {
-	$success1 = Auro::grant((int) $l['uni_id'], (float) $l['amount'], "Initial Auro Transfer", $config['site-name']);
-	$success2 = Currency::subtract((int) $l['uni_id'], (float) $l['amount'], "Initial Auro Transfer");
+	if($l['amount'] == 0)	{ continue; }
+	$success1 = Auro::grant((int) $l['uni_id'], (int) $l['amount'], "Initial Auro Transfer", $config['site-name']);
+	$success2 = Currency::subtract((int) $l['uni_id'], (int) $l['amount'], "Initial Auro Transfer");
 	if(!$success1 || !$success2)
 	{
 		$ok = false;

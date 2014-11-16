@@ -32,7 +32,7 @@ if(Form::submitted("transfer"))
 				Database::startTransaction();
 			
 				// transfer Auro
-				$pass['auro'] = (float) $pass['auro'];
+				$pass['auro'] = (int) $pass['auro'];
 				if($pass['auro'] > 0)
 				{
 					if(Auro::grant(Me::$id, $pass['auro'], "Transfer from Uni5", $config['site-name']))

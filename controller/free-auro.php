@@ -14,7 +14,7 @@ if(!Me::$loggedIn)
 // Run Action to get Free Auro
 if($getLink = Link::clicked() and $getLink == "free-auro")
 {
-	if(Auro::grant(Me::$id, (float) 100000, "Free Auro", $config['site-name']))
+	if(Auro::grant(Me::$id, 100000, "Free Auro", $config['site-name']))
 	{
 		Alert::success("Free Auro", "You just got 100,000 free auro!");
 	}
