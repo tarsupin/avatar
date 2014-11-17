@@ -89,7 +89,10 @@ abstract class AppTrade {
 		Cache::delete("invLayers:" . $recipientID);
 		
 		// update avatars if necessary
-		AppOutfit::removeFromAvatar($senderID, $itemID);
+		if(!AppAvatar::checkOwnItem($senderID, $itemID))
+		{
+			AppOutfit::removeFromAvatar($senderID, $itemID);
+		}
 
 		return $success;
 	}

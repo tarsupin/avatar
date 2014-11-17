@@ -23,12 +23,11 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="javascript:review_item(0);">Preview Window</a></li>
 				<li class="dropdown-slot"><a href="/outfitcode-preview">Outfit Code</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "exotic-purchase", "wish-list")) ? " nav-active" : "") . '"><a href="/menu-shops">Shops</a>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("shop-list", "shop", "shop-search", "exotic-purchase")) ? " nav-active" : "") . '"><a href="/menu-shops">Shops</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/shop-list">Shop List</a></li>
 				<li class="dropdown-slot"><a href="/exotic-purchase">Exotic Items</a></li>
 				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
-				<li class="dropdown-slot"><a href="/wish-list">Wish List</a></li>
 			</ul>
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '"><a href="/menu-giftandtrade">Gift &amp; Trade</a>
 			<ul>
@@ -45,6 +44,11 @@ if(Me::$loggedIn)
 			<ul>
 				<li class="dropdown-slot"><a href="/wrapper-open">Open Wrapper</a></li>
 				<li class="dropdown-slot"><a href="/wrapper-list">List of Wrappers</a></li>
+			</ul>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wish-list", "view-wishlist")) ? " nav-active" : "") . '"><a href="menu-misc">Misc</a>
+			<ul>
+				<li class="dropdown-slot"><a href="/wish-list">My Wish List</a></li>
+				<li class="dropdown-slot"><a href="/view-wishlist">Share Wish List</a></li>
 			</ul>
 		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot' . ($urlActive == "staff" ? " nav-active" : "") . '"><a href="/menu-staff">Staff</a>
 			<ul>
