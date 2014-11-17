@@ -46,27 +46,32 @@ if(isset($url[1]) && $url[1] != "new")
 	$mine = false;
 	$users = Database::selectMultiple("SELECT uni_id, has_agreed, message FROM transactions_users WHERE transaction_id=?", array($url[1]));
 	$approval = array();
-	$message = array();
+	$mymessage = "";
+	$contrib = array();
 	foreach($users as $trans)
 	{
-		if((int) $trans['uni_id'] == Me::$id)
+		$trans['uni_id'] = (int) $trans['uni_id'];
+		$approval[$trans['uni_id']] = (int) $trans['has_agreed'];
+		if($trans['uni_id'] == Me::$id)
 		{
 			$mine = true;
-			$approval[Me::$id] = (int) $trans['has_agreed'];
+			$mymessage = $trans['message'];
 		}
 		else
 		{
-			$recipientID = (int) $trans['uni_id'];
+			$recipientID = $trans['uni_id'];
 			$recipient = User::get($recipientID, "handle");
 			$recipient = $recipient['handle'];
-			$approval[$recipientID] = (int) $trans['has_agreed'];
 			
 			if($trans['message'] != "")
 			{
 				Alert::info("Message", "Message from " . $recipient . ":<br/>" . $trans['message']);
 			}
 		}
-		$message[$trans['uni_id']] = $trans['message'];
+		
+		$contrib[$trans['uni_id']] = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], $trans['uni_id']));
+		if($contrib[$trans['uni_id']] != array())	{ $contrib[$trans['uni_id']] = true; }
+		else										{ $contrib[$trans['uni_id']] = false; }
 	}
 	
 	// go to overview if not your transaction
@@ -89,7 +94,7 @@ if(isset($url[1]) && $url[1] != "new")
 		elseif(isset($_POST['gift']) || isset($_POST['gift_anon']))
 		{
 			// check that it is indeed a gift and the other person has not added anything
-			if(!Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], $recipientID)))
+			if(!$contrib[$recipientID])
 			{
 				$entries = Database::selectMultiple("SELECT id, process_parameters FROM transactions_entries WHERE transaction_id=?", array($url[1]));
 				// set all entries to anonymous
@@ -143,6 +148,12 @@ if(isset($url[1]) && $url[1] != "new")
 		
 		elseif(isset($_POST['trade']))
 		{
+			// check that both sides contribute
+			if(!$contrib[Me::$id] || !$contrib[$recipientID])
+			{
+				Alert::error("One Sided", "Trades require both participants to send something. If this is not what you wish to do, please use the Gift function instead.");
+			}
+		
 			// check that the transaction still is as you saw it
 			$cache = Cache::get("transaction-" . $url[1] . "-" . Me::$id);
 			if($cache)
@@ -172,7 +183,7 @@ if(isset($url[1]) && $url[1] != "new")
 				}
 				else
 				{
-					Alert::error("Trade Not Sent", "The trade could not be completed. There are one or more entries that cannot be processed. Please make sure that both you and " . $recipient . " have enough Auro and all the items you wish to trade.");
+					Alert::error("Trade Not Sent", "The trade could not be completed. There are one or more entries that cannot be processed. Please make sure that both you and " . $recipient . " have enough Auro and all the Exotic Packages and items you wish to trade.");
 				}
 			}
 		}
@@ -183,7 +194,7 @@ if(isset($url[1]) && $url[1] != "new")
 		$_POST['message'] = Sanitize::punctuation($_POST['message']);
 		if(Database::query("UPDATE transactions_users SET message=? WHERE transaction_id=? AND uni_id=? LIMIT 1", array($_POST['message'], $url[1], Me::$id)))
 		{
-			$message[Me::$id] = $_POST['message'];
+			$mymessage = $_POST['message'];
 		}
 	}
 
@@ -207,6 +218,7 @@ if(isset($url[1]) && $url[1] != "new")
 			{
 				$approval[Me::$id] = 0;
 				$approval[$recipientID] = 0;
+				$contrib[Me::$id] = true;
 				Alert::success("Entry Added", "The Auro have been added to the transaction.");
 			}
 			else
@@ -239,6 +251,7 @@ if(isset($url[1]) && $url[1] != "new")
 						{
 							$approval[Me::$id] = 0;
 							$approval[$recipientID] = 0;
+							$contrib[Me::$id] = true;
 							Alert::success("Entry Added", "The item has been added to the transaction.");
 						}
 						else
@@ -266,6 +279,7 @@ if(isset($url[1]) && $url[1] != "new")
 						{
 							$approval[Me::$id] = 0;
 							$approval[$recipientID] = 0;
+							$contrib[Me::$id] = true;
 							Alert::success("Entry Added", "The package has been added to the transaction.");
 						}
 						else
@@ -293,7 +307,9 @@ if(isset($url[1]) && $url[1] != "new")
 				if(Transaction::removeEntry($_GET['remove']))
 				{
 					$approval[Me::$id] = 0;
-					$approval[$recipientID] = 0;
+					$approval[$recipientID] = 0;					
+					$contrib[$contrib[Me::$id]] = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? LIMIT 1", array($url[1], $contrib[Me::$id]));
+					if($contrib[$contrib[Me::$id]] == array())	{ $contrib[$contrib[Me::$id]] = false; }					
 					Alert::success("Entry Removed", "The entry has been removed from the transaction.");
 				}
 			}
@@ -346,7 +362,7 @@ if(!isset($url[1]))
 		<li>Add Auro to the transaction (if applicable).</li>
 		<li>Add Exotic Packages to the transaction (if applicable).</li>
 		<li>Layer by layer, add the items you wish to send (if applicable).</li>
-		<li>There will be a list detailing what is part of the transaction. You can remove Auro and items from it.</li>
+		<li>There will be a list detailing what is part of the transaction. You can remove Auro, Exotic Packages and items from it.</li>
 		<li>After you\'ve made sure that the transaction contains exactly what you want it to, click either the "Gift" or "Trade" button.<br/>- "Gifts" don\'t require any action from the recipient.<br/>- "Trades" need to be updated by the recipient and will then return to you for confirmation.</li>
 		<li>Done! The transaction is on its way to the recipient now. They will receive a notification.</li>
 	</ul></p>
@@ -501,12 +517,33 @@ else
 	<div class="spacer"></div>
 	<p>If you are trading, your trade partner can see a message from you. Would you like to set one?</p>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade-message") . '
-		<p><input type="text" name="message" maxlength="100"' . ($message[Me::$id] != '' ? ' value="' . $message[Me::$id] . '"' : '') . '/> (max 100 characters)</p>
+		<p><input type="text" name="message" maxlength="100"' . ($mymessage != '' ? ' value="' . $mymessage . '"' : '') . '/> (max 100 characters)</p>
 		<p><input type="submit" value="Set Message"/></p>
 	</form>
 	<div class="spacer"></div>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade") . '
-		<p><input class="button" type="submit" name="gift_anon" value="Gift anonymously to ' . $recipient . '"/> OR <input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/> OR <input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/> OR <input type="submit" name="cancel" value="Cancel Transaction"/></p>		
+	<p>';
+	$comma = "";
+	if(!$contrib[Me::$id])
+	{
+		echo '
+	Please add something to the transaction. ';
+	}
+	else
+	{
+		if(!$contrib[$recipientID])
+		{
+			echo '
+		<input class="button" type="submit" name="gift_anon" value="Gift anonymously to ' . $recipient . '"/> OR <input class="button" type="submit" name="gift" value="Gift to ' . $recipient . '"/>';
+			$comma = " OR ";
+		}		
+		echo ''
+		. $comma . '<input class="button" type="submit" name="trade" value="Trade with ' . $recipient . '"/>';
+		$comma = " OR ";
+	}
+	echo ''
+		. $comma . '<input type="submit" name="cancel" value="Cancel Transaction"/>
+	</p>
 	</form>';
 }
 
