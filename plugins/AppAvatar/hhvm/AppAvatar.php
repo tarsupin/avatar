@@ -435,7 +435,7 @@ abstract class AppAvatar {
 		$gender = ($gender == "male" ? "male" : "female");
 		
 		// Compare with current data to determine cost
-		$avatarData = self::avatarData(Me::$id);
+		$avatarData = self::avatarData(Me::$id, $aviID);
 		$cost = 0;
 		if($gender != $avatarData['gender_full'])	{ $cost += 1000; }
 		if($base != $avatarData['base'])			{ $cost += 30; }

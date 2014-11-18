@@ -49,6 +49,9 @@ require(SYS_PATH . "/controller/includes/header.php");
 echo '
 <style>
 textarea { width:100%; height:150px; }
+@media screen and (min-width:501px) {
+	.uniform { position:static; margin-right:210px; }
+}
 </style>';
 
 // Display Side Panel
@@ -67,7 +70,7 @@ $outfitArray[0] = array(0, $avatarData['base']);
 ksort($outfitArray);
 
 echo '
-	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/>';
+	<div id="aviblock"><img src="' . AppOutfit::drawSrc("preview") . '"/><br/>';
 // Show equipped items in human-readable form
 foreach($outfitArray as $oa)
 {
@@ -76,7 +79,7 @@ foreach($outfitArray as $oa)
 	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]) ? " [&bull;]" : "") . "<br/>";
 }
 echo '</div>
-	<form class="uniform" method="post" style="float:left;">' . Form::prepare("outfitcode-preview") . '
+	<form class="uniform" method="post">' . Form::prepare("outfitcode-preview") . '
 		<p>To save a list of your preview outfit, copy and save the content of the following textbox.</p>
 		<p><textarea onclick="$(this).select();">' . json_encode($outfitArray) . '</textarea></p>
 		<p>To dress in a previously saved outfit, copy the saved code into the following textbox and click the button.</p>

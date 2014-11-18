@@ -72,6 +72,10 @@ if(isset($url[1]))
 }
 else
 {
+	if(!isset($_GET['page']))
+	{
+		$_GET['page'] = 0;
+	}
 	if(Form::submitted("share-wishlist-all"))
 	{
 		if(isset($_POST['everyone']))
@@ -232,24 +236,32 @@ else
 	echo '
 	<h2>Available Wish Lists</h2>
 	<p>These users have made their wish list available to everyone or to you specifically. Your own wish list is not included here.</p>';
-	$lists = Database::selectMultiple("SELECT DISTINCT uni_id FROM user_share_wishlist WHERE other_id=? OR other_id=?", array(0, Me::$id));
-	$dolist = array();
+	$lists = Database::selectMultiple("SELECT DISTINCT user_share_wishlist.uni_id, handle FROM user_share_wishlist INNER JOIN users ON user_share_wishlist.uni_id=users.uni_id WHERE (other_id=? OR other_id=?) AND user_share_wishlist.uni_id!=? ORDER BY handle LIMIT " . ($_GET['page']*20 + 0) . ",20", array(0, Me::$id, Me::$id));
+	echo '
+	<p><ol start="' . ($_GET['page']*20 + 1) . '" style="list-style-type:decimal;margin-left:1em;">';
 	foreach($lists as $list)
 	{
 		if($list['uni_id'] == Me::$id)	{ continue; }
-		$recipient = User::get((int) $list['uni_id'], "handle");
-		$dolist[$list['uni_id']] = $recipient['handle'];
+		echo '
+		<li><a href="/view-wishlist/' . $list['uni_id'] . '">' . $list['handle'] . '</a></li>';
 	}
-	natcasesort($dolist);
 	echo '
-	<p><ul style="list-style-type:decimal;margin-left:1em;">';
-	foreach($dolist as $key => $do)
+	</ol></p>';
+	if($_GET['page'] > 0 or isset($lists[19]))
 	{
 		echo '
-		<li><a href="/view-wishlist/' . $key . '">' . $do . '</a></li>';
+	<br/>';
+		if($_GET['page'] > 0)
+		{
+			echo '
+	<a href="/view-wishlist?page=' . ($_GET['page']-1) . '">Previous <span class="icon-arrow-left"></span></a>';
+		}
+		if(isset($lists[19]))
+		{
+			echo '
+	<a href="/view-wishlist?page=' . ($_GET['page']+1) . '"><span class="icon-arrow-right"></span> Next</a>';
+		}
 	}
-	echo '
-	</ul></p>';
 }
 echo '
 </div>';

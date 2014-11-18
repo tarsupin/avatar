@@ -27,7 +27,7 @@ if(Form::submitted("edit-item"))
 	$title = Sanitize::word($_POST['title'], " ");
 	if($title != $itemData['title'])
 	{
-		Database::query("UPDATE `items` SET title=? WHERE itemID=? LIMIT 1", array($title, $itemID));
+		Database::query("UPDATE `items` SET title=? WHERE itemID=? LIMIT 1", array($title, $url[2]));
 		Dir::move(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'], APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $title);
 	}
 	
@@ -40,13 +40,13 @@ if(Form::submitted("edit-item"))
 	$gender = (in_array($_POST['gender'], array("b", "f", "m")) ? $_POST['gender'] : "b");
 	if($gender != $itemData['gender'])
 	{
-		Database::query("UPDATE `items` SET gender=? WHERE itemID=? LIMIT 1", array($gender, $itemID));
+		Database::query("UPDATE `items` SET gender=? WHERE itemID=? LIMIT 1", array($gender, $url[2]));
 	}
 	
 	$rarity = (int) $_POST['rarity'];
 	if($rarity != $itemData['rarity_level'])
 	{
-		Database::query("UPDATE `items` SET rarity_level=? WHERE itemID=? LIMIT 1", array($rarity, $itemID));
+		Database::query("UPDATE items SET rarity_level=? WHERE id=? LIMIT 1", array($rarity, $url[2]));
 	}
 	
 	switch($_POST['relation'])

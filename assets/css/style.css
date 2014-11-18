@@ -104,7 +104,7 @@ input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1p
 .right { right:3px; top:19px; }
 .owned { right:1px; top:40px; }
 
-.item_block { display:inline-block; padding:10px; text-align:center; width:135px; }
+.item_block { display:inline-block; padding:10px; text-align:center; width:132px; }
 .item_block select { width:135px; }
 .item_block img { max-height:100px; max-width:80px; }
 

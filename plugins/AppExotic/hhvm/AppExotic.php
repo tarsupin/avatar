@@ -59,7 +59,7 @@ abstract class AppExotic {
 				}
 				// choose based on last used item
 				$last = self::getSlot(1);
-				if($last !== false)
+				if($last != array())
 				{
 					foreach($content as $key => $cont)
 					{
@@ -88,11 +88,11 @@ abstract class AppExotic {
 				break;				
 			case 2:
 				$age = rand(1, 3);
-				$stock = rand(4, 7);
+				$stock = rand(4, 1);
 				$expire = time() + (rand(36, 60) * 3600);
 				break;
 			case 3:
-				$age = rand(2, 8);
+				$age = rand(4, 10);
 				$stock = rand(4, 7);
 				$expire = time() + (rand(36, 60) * 3600);
 				break;
@@ -100,14 +100,14 @@ abstract class AppExotic {
 				$oldest = $current_year - 2009;
 				$oldest *= 12;
 				$oldest += $current_month - 6;
-				$age = rand(6, $oldest);
+				$age = rand(11, $oldest);
 				$stock = rand(1, 3);
 				$expire = time() + (rand(36, 60) * 3600);
 		}
 		
 		$month = (int) date("n", mktime(0, 0, 0, $current_month-$age, 1, $current_year));
 		$year = (int) date("Y", mktime(0, 0, 0, $current_month-$age, 1, $current_year));
-		if($slotID > 0)
+		if($slotID > 1)
 		{
 			$content = Database::selectMultiple("SELECT item_id FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE year=? AND month=?", array($year, $month));
 			$item = $content[array_rand($content)]['item_id'];
