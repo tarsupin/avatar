@@ -41,11 +41,11 @@ $config['database']['name'] = "avatar";
 if(ENVIRONMENT == "production") {
 
 	// Set Important URLs
-	define("SITE_URL", "http://avatar.unifaction.cool");
+	define("SITE_URL", "http://avatar.unifaction.com");
 	define("CDN", "http://cdn.unifaction.com");
 	
 	// Important Configurations
-	$config['site-domain'] = "avatar.unifaction.cool";		#production
+	$config['site-domain'] = "avatar.unifaction.com";		#production
 	$config['admin-email'] = "info@unifaction.com";
 }
 
