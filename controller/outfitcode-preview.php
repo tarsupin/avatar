@@ -15,25 +15,22 @@ if(!isset($avatarData['base']))
 // Run Action
 if(Form::submitted("outfitcode-preview"))
 {
-	if(FormValidate::pass())
+	$outfitArray =  json_decode($_POST['saved'], true);	
+	if($outfitArray === NULL)
 	{
-		$outfitArray =  json_decode($_POST['saved'], true);	
-		if($outfitArray === NULL)
-		{
-			$outfitArray = unserialize($_POST['saved']);
-			// Uni5 code, need to index properly
-			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
-		}
-		else
-		{
-			// Uni6 code, done above
-		}
-		
-		// Save the changes
-		unset($outfitArray[0]);
-		Alert::success("Avatar Updated", "Your outfit has been updated!");
-		AppOutfit::save(Me::$id, "preview", $outfitArray);
+		$outfitArray = unserialize($_POST['saved']);
+		// Uni5 code, need to index properly
+		$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 	}
+	else
+	{
+		// Uni6 code, done above
+	}
+	
+	// Save the changes
+	unset($outfitArray[0]);
+	Alert::success("Avatar Updated", "Your outfit has been updated!");
+	AppOutfit::save(Me::$id, "preview", $outfitArray);
 }
 
 // Set page title

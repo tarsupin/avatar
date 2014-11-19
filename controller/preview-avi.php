@@ -214,12 +214,11 @@ foreach($outfitArray as $pos => $item)
 		elseif($eItem['rarity_level'] == 0 || Me::$clearance >= 5)
 		{
 			$cost = AppAvatar::itemMinCost($eItem['id']);
-			if($cost !== false)
+			if($cost != 0)
 			{
-				$itemcost = AppAvatar::itemMinCost($eItem['id']);
-				$totalmissingcost += $itemcost;
+				$totalmissingcost += $cost;
 				echo '
-			<a class="buy" title="Buy for ' . $itemcost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+			<a class="buy" title="Buy for ' . $cost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
 			}
 		}
 

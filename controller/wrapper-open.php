@@ -45,63 +45,60 @@ foreach($owned as $key => $own)
 // Run Action
 if(Form::submitted("wrapper-open"))
 {
-	if(FormValidate::pass())
+	// check ownership
+	$_POST['id'] = (int) $_POST['id'];
+	$has = false;
+	foreach($owned as $own)
 	{
-		// check ownership
-		$_POST['id'] = (int) $_POST['id'];
-		$has = false;
-		foreach($owned as $own)
+		if($own['id'] == $_POST['id'])
 		{
-			if($own['id'] == $_POST['id'])
-			{
-				$detail = $own;
-				$has = true;
-				break;
-			}
-		}		
-		if(!$has)
-		{
-			Alert::error("Not Owned", "You do not own this wrapper!");
+			$detail = $own;
+			$has = true;
+			break;
 		}
-		else
+	}		
+	if(!$has)
+	{
+		Alert::error("Not Owned", "You do not own this wrapper!");
+	}
+	else
+	{
+		Database::startTransaction();
+		// give content
+		foreach($detail['content'] as $item)
 		{
-			Database::startTransaction();
-			// give content
-			foreach($detail['content'] as $item)
-			{
-				if(!AppAvatar::receiveItem(Me::$id, (int) $item, "Opened Wrapper"))
-				{
-					Database::endTransaction(false);
-					Alert::error("Wrapper Not Opened", "The wrapper could not be opened.");
-					break;
-				}
-			}
-			// remove wrapper
-			if(!AppAvatar::dropItem(Me::$id, $_POST['id'], "Opened Wrapper"))
+			if(!AppAvatar::receiveItem(Me::$id, (int) $item, "Opened Wrapper"))
 			{
 				Database::endTransaction(false);
 				Alert::error("Wrapper Not Opened", "The wrapper could not be opened.");
+				break;
 			}
-			// complete or cancel transaction
-			if(!Alert::hasErrors())
+		}
+		// remove wrapper
+		if(!AppAvatar::dropItem(Me::$id, $_POST['id'], "Opened Wrapper"))
+		{
+			Database::endTransaction(false);
+			Alert::error("Wrapper Not Opened", "The wrapper could not be opened.");
+		}
+		// complete or cancel transaction
+		if(!Alert::hasErrors())
+		{
+			Database::endTransaction();
+			
+			foreach($detail['content'] as $item)
 			{
-				Database::endTransaction();
-				
-				foreach($detail['content'] as $item)
+				$item = $details[$item];
+				Alert::success("Received " . $item['title'], 'You have received ' . $item['title'] . '! [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']');
+			}
+			Alert::info("Wrapper Removed", "The wrapper has been removed from your inventory.");
+			
+			foreach($owned as $key => $own)
+			{
+				if($own['id'] == $_POST['id'])
 				{
-					$item = $details[$item];
-					Alert::success("Received " . $item['title'], 'You have received ' . $item['title'] . '! [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']');
-				}
-				Alert::info("Wrapper Removed", "The wrapper has been removed from your inventory.");
-				
-				foreach($owned as $key => $own)
-				{
-					if($own['id'] == $_POST['id'])
-					{
-						if($own['c'] < 2)	{ unset($owned[$key]); }
-						else				{ $owned[$key]['c'] -= 1; }
-						break;
-					}
+					if($own['c'] < 2)	{ unset($owned[$key]); }
+					else				{ $owned[$key]['c'] -= 1; }
+					break;
 				}
 			}
 		}

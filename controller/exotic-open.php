@@ -38,27 +38,24 @@ if(isset($url[2]))
 
 	if(Form::submitted("exotic-open"))
 	{
-		if(FormValidate::pass())
+		// check if this item is in this package
+		$valid = Database::selectOne("SELECT id FROM packages INNER JOIN packages_content ON packages.id=packages_content.package_id WHERE item_id=? AND package_id=?", array($item['id'], $url[1]));
+		if(!$valid)
 		{
-			// check if this item is in this package
-			$valid = Database::selectOne("SELECT id FROM packages INNER JOIN packages_content ON packages.id=packages_content.package_id WHERE item_id=? AND package_id=?", array($item['id'], $url[1]));
-			if(!$valid)
-			{
-				Alert::saveError("Not Available", "This item is not available in this package.");
-				header("Location: /exotic-open"); exit;
-			}
-						
-			// give item
-			if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
-			{
-				// get wrappers
-				$wrappers = AppAvatar::wrappers();
-			
-				// remove package
-				AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : ""));
-				Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . ".");
-				header("Location:/dress-avatar?position=" . $item['position']); exit;
-			}
+			Alert::saveError("Not Available", "This item is not available in this package.");
+			header("Location: /exotic-open"); exit;
+		}
+					
+		// give item
+		if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
+		{
+			// get wrappers
+			$wrappers = AppAvatar::wrappers();
+		
+			// remove package
+			AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : ""));
+			Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . ".");
+			header("Location:/dress-avatar?position=" . $item['position']); exit;
 		}
 	}
 }

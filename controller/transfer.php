@@ -15,94 +15,91 @@ if(!isset($avatarData['base']))
 // Run Action to Transfer
 if(Form::submitted("transfer"))
 {
-	if(FormValidate::pass())
+	$_POST['account'] = Sanitize::variable($_POST['account'], ".");
+	$_POST['password'] = trim($_POST['password']);
+	$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
+	if(!$pass)
 	{
-		$_POST['account'] = Sanitize::variable($_POST['account'], ".");
-		$_POST['password'] = trim($_POST['password']);
-		$pass = Database::selectOne("SELECT account, password, auro FROM _transfer_accounts WHERE account=? AND uni6_id=? LIMIT 1", array($_POST['account'], 0));
-		if(!$pass)
+		Alert::error("Wrong Username", "The user " . $_POST['account'] . " does not exist on Uni5, or you have already transferred.");
+	}
+	else
+	{
+		// check password
+		if($pass['password'] == sha1($_POST['password']))
 		{
-			Alert::error("Wrong Username", "The user " . $_POST['account'] . " does not exist on Uni5, or you have already transferred.");
+			Database::startTransaction();
+		
+			// transfer Auro
+			$pass['auro'] = (int) $pass['auro'];
+			if($pass['auro'] > 0)
+			{
+				if(Auro::grant(Me::$id, $pass['auro'], "Transfer from Uni5", $config['site-name']))
+				{
+					Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array(0, $pass['account']));
+					Alert::success("Auro Transfer", $pass['auro'] . " Auro have been transferred.");
+				}
+				else
+				{
+					Alert::error("Auro Transfer", "The Auro transfer has failed.");
+					Database::endTransaction(false);
+				}
+			}
+			
+			// transfer items
+			if(!Alert::hasErrors())
+			{
+				if(AppTransfer::transferItems(Me::$id, $pass['account']))
+				{
+					Alert::success("Item Transfer", 'Your items have been transferred. You can view them <a href="/dress-avatar">here</a>.');
+				}
+				else
+				{
+					Alert::error("Item Transfer", "The item transfer has failed.");
+					Database::endTransaction(false);
+				}
+			}
+			
+			// transfer packages
+			if(!Alert::hasErrors())
+			{
+				if(AppTransfer::transferPackages(Me::$id, $pass['account']))
+				{
+					Alert::success("Package Transfer", 'Your packages have been transferred. You can view them <a href="/exotic-open">here</a>.');
+				}
+				else
+				{
+					Alert::error("Package Transfer", "The package transfer has failed.");
+					Database::endTransaction(false);
+				}
+			}
+			
+			// transfer extra avatar slots
+			if(!Alert::hasErrors())
+			{
+				if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account'])))
+				{
+					if(!Database::query("INSERT INTO user_max_avatars VALUES (?, ?)", array(Me::$id, (int) $max['max'])))
+					{
+						Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
+						Database::endTransaction(false);
+					}
+					else
+					{
+						Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
+					}
+				}
+			}
+			
+			if(!Alert::hasErrors())
+			{
+				Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
+				Cache::delete("invLayers:" . Me::$id);
+				Database::endTransaction();
+			}
 		}
 		else
 		{
-			// check password
-			if($pass['password'] == sha1($_POST['password']))
-			{
-				Database::startTransaction();
-			
-				// transfer Auro
-				$pass['auro'] = (int) $pass['auro'];
-				if($pass['auro'] > 0)
-				{
-					if(Auro::grant(Me::$id, $pass['auro'], "Transfer from Uni5", $config['site-name']))
-					{
-						Database::query("UPDATE _transfer_accounts SET auro=? WHERE account=? LIMIT 1", array(0, $pass['account']));
-						Alert::success("Auro Transfer", $pass['auro'] . " Auro have been transferred.");
-					}
-					else
-					{
-						Alert::error("Auro Transfer", "The Auro transfer has failed.");
-						Database::endTransaction(false);
-					}
-				}
-				
-				// transfer items
-				if(!Alert::hasErrors())
-				{
-					if(AppTransfer::transferItems(Me::$id, $pass['account']))
-					{
-						Alert::success("Item Transfer", 'Your items have been transferred. You can view them <a href="/dress-avatar">here</a>.');
-					}
-					else
-					{
-						Alert::error("Item Transfer", "The item transfer has failed.");
-						Database::endTransaction(false);
-					}
-				}
-				
-				// transfer packages
-				if(!Alert::hasErrors())
-				{
-					if(AppTransfer::transferPackages(Me::$id, $pass['account']))
-					{
-						Alert::success("Package Transfer", 'Your packages have been transferred. You can view them <a href="/exotic-open">here</a>.');
-					}
-					else
-					{
-						Alert::error("Package Transfer", "The package transfer has failed.");
-						Database::endTransaction(false);
-					}
-				}
-				
-				// transfer extra avatar slots
-				if(!Alert::hasErrors())
-				{
-					if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account'])))
-					{
-						if(!Database::query("INSERT INTO user_max_avatars VALUES (?, ?)", array(Me::$id, (int) $max['max'])))
-						{
-							Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
-							Database::endTransaction(false);
-						}
-						else
-						{
-							Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
-						}
-					}
-				}
-				
-				if(!Alert::hasErrors())
-				{
-					Database::query("UPDATE _transfer_accounts SET uni6_id=? WHERE account=? LIMIT 1", array(Me::$id, $pass['account']));
-					Cache::delete("invLayers:" . Me::$id);
-					Database::endTransaction();
-				}
-			}
-			else
-			{
-				Alert::error("Wrong Password", "The password does not match.");
-			}
+			Alert::error("Wrong Password", "The password does not match.");
 		}
 	}
 }

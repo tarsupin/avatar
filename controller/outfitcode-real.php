@@ -15,59 +15,56 @@ if(!isset($avatarData['base']))
 // Run Action
 if(Form::submitted("outfitcode-real"))
 {
-	if(FormValidate::pass())
+	$outfitArray = json_decode($_POST['saved'], true);
+	if($outfitArray === NULL)
 	{
-		$outfitArray = json_decode($_POST['saved'], true);
-		if($outfitArray === NULL)
+		$outfitArray = unserialize($_POST['saved']);
+		// Uni5 code, need to index properly; existence is automatically checked
+		// check ownership
+		foreach($outfitArray as $key => $oa)
 		{
-			$outfitArray = unserialize($_POST['saved']);
-			// Uni5 code, need to index properly; existence is automatically checked
-			// check ownership
-			foreach($outfitArray as $key => $oa)
+			if($oa[0] == 0) { continue; }
+			if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 			{
-				if($oa[0] == 0) { continue; }
+				$itemData = AppAvatar::itemData((int) $oa[0], "title");
+				Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+				unset($outfitArray[$key]);
+			}
+		}			
+		
+		$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
+	}
+	else
+	{
+		// Uni6 code
+		foreach($outfitArray as $key => $oa)
+		{
+			// check existence
+			$itemData = AppAvatar::itemData((int) $oa[0], "title");
+			if(!$itemData)
+			{
+				unset($outfitArray[$key]);
+				$outfitArray = AppOutfit::sortDelete($outfitArray, $key);
+			}
+			else
+			{
+				// check ownership
 				if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 				{
-					$itemData = AppAvatar::itemData((int) $oa[0], "title");
 					Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
-					unset($outfitArray[$key]);
-				}
-			}			
-			
-			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
-		}
-		else
-		{
-			// Uni6 code
-			foreach($outfitArray as $key => $oa)
-			{
-				// check existence
-				$itemData = AppAvatar::itemData((int) $oa[0], "title");
-				if(!$itemData)
-				{
 					unset($outfitArray[$key]);
 					$outfitArray = AppOutfit::sortDelete($outfitArray, $key);
 				}
-				else
-				{
-					// check ownership
-					if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
-					{
-						Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
-						unset($outfitArray[$key]);
-						$outfitArray = AppOutfit::sortDelete($outfitArray, $key);
-					}
-				}				
-			}
+			}				
 		}
-		
-		// Save the changes
-		unset($outfitArray[0]);
-		$aviData = Avatar::imageData(Me::$id, $activeAvatar);
-		AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
-		AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
-		Alert::success("Avatar Updated", "Your outfit has been updated!");
 	}
+	
+	// Save the changes
+	unset($outfitArray[0]);
+	$aviData = Avatar::imageData(Me::$id, $activeAvatar);
+	AppOutfit::draw($avatarData['base'], $avatarData['gender'], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
+	AppOutfit::save(Me::$id, $avatarData['identification'], $outfitArray);
+	Alert::success("Avatar Updated", "Your outfit has been updated!");
 }
 
 // Set page title

@@ -61,7 +61,7 @@ echo '
 <div id="content">' .
 Alert::display() . '
 <h2>Purchase Exotic Item</h2>
-<p>The items available in this shop rotate as indicated by the timer and stock below each one.<br/>You will be notified when an item on your wishlist rotates in.</p>';
+<p>The items available in this shop rotate as indicated by the timer and stock below each one.<br/>You will be notified when an item on your wish list rotates in.</p>';
 
 // current package		
 $exist = Database::selectOne("SELECT id, title FROM packages WHERE year=? AND month=?", array((int) date("Y"), (int) date("n")));

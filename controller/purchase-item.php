@@ -41,10 +41,7 @@ if($ownItem)
 // Check if you purchased the item
 if(Form::submitted("purchase-item"))
 {
-	if(FormValidate::pass())
-	{
-		AppAvatar::purchaseItem($item['id'], $shopID);
-	}
+	AppAvatar::purchaseItem($item['id'], $shopID);
 }
 
 // Set page title

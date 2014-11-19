@@ -80,15 +80,17 @@ abstract class AppExotic {
 				if(!isset($item))
 				{
 					$item = $content[array_rand($content)]['item_id'];
+					//$item = $content[0]['item_id'];
 				}
 				// roughly equal time for all items
 				$expire = time() + (floor((date("t") - $exception) / count($content) * 24) * 3600);
+				//$expire = time() + (floor((date("t") - $exception) / count($content) * 12) * 3600);
 				// expire at the end of month, if not earlier
 				$expire = min($expire, mktime(0, 0, 0, date("n")+1, 1)-1);
 				break;				
 			case 2:
 				$age = rand(1, 3);
-				$stock = rand(4, 1);
+				$stock = rand(7, 10);
 				$expire = time() + (rand(36, 60) * 3600);
 				break;
 			case 3:

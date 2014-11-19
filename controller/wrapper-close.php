@@ -56,7 +56,7 @@ foreach($wrap['content'] as $cont)
 // Run Action
 if(Form::submitted("wrapper-close"))
 {
-	if(FormValidate::pass() && !Alert::hasErrors())
+	if(!Alert::hasErrors())
 	{
 		Database::startTransaction();
 		

@@ -28,7 +28,7 @@ if(!$item)
 
 // Get cost
 $item['cost'] = AppAvatar::itemMinCost($url[1], true);
-if($item['cost'] !== false)
+if($item['cost'] != 0)
 {
 	$item['cost'] = (int) $item['cost'];
 }
@@ -40,17 +40,14 @@ else
 // Check if you sold the item
 if(Form::submitted("sell-item") && !Alert::hasErrors())
 {
-	if(FormValidate::pass())
+	// get wrappers
+	$wrappers = AppAvatar::wrappers();
+		
+	if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']))
 	{
-		// get wrappers
-		$wrappers = AppAvatar::wrappers();
-			
-		if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']))
-		{
-			AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop");
-			Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . ($item['cost']/2) . ' Auro.');
-			header("Location: /dress-avatar?position=" . $item['position']); exit;	
-		}
+		AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop");
+		Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . round($item['cost']/2) . ' Auro.');
+		header("Location: /dress-avatar?position=" . $item['position']); exit;	
 	}
 }
 

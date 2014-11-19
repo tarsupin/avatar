@@ -227,10 +227,19 @@ abstract class AppAvatar {
 	(
 		int $itemID				// <int> The ID of the item to get the data from.
 	,	bool $allShops = false	// <bool> Whether the function should include shops inaccessible to the user.
-	): int						// RETURNS <int> data of the item, or FALSE if failed.
+	): int						// RETURNS <int> minimum cost of the item, or 0 if failed.
 	
 	// $itemData = AppAvatar::itemMinCost($itemID);
 	{
+		if(Me::$clearance < 5)
+		{
+			$rarity = self::itemData($itemID, "rarity_level");
+			if($rarity['rarity_level'] != 0)
+			{
+				return 0;
+			}
+		}
+	
 		$shop = Database::selectOne("SELECT MIN(cost) AS m FROM shop_inventory INNER JOIN shop ON shop_inventory.shop_id=shop.id WHERE item_id=? AND clearance<=?", array($itemID, Me::$clearance));
 		if(!$shop['m'] && $allShops)
 		{
@@ -241,7 +250,7 @@ abstract class AppAvatar {
 		{
 			return (int) $shop['m'];
 		}
-		return false;
+		return 0;
 	}
 	
 	

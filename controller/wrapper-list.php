@@ -89,7 +89,7 @@ foreach($details as $key => $item)
 		}
 		
 		$html .= '
-		</select>';
+		</select><br/>' . $item['title'];
 	$html .= '
 	</div>';
 	$details[$key]['html'] = $html;
