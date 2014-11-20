@@ -60,7 +60,9 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' .
 Alert::display() . '
-<h2>Purchase Exotic Item</h2>
+<div class="overwrap-box">
+<div class="overwrap-line">Purchase Exotic Item</div>
+<div class="inner-box">
 <p>The items available in this shop rotate as indicated by the timer and stock below each one.<br/>You will be notified when an item on your wish list rotates in.</p>';
 
 // current package		
@@ -110,7 +112,7 @@ for($i=1; $i<5; $i++)
 {
 	$slot = AppExotic::getSlot($i);
 
-	if($slot == array())
+	if($slot == array() || $slot['expire'] < time())
 	{
 		// make exception for November 2014 (late package)
 		if($i == 1 && date("Y") == 2014 && date("n") == 11)
@@ -190,6 +192,11 @@ for($i=1; $i<5; $i++)
 	</div>';
 	}
 }
+
+echo '
+</div>
+</div>
+</div>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

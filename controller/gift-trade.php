@@ -350,7 +350,9 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' .
 Alert::display() . '
-<h2>Gift &amp; Trade</h2>';
+<div class="overwrap-box">
+	<div class="overwrap-line">Gift &amp; Trade</div>
+	<div class="inner-box">';
 
 // Overwiew page
 if(!isset($url[1]))
@@ -366,6 +368,11 @@ if(!isset($url[1]))
 		<li>After you\'ve made sure that the transaction contains exactly what you want it to, click either the "Gift" or "Trade" button.<br/>- "Gifts" don\'t require any action from the recipient.<br/>- "Trades" need to be updated by the recipient and will then return to you for confirmation.</li>
 		<li>Done! The transaction is on its way to the recipient now. They will receive a notification.</li>
 	</ol></p>
+	</div>
+</div>
+<div class="overwrap-box">
+	<div class="overwrap-line">Pending Transactions</div>
+	<div class="inner-box">
 	<div class="spacer"></div>
 	<ul>';
 	
@@ -546,6 +553,11 @@ else
 	</p>
 	</form>';
 }
+
+echo '
+	</div>
+</div>
+</div>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

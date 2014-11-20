@@ -121,7 +121,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Open Wrapper</div>
+	<div class="inner-box">';
 
 // get images
 foreach($details as $key => $item)
@@ -155,7 +158,6 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2>Open Wrapper</h2>
 	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.<br/>Click on the text with the dotted border to toggle the wrapper\'s content in/out of view.</p>';
 
 $space = false;
@@ -168,7 +170,7 @@ foreach($owned as $own)
 	
 	echo '
 	<h3>' . $details[$own['id']]['title'] . ($own['c'] > 1 ? ' (' . $own['c'] . ')' : '') . '</h3>
-	' . $details[$own['id']]['html'] . ' <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">will be replaced with:</span><div class="spoiler-content">';
+	<span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">' . $details[$own['id']]['html'] . ' will be replaced with:</span><div class="spoiler-content">';
 	foreach($own['content']	as $cont)
 	{
 		echo $details[$cont]['html'];
@@ -182,6 +184,8 @@ foreach($owned as $own)
 }	
 	
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

@@ -63,7 +63,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">' . $shops[$shopID] . '</div>
+	<div class="inner-box">';
 
 // Shop Display
 echo '
@@ -136,6 +139,8 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 	echo CacheFile::load($cachedPage);
 }
 echo '
+	</div>
+</div>
 </div>';
 
 // Allow staff to purchase all items (replaces the "Preview" text with a purchase link)

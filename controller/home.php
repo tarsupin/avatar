@@ -28,9 +28,13 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
-	<h2>Avatar</h2>
+<div class="overwrap-box">
+<div class="overwrap-line">Avatar</div>
+	<div class="inner-box">
 	<p>Welcome to the avatar site!</p>
 	<p>This is where you can create your avatar doll and dress it up in various high quality items. Explore the endless combination possibilities our intuitive and flexible dressing system has to offer!</p>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

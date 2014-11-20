@@ -28,9 +28,14 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">Staff Menu</div>
+	<div class="inner-box">
 	<p><a href="staff/shop-refresh">Refresh Shops</a></p>
 	<p><a href="staff/item-create">Create Item</a></p>
 	<p><a href="staff/transfer">Transfer</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer

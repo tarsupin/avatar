@@ -181,7 +181,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2>Edit Item</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Edit Item</div>
+	<div class="inner-box">
 	<form class="uniform" action="/staff/item-edit/' . $url[2] . '" method="post">' . Form::prepare("edit-item") . '
 		<p><input type="text" name="title" maxlength="30" value="' . $itemData['title'] . '"/> title</p>
 		<p><select name="position">';
@@ -297,6 +299,11 @@ foreach($files as $file)
 	<a href="/staff/item-edit/' . $url[2] . '?delete=' . substr($file, 0, -4) . '" onclick="return confirm(\'Are you sure you want to delete this file?\');">&#10006;</a> ' . $file . "<br/>";
 	}
 }
+
+echo '
+	</div>
+</div>
+</div>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

@@ -13,15 +13,11 @@ if(Me::$clearance < 5)
 }
 
 // Run Staff Tools
-if($runLink = Link::clicked() && isset($_GET['refresh']))
+if(isset($_GET['refresh']))
 {
-	// Refresh the Shop Cache
-	if($runLink == "refresh-shop")
-	{
-		touch("cache/shop_" . $_GET['refresh'] . "_m.html", time()-86401);
-		touch("cache/shop_" . $_GET['refresh'] . "_f.html", time()-86401);
-		Alert::success("Shop Refreshed", AppAvatar::getShopTitle((int) $_GET['refresh']) . " has been refreshed.");
-	}
+	touch("cache/shop_" . $_GET['refresh'] . "_m.html", time()-86401);
+	touch("cache/shop_" . $_GET['refresh'] . "_f.html", time()-86401);
+	Alert::success("Shop Refreshed", AppAvatar::getShopTitle((int) $_GET['refresh']) . " has been refreshed.");
 }
 
 // Set page title
@@ -41,27 +37,31 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2>Refresh Shops</h2>
-	<a href="/staff/shop-refresh?refresh=1&' . Link::prepare("refresh-shop") . '">A Cut Above</a><br/>
-	<a href="/staff/shop-refresh?refresh=2&' . Link::prepare("refresh-shop") . '">All That Glitters</a><br/>
-	<a href="/staff/shop-refresh?refresh=15&' . Link::prepare("refresh-shop") . '">Avatar Museum</a><br/>
-	<a href="/staff/shop-refresh?refresh=5&' . Link::prepare("refresh-shop") . '">Body Shop</a><br/>
-	<a href="/staff/shop-refresh?refresh=18&' . Link::prepare("refresh-shop") . '">Credit Shop</a><br/>
-	<a href="/staff/shop-refresh?refresh=14&' . Link::prepare("refresh-shop") . '">Exotic Exhibit</a><br/>
-	<a href="/staff/shop-refresh?refresh=6&' . Link::prepare("refresh-shop") . '">Finishing Touch</a><br/>
-	<a href="/staff/shop-refresh?refresh=7&' . Link::prepare("refresh-shop") . '">Haute Couture</a><br/>
-	<a href="/staff/shop-refresh?refresh=3&' . Link::prepare("refresh-shop") . '">Heart and Sole</a><br/>
-	<a href="/staff/shop-refresh?refresh=8&' . Link::prepare("refresh-shop") . '">Junk Drawer</a><br/>
-	<a href="/staff/shop-refresh?refresh=9&' . Link::prepare("refresh-shop") . '">Looking Glass</a><br/>
-	<a href="/staff/shop-refresh?refresh=4&' . Link::prepare("refresh-shop") . '">Pr&ecirc;t &agrave; Porter</a><br/>
-	<a href="/staff/shop-refresh?refresh=10&' . Link::prepare("refresh-shop") . '">Time Capsule</a><br/>
-	<a href="/staff/shop-refresh?refresh=11&' . Link::prepare("refresh-shop") . '">Under Dressed</a><br/>
-	<a href="/staff/shop-refresh?refresh=12&' . Link::prepare("refresh-shop") . '">Vogue Veneers</a><br/>
+<div class="overwrap-box">
+	<div class="overwrap-line">Refresh Shops</div>
+	<div class="inner-box">
+	<a href="/staff/shop-refresh?refresh=1">A Cut Above</a><br/>
+	<a href="/staff/shop-refresh?refresh=2">All That Glitters</a><br/>
+	<a href="/staff/shop-refresh?refresh=15">Avatar Museum</a><br/>
+	<a href="/staff/shop-refresh?refresh=5">Body Shop</a><br/>
+	<a href="/staff/shop-refresh?refresh=18">Credit Shop</a><br/>
+	<a href="/staff/shop-refresh?refresh=14">Exotic Exhibit</a><br/>
+	<a href="/staff/shop-refresh?refresh=6">Finishing Touch</a><br/>
+	<a href="/staff/shop-refresh?refresh=7">Haute Couture</a><br/>
+	<a href="/staff/shop-refresh?refresh=3">Heart and Sole</a><br/>
+	<a href="/staff/shop-refresh?refresh=8">Junk Drawer</a><br/>
+	<a href="/staff/shop-refresh?refresh=9">Looking Glass</a><br/>
+	<a href="/staff/shop-refresh?refresh=4">Pr&ecirc;t &agrave; Porter</a><br/>
+	<a href="/staff/shop-refresh?refresh=10">Time Capsule</a><br/>
+	<a href="/staff/shop-refresh?refresh=11">Under Dressed</a><br/>
+	<a href="/staff/shop-refresh?refresh=12">Vogue Veneers</a><br/>
 	<br/>
-	<a href="/staff/shop-refresh?refresh=13&' . Link::prepare("refresh-shop") . '">Archive</a><br/>
-	<a href="/staff/shop-refresh?refresh=16&' . Link::prepare("refresh-shop") . '">Staff Shop</a><br/>
-	<a href="/staff/shop-refresh?refresh=17&' . Link::prepare("refresh-shop") . '">Test Shop</a><br/>
-	<a href="/staff/shop-refresh?refresh=19&' . Link::prepare("refresh-shop") . '">Wrappers</a>
+	<a href="/staff/shop-refresh?refresh=13">Archive</a><br/>
+	<a href="/staff/shop-refresh?refresh=16">Staff Shop</a><br/>
+	<a href="/staff/shop-refresh?refresh=17">Test Shop</a><br/>
+	<a href="/staff/shop-refresh?refresh=19">Wrappers</a>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

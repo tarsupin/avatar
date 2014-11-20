@@ -144,10 +144,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>Transfer from Uni5</h2>
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Transfer from Uni5</div>
+	<div class="inner-box">
 	<p>This is the STAFF tool! It does the same as the public one, but please do not use it without good reason (such as forgotten passwords).</p>
 	
 	<form class="uniform" method="post">' . Form::prepare("transfer-staff") . '
@@ -157,6 +157,8 @@ echo '
 		<p><input type="text" name="account6"/></p>
 		<input type="submit" name="submit" value="Transfer" />
 	</form>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

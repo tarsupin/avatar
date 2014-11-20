@@ -60,7 +60,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Purchase ' . $item['title'] . '</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Purchase ' . $item['title'] . '</div>
+	<div class="inner-box">
 	<p>Are you sure you want to purchase ' . $item['title'] . ' for ' . $item['cost'] . ' Auro? [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']</p>';
 	
 	// Get some of the items
@@ -96,6 +98,8 @@ echo '
 	<form class="uniform" method="post">' . Form::prepare("purchase-item") . '
 		<input type="submit" name="submit" value="Purchase" />
 	</form>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

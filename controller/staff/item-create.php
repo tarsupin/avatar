@@ -55,7 +55,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '	
-	<h2>Create Item</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Create Item</div>
+	<div class="inner-box">
 	<form class="uniform" method="post">' . Form::prepare("create-item") . '
 		<p><input type="text" name="title" maxlength="30"/> title</p>
 		<p><select name="position">';
@@ -69,7 +71,10 @@ echo '</select> layer</p>
 		<p><select name="rarity"><option value="0">freely purchasable</option><option value="1">not purchasable</option><option value="2">EP item</option></select> gender</p>
 		<p><select name="relation"><option value="free">free</option><option value="above">above base</option><option value="skin">on base (skin)</option><option value="below">below base</option></select> relation to base</p>
 		<p><input type="submit" value="Create"/></p>
-	</form>';
+	</form>
+	</div>
+	</div>
+</div>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

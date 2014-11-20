@@ -76,10 +76,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>Open Exotic Package</h2>';
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Open Exotic Package</div>
+	<div class="inner-box">';
 
 // output all packages
 if(!isset($url[2]))
@@ -174,6 +174,8 @@ else
 }
 
 	echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

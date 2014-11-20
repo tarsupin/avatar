@@ -120,11 +120,11 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>Transfer from Uni5</h2>
-	<p>This will transfer your Auro, items, donation packages and additional avatar slots (if applicable). Credits need to be transferred in a separate process that can only be done by the admin, so you might not have access to them right away. They are NOT lost.</p>
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Transfer from Uni5</div>
+	<div class="inner-box">
+	<p>This will transfer your Auro, items, donation packages and additional avatar slots (if applicable).<br/>Credits need to be transferred in a separate process <a href="' . URL::unijoule_com() . '/transfer-unijoule">on this page</a>.</p>
 	
 	<form class="uniform" method="post">' . Form::prepare("transfer") . '
 		<h4>Uni5 Account Name</h4>
@@ -133,6 +133,8 @@ echo '
 		<p><input type="password" name="password"/></p>
 		<input type="submit" name="submit" value="Transfer" />
 	</form>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

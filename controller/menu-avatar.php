@@ -16,9 +16,14 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">Avatar Menu</div>
+	<div class="inner-box">
 	<p><a href="/create-avatar">Create Avatar</a></p>
 	<p><a href="/edit-avatar">Edit Avatar</a></p>
 	<p><a href="/switch-avatar">Switch Avatar</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer

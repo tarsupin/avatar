@@ -16,10 +16,14 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">Shops Menu</div>
+	<div class="inner-box">
 	<p><a href="/shop-list">Shop List</a></p>
 	<p><a href="/exotic-purchase">Exotic Items</a></p>
 	<p><a href="/shop-search">Shop Search</a></p>
-	<p><a href="/wish-list">Wish List</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer

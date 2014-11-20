@@ -70,6 +70,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 echo '
 <style>
+table { width:100%; }
 table tr:first-child td { text-align:center; }
 </style>';
 
@@ -79,7 +80,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">My Wish List</div>
+	<div class="inner-box">';
 
 // Page Display
 $wished = Database::selectMultiple("SELECT item_id, title, position, gender, rarity_level FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
@@ -111,7 +115,6 @@ if(isset($_GET['sort']) && $_GET['sort'] == "cost")
 }
 
 echo '
-	<h2>My Wish List</h2>
 	<table class="mod-table">
 		<tr>
 			<td>&nbsp;</td>';
@@ -147,6 +150,8 @@ foreach ($wished as $itemData)
 }
 echo '
 	</table>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

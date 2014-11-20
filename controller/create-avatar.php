@@ -113,7 +113,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Create Your Avatar</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Create Your Avatar</div>
+	<div class="inner-box">
 	<p>Please select the avatar base that you would like to use! You can change it later, as well as set a name for the new avatar.</p>';
 		
 	foreach($races as $race)
@@ -124,15 +126,17 @@ echo '
 	}
 	
 	echo '
-    <p><ul><li>You can have 3 avatars for free and up to 6 additional (9 total) in exchange for Credits:
-        <ul><li>- The first additional avatar slot costs 10 Credits.
-        <li>- Any further additional avatar slots cost 15 Credits each.</li></ul></li>
+    <p><ul><li>You can have 3 avatars for free and up to 6 additional (9 total) in exchange for UniJoule:
+        <ul><li>- The first additional avatar slot costs 10 UniJoule.
+        <li>- Any further additional avatar slots cost 15 UniJoule each.</li></ul></li>
     <li>You have unlocked ' . ($max['max'] - 3) . ' additional slots, therefore you may have up to ' . $max['max'] . ' avatars.</li></ul></p>
 	<p><form class="uniform" method="post"/>' . Form::prepare("extra-slot") . '
 		<input type="submit" value="Purchase Extra Slot" onclick="return confirm(\'Are you sure you want to purchase an extra slot?\');"/>
 	</form></p>';
 	
 	echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

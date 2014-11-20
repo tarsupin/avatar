@@ -25,6 +25,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 echo '
 <style>
+table { width:100%; }
 table tr:first-child td { text-align:center; }
 </style>';
 
@@ -34,10 +35,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>Item Log</h2>
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Item Log</div>
+	<div class="inner-box">
 	<table class="mod-table">
 		<tr>
 			<td>Sent</td>
@@ -97,6 +98,8 @@ echo '
 		}
 	}
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

@@ -29,7 +29,9 @@ echo '
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Regular Shops</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Regular Shops</div>
+	<div class="inner-box">
 	<a class="shop-button" href="/shop/1"><img src="/assets/shop-icons/a_cut_above.png" alt="A Cut Above" /></a>
 	<a class="shop-button" href="/shop/4"><img src="/assets/shop-icons/pret_a_porter.png" alt="Pr&ecirc;t &agrave; Porter" /></a>
 	<a class="shop-button" href="/shop/7"><img src="/assets/shop-icons/haute_couture.png" alt="Haute Couture" /></a>
@@ -42,21 +44,30 @@ echo '
 	<a class="shop-button" href="/shop/6"><img src="/assets/shop-icons/the_finishing_touch.png" alt="Finishing Touch" /></a>
 	<a class="shop-button" href="/shop/9"><img src="/assets/shop-icons/the_looking_glass.png" alt="Looking Glass" /></a>
 	<a class="shop-button" href="/shop/12"><img src="/assets/shop-icons/vogue_veneers.png" alt="Vogue Veneers" /></a>
-	
-	<h2>Preview Shops</h2>
+	</div>
+</div>
+<div class="overwrap-box">
+	<div class="overwrap-line">Preview Shops</div>
+	<div class="inner-box">	
 	<a class="shop-button2" href="/shop/15"><img src="/assets/shop-icons/uf_museum.png" alt="Avatar Museum" /></a>
 	<a class="shop-button2" href="/shop/18"><img src="/assets/shop-icons/credit_shop.png" alt="Credit Shop" /></a>
-	<a class="shop-button2" href="/shop/14"><img src="/assets/shop-icons/exotic_display.png" alt="Exotic Exhibit" /></a>';
+	<a class="shop-button2" href="/shop/14"><img src="/assets/shop-icons/exotic_display.png" alt="Exotic Exhibit" /></a>
+	</div>
+</div>';
 	
 // Display Staff Shops
 if(Me::$clearance >= 5)
 {
 	echo '
-	<h2>Staff Shops</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Staff Shops</div>
+	<div class="inner-box">
 	<a class="shop-button2" href="/shop/13"><img src="/assets/shop-icons/default.png" alt="Archive" title="Archive" /></a>
 	<a class="shop-button2" href="/shop/16"><img src="/assets/shop-icons/default.png" alt="Staff Shop" title="Staff Shop" /></a>
 	<a class="shop-button2" href="/shop/17"><img src="/assets/shop-icons/default.png" alt="Test Shop" title="Test Shop" /></a>
-	<a class="shop-button2" href="/shop/19"><img src="/assets/shop-icons/default.png" alt="Wrappers" title="Wrappers" /></a>';
+	<a class="shop-button2" href="/shop/19"><img src="/assets/shop-icons/default.png" alt="Wrappers" title="Wrappers" /></a>
+	</div>
+</div>';
 }
 echo '
 </div>';

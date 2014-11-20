@@ -157,7 +157,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Shop Search</div>
+	<div class="inner-box">';
 
 // Shop Display
 $shops = array(
@@ -329,6 +332,8 @@ else
 }
 
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

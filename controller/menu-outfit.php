@@ -16,8 +16,13 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">Outfit Menu</div>
+	<div class="inner-box">
 	<p><a href="/dress-avatar">Dressing Room</a></p>
 	<p><a href="/outfitcode-real">Outfit Code</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer

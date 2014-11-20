@@ -73,7 +73,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Edit Your Avatar</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Edit Your Avatar</div>
+	<div class="inner-box">
 	<p>You can set or change your avatar\'s name.</p>
 	<form class="uniform" method="post">' . Form::prepare("editname") . '
 		<p><input type="text" name="aviname" maxlength="20" value="' . $avatarData['name'] . '"/> (max 20 characters)</p>
@@ -90,6 +92,8 @@ echo '
 	}
 	
 	echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

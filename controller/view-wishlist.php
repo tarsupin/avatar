@@ -9,73 +9,75 @@ if(!Me::$loggedIn)
 // Check if you have an avatar
 if(!isset($avatarData['base']))		{ header("Location: /create-avatar"); exit; }
 
+if(!isset($_GET['page']))	{ $_GET['page'] = 0; }
+
 if(isset($url[1]))
 {
-	$url[1] = (int) $url[1];
-
-	// get owner and permission setting
-	$owner = Database::selectOne("SELECT uni_id FROM user_share_wishlist WHERE uni_id=? AND (other_id=? OR other_id=?) LIMIT 1", array($url[1], 0, Me::$id));
-	if($owner == array() && $url[1] != Me::$id)
+	$user = Sanitize::variable($url[1]);
+	$recipientID = User::getDataByHandle($user);
+	if($recipientID != array())
 	{
-		Alert::saveError("Not Allowed", "You do not have permission to view this wish list.");
-		header("Location: /view-wishlist"); exit;
-	}
-	elseif($url[1] == Me::$id)
-	{
-		$owner['uni_id'] = Me::$id;
-		$recipient = Me::$vals['handle'];
-	}
-	else
-	{
-		$recipient = User::get((int) $owner['uni_id'], "handle");
-		$recipient = $recipient['handle'];
-	}
-
-	// Sort order
-	$order = "";
-	if(isset($_GET['sort']) && in_array($_GET['sort'], array("title", "position", "gender")))
-	{
-		$order = " ORDER BY " . $_GET['sort'];
-		if(isset($_GET['reverse']))
+		$recipientID = (int) $recipientID['uni_id'];
+		// get owner and permission setting
+		$owner = Database::selectOne("SELECT uni_id FROM user_share_wishlist WHERE uni_id=? AND (other_id=? OR other_id=?) LIMIT 1", array($recipientID, 0, Me::$id));
+		if($owner == array() && $recipientID != Me::$id)
 		{
-			$order .= " DESC";
+			Alert::saveError("Not Allowed", "You do not have permission to view this wish list.");
+			header("Location: /view-wishlist"); exit;
 		}
-	}
-	
-	$wished = Database::selectMultiple("SELECT item_id, title, position, gender, rarity_level FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array($owner['uni_id']));
-
-	foreach($wished as $key => $wish)
-	{
-		$wished[$key]['cost'] = AppAvatar::itemMinCost((int) $wish['item_id']);
-	}
-
-	if(isset($_GET['sort']) && $_GET['sort'] == "cost")
-	{
-		if(isset($_GET['reverse']))
+		elseif($recipientID == Me::$id)
 		{
-			function cmp($a, $b)
-			{
-				if($a['cost'] == $b['cost'])	{ return 0; }
-				return ($a['cost'] > $b['cost'] ? -1 : 1);
-			}
+			$owner['uni_id'] = Me::$id;
+			$recipient = Me::$vals['handle'];
 		}
 		else
 		{
-			function cmp($a, $b)
+			$recipient = User::get((int) $owner['uni_id'], "handle");
+			$recipient = $recipient['handle'];
+		}
+
+		// Sort order
+		$order = "";
+		if(isset($_GET['sort']) && in_array($_GET['sort'], array("title", "position", "gender")))
+		{
+			$order = " ORDER BY " . $_GET['sort'];
+			if(isset($_GET['reverse']))
 			{
-				if($a['cost'] == $b['cost'])	{ return 0; }
-				return ($a['cost'] < $b['cost'] ? -1 : 1);
+				$order .= " DESC";
 			}
 		}
-		usort($wished, "cmp");
+		
+		$wished = Database::selectMultiple("SELECT item_id, title, position, gender, rarity_level FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array($owner['uni_id']));
+
+		foreach($wished as $key => $wish)
+		{
+			$wished[$key]['cost'] = AppAvatar::itemMinCost((int) $wish['item_id']);
+		}
+
+		if(isset($_GET['sort']) && $_GET['sort'] == "cost")
+		{
+			if(isset($_GET['reverse']))
+			{
+				function cmp($a, $b)
+				{
+					if($a['cost'] == $b['cost'])	{ return 0; }
+					return ($a['cost'] > $b['cost'] ? -1 : 1);
+				}
+			}
+			else
+			{
+				function cmp($a, $b)
+				{
+					if($a['cost'] == $b['cost'])	{ return 0; }
+					return ($a['cost'] < $b['cost'] ? -1 : 1);
+				}
+			}
+			usort($wished, "cmp");
+		}
 	}
 }
 else
 {
-	if(!isset($_GET['page']))
-	{
-		$_GET['page'] = 0;
-	}
 	if(Form::submitted("share-wishlist-all"))
 	{
 		if(isset($_POST['everyone']))
@@ -125,11 +127,12 @@ else
 	{
 		if($link == "share-wishlist-not")
 		{
-			$recipientID = (int) $_GET['remove'];
+			$user = Sanitize::variable($_GET['remove']);
+			$recipientID = User::getDataByHandle($user);
+			$recipientID = (int) $recipientID['uni_id'];
 			if(Database::query("DELETE FROM user_share_wishlist WHERE uni_id=? AND other_id=? LIMIT 1", array(Me::$id, $recipientID)))
 			{
-				$handle = User::get($recipientID, "handle");
-				Alert::success("Not Allowed", $handle['handle'] . " may no longer view your wish list.");
+				Alert::success("Not Allowed", $user . " may no longer view your wish list.");
 			}
 		}
 	}
@@ -154,6 +157,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 
 echo '
 <style>
+table { width:100%; }
 table tr:first-child td { text-align:center; }
 </style>';
 
@@ -169,20 +173,22 @@ Alert::display();
 if(isset($url[1]))
 {
 	echo '
-	<h2>View ' . (isset($recipient) ? $recipient . "'s " : "") . 'Wish List</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">' . (isset($recipient) ? $recipient . "'s " : "") . 'Wish List</div>
+	<div class="inner-box">
 	<table class="mod-table">
 		<tr>';
 	foreach(array("title", "position", "gender", "cost") as $col)
 	{
 		if (isset($_GET['sort']) && $_GET['sort'] == $col && !isset($_GET['reverse']))
 			echo "
-			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $owner['uni_id'] . "?sort=" . $col . "&reverse'>&#9650;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $recipient . "?sort=" . $col . "&reverse'>&#9650;</a></td>";
 		elseif (isset($_GET['sort']) && $_GET['sort'] == $col)
 			echo "
-			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $owner['uni_id'] . "?sort=" . $col . "'>&#9660;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $recipient . "?sort=" . $col . "'>&#9660;</a></td>";
 		else
 			echo "
-			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $owner['uni_id'] . "?sort=" . $col . "'>&#9651;</a></td>";
+			<td>" . ucfirst($col) . " <a href='/view-wishlist/" . $recipient . "?sort=" . $col . "'>&#9651;</a></td>";
 	}
 	echo '
 			<td>Package</td>
@@ -202,7 +208,9 @@ if(isset($url[1]))
 		</tr>';
 	}
 	echo '
-	</table>';
+	</table>
+	</div>
+</div>';
 }
 else
 {
@@ -213,7 +221,9 @@ else
 		$allow[$key] = (int) $a['other_id'];
 	}
 	echo '
-	<h2>Share Wish List</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Share Wish List</div>
+	<div class="inner-box">
 	<p><a href="/view-wishlist/' . Me::$id . '">Share this link!</a></p>
 	<p>To actually be able to use the link above, user(s) must have permission to view your wish list. You can set those permissions here.</p>
 	<form class="uniform" method="post">' . Form::prepare("share-wishlist-all") . '
@@ -227,14 +237,17 @@ else
 		if($a == 0)	{ continue; }
 		$handle = User::get($a, "handle");
 		echo '
-		<a href="/view-wishlist?remove=' . $a . '&' . Link::prepare("share-wishlist-not") . '">&#10006;</a> ' . $handle['handle'] . '<br/>';
+		<a href="/view-wishlist?remove=' . $handle['handle'] . '&' . Link::prepare("share-wishlist-not") . '">&#10006;</a> ' . $handle['handle'] . '<br/>';
 	}
 	echo '
-	<div class="spacer"></div>';	
+	</div>
+</div>
+<div class="overwrap-box">
+	<div class="overwrap-line">Available Wish Lists</div>
+	<div class="inner-box">';	
 	
 	// get permissions for other lists
 	echo '
-	<h2>Available Wish Lists</h2>
 	<p>These users have made their wish list available to everyone or to you specifically. Your own wish list is not included here.</p>';
 	$lists = Database::selectMultiple("SELECT DISTINCT user_share_wishlist.uni_id, handle FROM user_share_wishlist INNER JOIN users ON user_share_wishlist.uni_id=users.uni_id WHERE (other_id=? OR other_id=?) AND user_share_wishlist.uni_id!=? ORDER BY handle LIMIT " . ($_GET['page']*20 + 0) . ",20", array(0, Me::$id, Me::$id));
 	echo '
@@ -243,7 +256,7 @@ else
 	{
 		if($list['uni_id'] == Me::$id)	{ continue; }
 		echo '
-		<li><a href="/view-wishlist/' . $list['uni_id'] . '">' . $list['handle'] . '</a></li>';
+		<li><a href="/view-wishlist/' . $list['handle'] . '">' . $list['handle'] . '</a></li>';
 	}
 	echo '
 	</ol></p>';
@@ -262,6 +275,9 @@ else
 	<a href="/view-wishlist?page=' . ($_GET['page']+1) . '"><span class="icon-arrow-right"></span> Next</a>';
 		}
 	}
+	echo '
+	</div>
+</div>';
 }
 echo '
 </div>';

@@ -148,11 +148,10 @@ require(SYS_PATH . "/controller/includes/metaheader.php");
 echo '
 <body>
 <style>
-html,body { background-color:white; }
 .alert-info, .alert-message, .alert-error { margin:0px 0px 5px 0px; padding:5px; }
 </style>
 <div id="viewport-wrap">
-<div id="content" style="padding:0px;margin:0px; overflow:hidden;">
+<div id="content" style="padding:0px;margin:0px; overflow:hidden;  background-color:#e8eef1;">
 <div id="aviblock"><ul>
 	<li style="height:383px;"><img src="' . AppOutfit::drawSrc("preview") . '" /></li>
 	<li class="nav-slot"><a href="/preview-avi?replace&' . Link::prepare("replace") . '">Replace with Current</a></li>

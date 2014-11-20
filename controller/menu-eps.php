@@ -16,8 +16,13 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">EPs Menu</div>
+	<div class="inner-box">
 	<p><a href="/exotic-open">Open Exotic Package</a></p>
 	<p><a href="/exotic-list">List of Exotic Packages</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer

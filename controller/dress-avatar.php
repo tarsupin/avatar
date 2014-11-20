@@ -198,7 +198,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" style="overflow:hidden;">' . Alert::display() . '';
+<div id="content">' . Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">' . ($avatarData['name'] != '' ? $avatarData['name'] . '\'s ' : '') . 'Dressing Room</div>
+	<div class="inner-box">';
 
 	// Clothes currently worn
 	echo '
@@ -377,6 +380,7 @@ echo '
 	}
 	
 	echo '
+	</div></div>
 </div>';
 
 ?>

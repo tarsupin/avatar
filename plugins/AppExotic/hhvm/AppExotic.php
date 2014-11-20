@@ -79,8 +79,8 @@ abstract class AppExotic {
 				// pick random item if cycled through all
 				if(!isset($item))
 				{
-					$item = $content[array_rand($content)]['item_id'];
-					//$item = $content[0]['item_id'];
+					//$item = $content[array_rand($content)]['item_id'];
+					$item = $content[0]['item_id'];
 				}
 				// roughly equal time for all items
 				$expire = time() + (floor((date("t") - $exception) / count($content) * 24) * 3600);

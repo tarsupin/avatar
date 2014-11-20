@@ -81,7 +81,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Sell ' . $item['title'] . '</h2>';
+<div class="overwrap-box">
+	<div class="overwrap-line">Sell ' . $item['title'] . '</div>
+	<div class="inner-box">';
 	if(!Alert::hasErrors())
 	{
 	echo '
@@ -122,6 +124,8 @@ echo '
 	</form>';
 	}
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

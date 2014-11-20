@@ -81,7 +81,7 @@ echo '
 <style>
 textarea { width:100%; height:150px; }
 @media screen and (min-width:501px) {
-	.uniform { position:static; margin-right:210px; }
+	.uniform { position:static; margin-right:215px; }
 }
 </style>';
 
@@ -90,8 +90,11 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 
 echo '
 <div id="panel-right"></div>
-<div id="content" style="overflow:hidden;">' .
-Alert::display();
+<div id="content">' .
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Outfit Code (Current Avatar)</div>
+	<div class="inner-box">';
 
 // Output code of current outfit
 $output = array();
@@ -117,6 +120,8 @@ echo '</div>
 		<p><textarea name="saved"></textarea></p>
 		<p><input type="submit" name="submit" value="Update Current Avatar"/></p>
 	</form>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

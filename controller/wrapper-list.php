@@ -62,7 +62,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">List of Wrappers</div>
+	<div class="inner-box">';
 
 // get images
 foreach($details as $key => $item)
@@ -96,7 +99,6 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2>List of Wrappers</h2>
 	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it.<br/>Click on the text with the dotted border to toggle the wrapper\'s content in/out of view.</p>';
 
 $space = false;
@@ -111,7 +113,7 @@ foreach($wrappers as $wrap)
 	<h3>' . $details[$wrap['id']]['title'] . '</h3>
 	If you own this wrapper, you can <a href="/wrapper-open">open it here</a>.<br/>
 	If you have opened this wrapper before and still have its contents, you can <a href="/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
-	' . $details[$wrap['id']]['html'] . ' <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">can be replaced with:</span><div class="spoiler-content">';
+	<span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">' . $details[$wrap['id']]['html'] . ' can be replaced with:</span><div class="spoiler-content">';
 	foreach($wrap['content']	as $cont)
 	{
 		echo $details[$cont]['html'];
@@ -136,6 +138,8 @@ foreach($wrappers as $wrap)
 	}
 	
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

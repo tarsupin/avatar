@@ -45,10 +45,11 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="/wrapper-open">Open Wrapper</a></li>
 				<li class="dropdown-slot"><a href="/wrapper-list">List of Wrappers</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wish-list", "view-wishlist")) ? " nav-active" : "") . '"><a href="menu-misc">Misc</a>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("wish-list", "view-wishlist", "share-equipment")) ? " nav-active" : "") . '"><a href="menu-misc">Misc</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/wish-list">My Wish List</a></li>
 				<li class="dropdown-slot"><a href="/view-wishlist">Share Wish List</a></li>
+				<li class="dropdown-slot"><a href="/share-equipment">Share Equipment List</a></li>
 			</ul>
 		</li>' . (Me::$clearance >= 5 ? '<li onmouseover="" class="menu-slot' . ($urlActive == "staff" ? " nav-active" : "") . '"><a href="/menu-staff">Staff</a>
 			<ul>

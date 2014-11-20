@@ -36,13 +36,13 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>Free Auro</h2>
-	<a class="button" href="/free-auro?want-free=yes&' . Link::prepare("free-auro") . '">Click to get FREE Auro</a>';
-
-		echo '
+Alert::display() . '
+<div class="overwrap-box">
+<div class="overwrap-line">Free Auro</div>
+	<div class="inner-box">
+	<a class="button" href="/free-auro?want-free=yes&' . Link::prepare("free-auro") . '">Click to get FREE Auro</a>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

@@ -119,7 +119,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">Re-Wrap Wrapper</div>
+	<div class="inner-box">';
 
 // get images
 foreach($details as $key => $item)
@@ -153,7 +156,6 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<h2>Re-Wrap Wrapper</h2>
 	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it. Here you can undo the opening process, provided you have all the items that came from the wrapper.</p>';
 	
 // output form
@@ -171,6 +173,8 @@ echo '
 </form>';
 	
 echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

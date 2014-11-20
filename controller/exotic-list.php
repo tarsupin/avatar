@@ -32,10 +32,10 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' .
-Alert::display();
-
-echo '
-	<h2>List of Exotic Packages (' . $url[1] . ')</h2>
+Alert::display() . '
+<div class="overwrap-box">
+	<div class="overwrap-line">List of Exotic Packages (' . $url[1] . ')</div>
+	<div class="inner-box">
 	<p>Click on the text with the dotted border to toggle the package\'s content in/out of view.</p>';
 
 // Attempt to load the cached version of this page
@@ -69,7 +69,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 		
 		$html .= '
 		<h3>' . $package['title'] . '</h3>
-		If you own this package, you can <a href="/exotic-open/' . $package['id'] . '">open it here</a>.<br/>' . (File::exists('assets/exotic_packages/' . lcfirst(date("F", mktime(0, 0, 0, $package['month'], 1))) . '_' . $package['year'] . '.png') ? '<img src="assets/exotic_packages/' . lcfirst(date("F", mktime(0, 0, 0, $package['month'], 1))) . '_' . $package['year'] . '.png"/>' : 'This package') . ' <span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">can be opened to receive one of these items:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
+		If you own this package, you can <a href="/exotic-open/' . $package['id'] . '">open it here</a>.<br/><span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">' . (File::exists('assets/exotic_packages/' . lcfirst(date("F", mktime(0, 0, 0, $package['month'], 1))) . '_' . $package['year'] . '.png') ? '<img src="assets/exotic_packages/' . lcfirst(date("F", mktime(0, 0, 0, $package['month'], 1))) . '_' . $package['year'] . '.png"/>' : 'This package') . ' can be opened to receive one of these items:</span><div class="spoiler-content"' . ($package['year'] == date("Y") && $package['month'] == date("n") ? ' style="display:block;"' : "") . '>';
 	
 		$content = Database::selectMultiple("SELECT item_id FROM packages_content WHERE package_id=?", array($package['id']));
 		foreach($content as $cont)
@@ -126,6 +126,8 @@ if($url[1] > 2009 or $url[1] < date("Y"))
 }
 
 	echo '
+	</div>
+</div>
 </div>';
 
 // Display the Footer

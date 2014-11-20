@@ -41,7 +41,9 @@ require(SYS_PATH . "/controller/includes/side-panel.php");
 echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
-	<h2>Choose Your Avatar</h2>
+<div class="overwrap-box">
+	<div class="overwrap-line">Choose Your Avatar</div>
+	<div class="inner-box">
 	<p>Please select the avatar that you would like to use!</p>';
 foreach($avis as $avi)
 {
@@ -54,6 +56,8 @@ foreach($avis as $avi)
 echo '
 	<div class="spacer"></div>
 	<p>You can also <a href="/create-avatar">create another avatar</a>!</p>
+	</div>
+</div>
 </div>';
 
 // Display the Footer

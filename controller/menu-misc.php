@@ -16,8 +16,14 @@ echo '
 <div id="panel-right"></div>
 <div id="content">
 	' . Alert::display() . '
+	<div class="overwrap-box">
+	<div class="overwrap-line">Misc Menu</div>
+	<div class="inner-box">
 	<p><a href="/wish-list">My Wish List</a></p>
 	<p><a href="/view-wishlist">Share Wish List</a></p>
+	<p><a href="/share-equipment">Share Equipment List</a></p>
+	</div>
+	</div>
 </div>';
 
 // Display the Footer
