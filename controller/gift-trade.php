@@ -359,7 +359,7 @@ if(!isset($url[1]))
 {
 	echo '
 	<p>This page combines gift and trade functionality. This is how it works:</p>
-	<p><ol style="list-style-type:decimal;margin-left:1em;">
+	<p><ol style="list-style-type:decimal;margin-left:2em;">
 		<li><a href="/gift-trade/new">Start a new transaction</a> or click on a pending one in the list below.</li>
 		<li>Add Auro to the transaction (if applicable).</li>
 		<li>Add Exotic Packages to the transaction (if applicable).</li>

@@ -25,7 +25,7 @@ if(Form::submitted("transfer-staff"))
 	else
 	{
 		$recipient = User::getIDByHandle($_POST['account6']);		
-		if($recipient !== false)
+		if($recipient != 0)
 		{
 			Database::startTransaction();
 		
@@ -88,6 +88,7 @@ if(Form::submitted("transfer-staff"))
 						}
 						else
 						{
+							Alert::success("Avatar Slot Transfer", 'The extra avatar slots have been transferred.');
 							Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
 						}
 					}
@@ -102,6 +103,7 @@ if(Form::submitted("transfer-staff"))
 							}
 							else
 							{
+								Alert::success("Avatar Slot Transfer", 'The extra avatar slots have been transferred.');
 								Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
 							}
 						}
@@ -129,7 +131,7 @@ if(Form::submitted("transfer-staff"))
 }
 
 // Set page title
-$config['pageTitle'] = "Transfer from Uni5";
+$config['pageTitle'] = "Transfer Uni5 to Uni6";
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -146,7 +148,7 @@ echo '
 <div id="content">' .
 Alert::display() . '
 <div class="overwrap-box">
-	<div class="overwrap-line">Transfer from Uni5</div>
+	<div class="overwrap-line">Transfer Uni5 to Uni6</div>
 	<div class="inner-box">
 	<p>This is the STAFF tool! It does the same as the public one, but please do not use it without good reason (such as forgotten passwords).</p>
 	

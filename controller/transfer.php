@@ -85,6 +85,7 @@ if(Form::submitted("transfer"))
 					}
 					else
 					{
+						Alert::success("Avatar Slot Transfer", 'Your extra avatar slots have been transferred.');
 						Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
 					}
 				}

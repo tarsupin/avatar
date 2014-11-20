@@ -35,6 +35,16 @@ if(isset($url[1]))
 			$recipient = User::get((int) $owner['uni_id'], "handle");
 			$recipient = $recipient['handle'];
 		}
+		
+		// Buy an item
+		if($link = Link::clicked())
+		{
+			if($link == "purchase-wish" && isset($_GET['buy']))
+			{
+				$_GET['buy'] = (int) $_GET['buy'];
+				AppAvatar::purchaseItem($_GET['buy']);
+			}
+		}
 
 		// Sort order
 		$order = "";
@@ -60,16 +70,24 @@ if(isset($url[1]))
 			{
 				function cmp($a, $b)
 				{
-					if($a['cost'] == $b['cost'])	{ return 0; }
-					return ($a['cost'] > $b['cost'] ? -1 : 1);
+					if($a['rarity_level'] == $b['rarity_level'])
+					{
+						if($a['cost'] == $b['cost'])	{ return 0; }
+						return ($a['cost'] > $b['cost'] ? -1 : 1);
+					}
+					return ($a['rarity_level'] > $b['rarity_level'] ? -1 : 1);
 				}
 			}
 			else
 			{
 				function cmp($a, $b)
 				{
-					if($a['cost'] == $b['cost'])	{ return 0; }
-					return ($a['cost'] < $b['cost'] ? -1 : 1);
+					if($a['rarity_level'] == $b['rarity_level'])
+					{
+						if($a['cost'] == $b['cost'])	{ return 0; }
+						return ($a['cost'] < $b['cost'] ? -1 : 1);
+					}
+					return ($a['rarity_level'] < $b['rarity_level'] ? -1 : 1);
 				}
 			}
 			usort($wished, "cmp");
@@ -224,7 +242,7 @@ else
 <div class="overwrap-box">
 	<div class="overwrap-line">Share Wish List</div>
 	<div class="inner-box">
-	<p><a href="/view-wishlist/' . Me::$id . '">Share this link!</a></p>
+	<p><a href="/view-wishlist/' . Me::$vals['handle'] . '">Share this link!</a></p>
 	<p>To actually be able to use the link above, user(s) must have permission to view your wish list. You can set those permissions here.</p>
 	<form class="uniform" method="post">' . Form::prepare("share-wishlist-all") . '
 		<p><input type="checkbox" name="everyone"' . (in_array(0, $allow) ? ' checked' : '') . '/> allow everyone <input type="submit" value="Set"></p>
@@ -251,7 +269,7 @@ else
 	<p>These users have made their wish list available to everyone or to you specifically. Your own wish list is not included here.</p>';
 	$lists = Database::selectMultiple("SELECT DISTINCT user_share_wishlist.uni_id, handle FROM user_share_wishlist INNER JOIN users ON user_share_wishlist.uni_id=users.uni_id WHERE (other_id=? OR other_id=?) AND user_share_wishlist.uni_id!=? ORDER BY handle LIMIT " . ($_GET['page']*20 + 0) . ",20", array(0, Me::$id, Me::$id));
 	echo '
-	<p><ol start="' . ($_GET['page']*20 + 1) . '" style="list-style-type:decimal;margin-left:1em;">';
+	<p><ol start="' . ($_GET['page']*20 + 1) . '" style="list-style-type:decimal;margin-left:2em;">';
 	foreach($lists as $list)
 	{
 		if($list['uni_id'] == Me::$id)	{ continue; }

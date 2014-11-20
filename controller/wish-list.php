@@ -71,7 +71,7 @@ require(SYS_PATH . "/controller/includes/header.php");
 echo '
 <style>
 table { width:100%; }
-table tr:first-child td { text-align:center; }
+table tr:first-child td, table tr td:first-child { text-align:center; }
 </style>';
 
 require(SYS_PATH . "/controller/includes/side-panel.php");
@@ -99,16 +99,24 @@ if(isset($_GET['sort']) && $_GET['sort'] == "cost")
 	{
 		function cmp($a, $b)
 		{
-			if($a['cost'] == $b['cost'])	{ return 0; }
-			return ($a['cost'] > $b['cost'] ? -1 : 1);
+			if($a['rarity_level'] == $b['rarity_level'])
+			{
+				if($a['cost'] == $b['cost'])	{ return 0; }
+				return ($a['cost'] > $b['cost'] ? -1 : 1);
+			}
+			return ($a['rarity_level'] > $b['rarity_level'] ? -1 : 1);
 		}
 	}
 	else
 	{
 		function cmp($a, $b)
 		{
-			if($a['cost'] == $b['cost'])	{ return 0; }
-			return ($a['cost'] < $b['cost'] ? -1 : 1);
+			if($a['rarity_level'] == $b['rarity_level'])
+			{
+				if($a['cost'] == $b['cost'])	{ return 0; }
+				return ($a['cost'] < $b['cost'] ? -1 : 1);
+			}
+			return ($a['rarity_level'] < $b['rarity_level'] ? -1 : 1);
 		}
 	}
 	usort($wished, "cmp");
