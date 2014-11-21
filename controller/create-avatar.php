@@ -44,7 +44,7 @@ if(Form::submitted("extra-slot"))
 				else
 				{
 					Database::endTransaction(false);
-					Alert::error("Slot Not Purchased", "Something went wrong! The slot could not be purchased.");
+					Alert::error("Slot Not Purchased", "Something went wrong! The slot could not be unlocked.");
 				}
 			}
 			else
@@ -58,7 +58,7 @@ if(Form::submitted("extra-slot"))
 				else
 				{
 					Database::endTransaction(false);
-					Alert::error("Slot Not Purchased", "Something went wrong! The slot could not be purchased.");
+					Alert::error("Slot Not Purchased", "Something went wrong! The slot could not be unlocked.");
 				}
 			}
 		}
@@ -131,7 +131,7 @@ echo '
         <li>- Any further additional avatar slots cost 15 UniJoule each.</li></ul></li>
     <li>You have unlocked ' . ($max['max'] - 3) . ' additional slots, therefore you may have up to ' . $max['max'] . ' avatars.</li></ul></p>
 	<p><form class="uniform" method="post"/>' . Form::prepare("extra-slot") . '
-		<input type="submit" value="Purchase Extra Slot" onclick="return confirm(\'Are you sure you want to purchase an extra slot?\');"/>
+		<input type="submit" value="Unlock Extra Slot" onclick="return confirm(\'Are you sure you want to unlock an extra slot?\');"/>
 	</form></p>';
 	
 	echo '

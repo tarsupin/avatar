@@ -148,7 +148,8 @@ require(SYS_PATH . "/controller/includes/metaheader.php");
 echo '
 <body>
 <style>
-.alert-info, .alert-message, .alert-error { margin:0px 0px 5px 0px; padding:5px; }
+#content * { box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; }
+.alert-info, .alert-message, .alert-error { margin:0px 215px 5px 0px; padding:5px; }
 </style>
 <div id="viewport-wrap">
 <div id="content" style="padding:0px;margin:0px; overflow:hidden;  background-color:#e8eef1;">

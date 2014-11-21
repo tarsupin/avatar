@@ -169,7 +169,7 @@ for($i=1; $i<5; $i++)
 			
 		echo '
 		</select>
-		<br/><a href="' . SITE_URL . '/wish-list?add=' . $slot['itemData']['id'] . '"/>Add to Wishlist</a>
+		<br/><a href="' . SITE_URL . '/wish-list?add=' . $slot['itemData']['id'] . '"/>Add to Wish List</a>
 		<br/>' . number_format($slot['cost'], 2) . ' UniJoule';
 		if(AppAvatar::checkOwnItem(Me::$id, (int) $slot['itemData']['id']))
 		{
