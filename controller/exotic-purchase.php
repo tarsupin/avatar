@@ -131,10 +131,12 @@ for($i=1; $i<5; $i++)
 			
 			// notify people who have it on their wishlist
 			$wish = Database::selectMultiple("SELECT uni_id FROM user_wish WHERE item_id=?", array($slot['itemData']['id']));
+			$uniIDList = array();
 			foreach($wish as $w)
 			{
-				Notifications::create((int) $w['uni_id'], SITE_URL . "/exotic-purchase", $slot['itemData']['title'] . " has rotated into the Exotic Shop.");
+				$uniIDList[] = (int) $w['uni_id'];
 			}
+			Notifications::createMultiple($uniIDList, SITE_URL . "/exotic-purchase", $slot['itemData']['title'] . " has rotated into the Exotic Shop.");
 		}
 	}
 	else

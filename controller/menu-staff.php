@@ -35,6 +35,7 @@ echo '
 	<p><a href="staff/item-create">Create Item</a></p>
 	<p><a href="staff/transfer5">Transfer 5 to 6</a></p>
 	<p><a href="staff/transfer6">Transfer 6 to 6</a></p>
+	<p><a href="staff/transferred-names">Transfer Name Changes</a></p>
 	</div>
 	</div>
 </div>';

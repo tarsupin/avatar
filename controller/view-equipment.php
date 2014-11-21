@@ -23,7 +23,7 @@ $recipientID = (int) $recipientID['uni_id'];
 // check permission
 $confirm1 = new Confirm("share-equip-" . $recipientID . "-" . Me::$id);
 $confirm2 = new Confirm("share-equip-" . $recipientID . "-0");
-if(!$confirm1->validate() && !$confirm2->validate() && $recipientID != Me::$id)
+if(!$confirm1->validate() && !$confirm2->validate() && $recipientID != Me::$id && Me::$clearance < 5)
 {
 	header("Location: /dress-avatar"); exit;
 }

@@ -57,6 +57,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer5">Transfer 5 to 6</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer6">Transfer 6 to 6</a></li>
+				<li class="dropdown-slot"><a href="staff/transferred-names">Transfer Name Changes</a></li>
 			</ul>
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum</a></li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>
