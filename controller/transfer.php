@@ -78,15 +78,40 @@ if(Form::submitted("transfer"))
 			{
 				if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account'])))
 				{
-					if(!Database::query("INSERT INTO user_max_avatars VALUES (?, ?)", array(Me::$id, (int) $max['max'])))
+					$has_slots = Database::selectOne("SELECT max FROM user_max_avatars WHERE uni_id=? LIMIT 1", array(Me::$id));
+					if($has_slots == array())
 					{
-						Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
-						Database::endTransaction(false);
+						if(!Database::query("INSERT INTO user_max_avatars VALUES (?, ?)", array(Me::$id, (int) $max['max'])))
+						{
+							Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
+							Database::endTransaction(false);
+						}
+						else
+						{
+							Alert::success("Avatar Slot Transfer", 'The extra avatar slots have been transferred.');
+							Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
+						}
 					}
 					else
 					{
-						Alert::success("Avatar Slot Transfer", 'Your extra avatar slots have been transferred.');
-						Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
+						if($has_slots['max'] + $max['max'] - 3 <= 9)
+						{
+							if(!Database::query("UPDATE user_max_avatars SET max=max+? WHERE uni_id=? LIMIT 1", array((int) $max['max']-3, Me::$id)))
+							{
+								Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
+								Database::endTransaction(false);
+							}
+							else
+							{
+								Alert::success("Avatar Slot Transfer", 'The extra avatar slots have been transferred.');
+								Database::query("DELETE FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($pass['account']));
+							}
+						}
+						else
+						{
+							Alert::error("Slot Transfer", "You will have more than 9 avatar slots! Please have an admin or programmer take care of this manually before trying the transfer again.");
+							Database::endTransaction(false);
+						}
 					}
 				}
 			}

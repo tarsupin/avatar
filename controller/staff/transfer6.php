@@ -72,9 +72,9 @@ if(Form::submitted("transfer-staff"))
 				}
 				else
 				{
-					if($has_slots['max'] + $max['max'] <= 9)
+					if($has_slots['max'] + $max['max'] - 3 <= 9)
 					{
-						if(!Database::query("UPDATE user_max_avatars SET max=max+? WHERE uni_id=? LIMIT 1", array((int) $max['max'], $to)))
+						if(!Database::query("UPDATE user_max_avatars SET max=max+? WHERE uni_id=? LIMIT 1", array((int) $max['max']-3, $to)))
 						{
 							Alert::error("Slot Transfer", "The avatar slot transfer has failed.");
 							Database::endTransaction(false);
