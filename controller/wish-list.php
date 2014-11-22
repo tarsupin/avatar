@@ -148,7 +148,7 @@ foreach ($wished as $itemData)
 	$package = Database::selectOne("SELECT title, year FROM packages_content INNER JOIN packages ON packages_content.package_id=packages.id WHERE item_id=? LIMIT 1", array($itemData['item_id']));
 	echo '
 		<tr' . ($own ? ' class="opaque"' : "") . '>
-			<td><a href="/wish-list?remove=' . $itemData['item_id'] . '">&#10006;</a></td>
+			<td><a href="/wish-list?remove=' . $itemData['item_id'] . '"><span class="icon-circle-close"></span></a></td>
 			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>

@@ -192,7 +192,7 @@ foreach($outfitArray as $pos => $item)
 		echo '
 	<li id="worn_' . $eItem['id'] . '">
 		<div><img id="itemImg_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
-		<a id="link_' . $eItem['id'] . '" class="close" href="/preview-avi?unequip=' . $eItem['id'] . '">&#10006;</a>
+		<a id="link_' . $eItem['id'] . '" class="close" href="/preview-avi?unequip=' . $eItem['id'] . '"><span class="icon-circle-close"></span></a>
 		<select id="color_' . $eItem['id'] . '">';
 		
 		$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title'], $avatarData['gender']);
@@ -218,20 +218,20 @@ foreach($outfitArray as $pos => $item)
 			{
 				$totalmissingcost += $cost;
 				echo '
-			<a class="buy" title="Buy for ' . $cost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '">&#10004;</a>';
+			<a class="buy" title="Buy for ' . $cost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '"><span class="icon-circle-check"></span></a>';
 			}
 		}
 
 		if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
 		{
 			echo '
-		<a class="left" href="/preview-avi?left=' . $eItem['id'] . '">&lt;</a>';
+		<a class="left" href="/preview-avi?left=' . $eItem['id'] . '"><span class="icon-arrow-left"></span></a>';
 		}
 		
 		if(isset($outfitArray[$pos + 1]) && $eItem['position'] != "skin")
 		{
 			echo '
-		<a class="right" href="/preview-avi?right=' . $eItem['id'] . '">&gt;</a>';
+		<a class="right" href="/preview-avi?right=' . $eItem['id'] . '"><span class="icon-arrow-right"></span></a>';
 		}
 		
 			echo '

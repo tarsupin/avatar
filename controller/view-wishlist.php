@@ -248,14 +248,14 @@ else
 		<p><input type="checkbox" name="everyone"' . (in_array(0, $allow) ? ' checked' : '') . '/> allow everyone <input type="submit" value="Set"></p>
 	</form>
 	<form class="uniform" method="post">' . Form::prepare("share-wishlist-one") . '
-		<p><input type="text" name="addshare" maxlength="22" placeholder="Username"/> <input type="submit" value="Allow User"></p>
+		<p>@<input type="text" name="addshare" maxlength="22" placeholder="Username"/> <input type="submit" value="Allow User"></p>
 	</form>';
 	foreach($allow as $a)
 	{
 		if($a == 0)	{ continue; }
 		$handle = User::get($a, "handle");
 		echo '
-		<a href="/view-wishlist?remove=' . $handle['handle'] . '&' . Link::prepare("share-wishlist-not") . '">&#10006;</a> ' . $handle['handle'] . '<br/>';
+		<a href="/view-wishlist?remove=' . $handle['handle'] . '&' . Link::prepare("share-wishlist-not") . '"><span class="icon-circle-close"></span></a> ' . $handle['handle'] . '<br/>';
 	}
 	echo '
 	</div>

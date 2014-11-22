@@ -257,7 +257,7 @@ echo '
 			echo '
 		<li id="worn_' . $eItem['id'] . '">
 			<div><img id="img_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
-			<a class="close" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'unequip=' . $eItem['id'] . '">&#10006;</a>
+			<a class="close" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'unequip=' . $eItem['id'] . '"><span class="icon-circle-close"></span></a>
 			<select id="color_' . $eItem['id'] . '">';
 			
 			$colors = AppAvatar::getItemColors($eItem['position'], $eItem['title'], $avatarData['gender']);
@@ -274,13 +274,13 @@ echo '
 			if(isset($outfitArray[$pos - 1]) && $eItem['position'] != "skin")
 			{
 				echo '
-			<a class="left" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'left=' . $eItem['id'] . '">&lt;</a>';
+			<a class="left" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'left=' . $eItem['id'] . '"><span class="icon-arrow-left"></span></a>';
 			}
 			
 			if(isset($outfitArray[$pos + 1]) && $eItem['position'] != "skin")
 			{
 				echo '
-			<a class="right" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'right=' . $eItem['id'] . '">&gt;</a>';
+			<a class="right" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'right=' . $eItem['id'] . '"><span class="icon-arrow-right"></span></a>';
 			}
 			
 				echo '

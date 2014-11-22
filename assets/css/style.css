@@ -101,11 +101,11 @@ input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1p
 		-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=1)";
 	filter:alpha(opacity=1);
 }
-.close { right:2px; top:-2px; }
-.buy { right:3px; top:42px; }
-.left { left:3px; top:19px; }
-.right { right:3px; top:19px; }
-.owned { right:1px; top:40px; }
+.close { right:1px; top:0px; }
+.buy { right:1px; top:42px; }
+.left { left:2px; top:21px; }
+.right { right:2px; top:21px; }
+.owned { right:2px; top:40px; }
 
 .item_block { display:inline-block; padding:5px; text-align:center; width:155px; }
 .item_block select { width:145px; }

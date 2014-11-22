@@ -100,7 +100,7 @@ echo '
 		Any given permission will work for the set number of days unless you remove it below.</p>
 		<br/>
 		<form class="uniform" method="post">' . Form::prepare("share-personal") . '
-			<p>I want to allow <input type="text" name="sharewith"/> to see a list of my equipment for a duration of <input type="number" min="1" max="30" name="duration" value="30" size="2"/> (1-30) days.</p>
+			<p>I want to allow @<input type="text" name="sharewith"/> to see a list of my equipment for a duration of <input type="number" min="1" max="30" name="duration" value="30" size="2"/> (1-30) days.</p>
 			<p><input type="submit" value="Grant Permission"/></p>
 		</form>
 		<br/>
@@ -126,12 +126,12 @@ foreach($given as $g)
 			$recipient = User::get($recipientID, "handle");
 			$recipient = $recipient['handle'];
 			echo '
-			<li><a href="/share-equipment?remove=' . $recipient . '&' . Link::prepare("share-equipment-not") . '">&#10006;</a> ' . $recipient . ' (expires ' . Time::fuzzy($g['date_expires']) . ')</li>';
+			<li><a href="/share-equipment?remove=' . $recipient . '&' . Link::prepare("share-equipment-not") . '"><span class="icon-circle-close"></span></a> ' . $recipient . ' (expires ' . Time::fuzzy((int) $g['date_expires']) . ')</li>';
 		}
 		else
 		{
 			echo '
-			<li><a href="/share-equipment?remove=0&' . Link::prepare("share-equipment-not") . '">&#10006;</a> Everyone (expires ' . Time::fuzzy($g['date_expires']) . ')</li>';
+			<li><a href="/share-equipment?remove=0&' . Link::prepare("share-equipment-not") . '"><span class="icon-circle-close"></span></a> Everyone (expires ' . Time::fuzzy((int) $g['date_expires']) . ')</li>';
 		}
 	}
 }

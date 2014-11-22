@@ -326,7 +326,7 @@ if(isset($url[1]) && $url[1] != "new")
 	{
 		$details = json_decode($trans['display'], true);
 		$info .= '
-		<li>' . ($trans['uni_id'] == Me::$id ? '<a href="/gift-trade/' . $url[1] . '?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'remove=' . $trans['id'] . '" onclick="alert(\'Are you sure you want to remove this entry?\');">&#10006;</a> ' : '') . $details['description'] . '</li>';
+		<li>' . ($trans['uni_id'] == Me::$id ? '<a href="/gift-trade/' . $url[1] . '?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'remove=' . $trans['id'] . '" onclick="alert(\'Are you sure you want to remove this entry?\');"><span class="icon-circle-close"></span></a> ' : '') . $details['description'] . '</li>';
 	}
 	$info .= '
 	</ul>';
@@ -416,7 +416,7 @@ elseif($url[1] == "new")
 	<form class="uniform" method="post">' . Form::prepare("initialize-transaction") . '
 		<p>
 			<strong>Recipient</strong><br />
-			<input type="text" maxlength="22" name="recipient"/>
+			@<input type="text" maxlength="22" name="recipient"/>
 		</p>
 		<p><input class="button" type="submit" name="submit" value="Start"/></p>
 	</form>';

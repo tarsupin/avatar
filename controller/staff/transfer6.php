@@ -54,7 +54,7 @@ if(Form::submitted("transfer-staff"))
 		// transfer extra avatar slots
 		if(!Alert::hasErrors())
 		{
-			if($max = Database::selectOne("SELECT max FROM _transfer_max_avatars WHERE account=? LIMIT 1", array($from)))
+			if($max = Database::selectOne("SELECT max FROM user_max_avatars WHERE uni_id=? LIMIT 1", array($from)))
 			{
 				$has_slots = Database::selectOne("SELECT max FROM user_max_avatars WHERE uni_id=? LIMIT 1", array($to));
 				if($has_slots == array())
