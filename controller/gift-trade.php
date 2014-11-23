@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/trade-gift");
+	Me::redirectLogin("/gift-trade");
 }
 
 // Require avatar
