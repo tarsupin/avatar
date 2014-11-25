@@ -41,7 +41,11 @@ html, body { background-color:#D9EAFF !important; }
 .inner-box { background-color:#e8eef1; border:solid 1px #c0c0c0; border-radius:4px; padding:6px; margin-top:6px; width:100%; overflow:hidden; }
 .overwrap-line { padding:0px 2px 0px 2px; font-weight:bold; font-size:1.2em; }
 
+input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1px #bbbbbb; }
+
 .spacer { height:50px; }
+
+.uniform input[type=file] { line-height:22px; vertical-align:middle; padding:8px 13px 8px 13px; border-radius:8px; border:0px; font-size:16px; cursor:pointer; border:solid 1px; }
 
 /****************************
 ****** Unique Elements ******
@@ -66,7 +70,7 @@ html, body { background-color:#D9EAFF !important; }
 	padding:5px;
 	position:relative;
 	text-align:center;
-	width:78px;
+	width:77px;
 }
 .dragndrop img { max-height:50px; max-width:100%; }
 .dragndrop select { width:100%; }
@@ -108,9 +112,11 @@ html, body { background-color:#D9EAFF !important; }
 .item_block img { max-height:100px; max-width:80px; }
 
 .redlinks>a { line-height:2.2em; white-space:nowrap; }
-.redlinks>span { padding:5px; white-space:nowrap; }
+.redlinks>span { padding:5px; white-space:nowrap; border-radius:4px;}
+.nav-active
 .spoiler-header, .redlinks>a, .dragndrop li
 {
+	border-radius:4px;
 	background-color:#c7e0ee;	
 	background-image:-linear-gradient(#c7e0ee, #e8eef1);
 	background-image:-moz-linear-gradient(top, #c7e0ee, #e8eef1);
@@ -119,11 +125,27 @@ html, body { background-color:#D9EAFF !important; }
 	background-image:-webkit-gradient(linear, left top, left bottom, from(#c7e0ee), to(#e8eef1));
 	background-image:-webkit-linear-gradient(top, #c7e0ee, #e8eef1);
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c7e0ee', endColorstr='#e8eef1');
-	color:#2c7099 !important;
 	padding:5px;
 }
-.spoiler-header { border:1px dotted; display:inline-block; }
+.spoiler-header { display:inline-block; margin-left:2em; }
 .spoiler-header:hover, .redlinks>a:hover
+{
+	background-color:#97d5fb;
+	background-image:none;
+	color:white !important;
+	transition:0.1s ease-in-out;
+}
+.spoiler-header:before
+{
+	content:"\e62b ";
+	color:#2c7099;
+	font-family:'icomoon';
+	font-size:1.5em;
+	position:absolute;
+	margin-left:-1.45em;
+	margin-top:-0.25em;
+}
+.spoiler-header:hover
 {
 	background-color:#97d5fb;
 	background-image:none;
@@ -133,7 +155,8 @@ html, body { background-color:#D9EAFF !important; }
 .spoiler-content
 {
 	display:none;
-	border-left:1px dotted;
+	padding-left:0.5em;
+	margin-left:2em;
 }
 
 .opaque

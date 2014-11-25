@@ -158,7 +158,7 @@ foreach($details as $key => $item)
 }
 
 echo '
-	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.<br/>Click on the text with the dotted border to toggle the wrapper\'s content in/out of view.</p>';
+	<p>A wrapper is an item that can be "opened" to receive other items from "inside" it. The wrapper itself disappears in the process, but a replacement that either is identical or can be combined to look identical is given, so you lose nothing.</p>';
 
 $space = false;
 	

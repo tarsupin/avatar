@@ -35,8 +35,7 @@ echo '
 Alert::display() . '
 <div class="overwrap-box">
 	<div class="overwrap-line">List of Exotic Packages (' . $url[1] . ')</div>
-	<div class="inner-box">
-	<p>Click on the text with the dotted border to toggle the package\'s content in/out of view.</p>';
+	<div class="inner-box">';
 
 // Attempt to load the cached version of this page
 $cachedPage = "exotic_" . $url[1] . "_" . $avatarData['gender'];
