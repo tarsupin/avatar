@@ -61,12 +61,17 @@ if(Me::$loggedIn)
 			</ul>
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum</a></li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>
+</div>
+<div class="menu-wrap show-600">
+	<ul class="menu">
+		<li class="dropdown-slot"><a href="/menu">Menu</a></li>
+	</ul>
 </div>');
 }
 else
 {
 	WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap hide-600">
+<div class="menu-wrap">
 	<ul class="menu">
 		<li class="dropdown-slot' . ($urlActive == "login" ? " nav-active" : "") . '"><a href="/login">Login</a></li>
 	</ul>
