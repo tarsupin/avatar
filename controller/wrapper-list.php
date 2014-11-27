@@ -3,7 +3,7 @@
 // Make sure you're logged in
 if(!Me::$loggedIn)
 {
-	Me::redirectLogin("/wrappers-list");
+	Me::redirectLogin("/wrapper-list");
 }
 
 // Return home if you don't have an avatar

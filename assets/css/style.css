@@ -113,7 +113,6 @@ input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1p
 
 .redlinks>a { line-height:2.2em; white-space:nowrap; }
 .redlinks>span { padding:5px; white-space:nowrap; border-radius:4px;}
-.nav-active
 .spoiler-header, .redlinks>a, .dragndrop li
 {
 	border-radius:4px;
@@ -144,13 +143,6 @@ input[type="number"] { padding:6px 6px 6px 12px; font-size:16px; border:solid 1p
 	position:absolute;
 	margin-left:-1.45em;
 	margin-top:-0.25em;
-}
-.spoiler-header:hover
-{
-	background-color:#97d5fb;
-	background-image:none;
-	color:white !important;
-	transition:0.1s ease-in-out;
 }
 .spoiler-content
 {
