@@ -135,6 +135,24 @@ class AppAvatar_config {
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 		");
 		
+		Database::exec("
+		CREATE TABLE `user_share_wishlist` (
+			`uni_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			`other_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			PRIMARY KEY (`uni_id`, `other_id`)
+		)
+		ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY (`uni_id`) PARTITIONS 7;
+		");
+		
+		Database::exec("
+		CREATE TABLE `user_share_wishlist_by_other` (
+			`uni_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			`other_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			PRIMARY KEY (`other_id`, `uni_id`)
+		)
+		ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY (`other_id`) PARTITIONS 7;
+		");
+		
 		return $this->isInstalled();
 	}
 	

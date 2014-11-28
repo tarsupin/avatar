@@ -102,15 +102,22 @@ else
 		{
 			if(Database::query("REPLACE INTO user_share_wishlist VALUES (?, ?)", array(Me::$id, 0)))
 			{
-				Database::query("DELETE FROM user_share_wishlist WHERE uni_id=? AND other_id!=?", array(Me::$id, 0));
-				Alert::success("Allowed", "Everyone may view your wish list now.");
+				if(Database::query("REPLACE INTO user_share_wishlist_by_other VALUES (?, ?)", array(0, Me::$id)))
+				{
+					Database::query("DELETE FROM user_share_wishlist WHERE uni_id=? AND other_id!=?", array(Me::$id, 0));
+					Database::query("DELETE FROM user_share_wishlist_by_other WHERE other_id!=? AND uni_id=?", array(0, Me::$id));
+					Alert::success("Allowed", "Everyone may view your wish list now. Individual permissions have been removed.");
+				}
 			}
 		}
 		else
 		{
 			if(Database::query("DELETE FROM user_share_wishlist WHERE uni_id=? AND other_id=? LIMIT 1", array(Me::$id, 0)))
 			{
-				Alert::success("Not Allowed", "Your wish list may now only be viewed by the users listed below, if any.");
+				if(Database::query("DELETE FROM user_share_wishlist_by_other WHERE other_id=? AND uni_id=? LIMIT 1", array(0, Me::$id)))
+				{
+					Alert::success("Not Allowed", "Your wish list may now only be viewed by the users listed below, if any.");
+				}
 			}
 		}
 	}
@@ -131,7 +138,10 @@ else
 				$recipientID = (int) $recipientID['uni_id'];
 				if(Database::query("REPLACE INTO user_share_wishlist VALUES (?, ?)", array(Me::$id, $recipientID)))
 				{
-					Alert::success("Allowed", $user . " may view your wish list now.");
+					if(Database::query("REPLACE INTO user_share_wishlist_by_other VALUES (?, ?)", array($recipientID, Me::$id)))
+					{
+						Alert::success("Allowed", $user . " may view your wish list now.");
+					}
 				}
 			}
 		}
@@ -150,7 +160,10 @@ else
 			$recipientID = (int) $recipientID['uni_id'];
 			if(Database::query("DELETE FROM user_share_wishlist WHERE uni_id=? AND other_id=? LIMIT 1", array(Me::$id, $recipientID)))
 			{
-				Alert::success("Not Allowed", $user . " may no longer view your wish list.");
+				if(Database::query("DELETE FROM user_share_wishlist_by_other WHERE other_id=? AND uni_id=? LIMIT 1", array($recipientID, Me::$id)))
+				{
+					Alert::success("Not Allowed", $user . " may no longer view your wish list.");
+				}
 			}
 		}
 	}

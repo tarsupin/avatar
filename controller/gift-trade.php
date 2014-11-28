@@ -96,19 +96,16 @@ if(isset($url[1]) && $url[1] != "new")
 			// check that it is indeed a gift and the other person has not added anything
 			if(!$contrib[$recipientID])
 			{
-				$entries = Database::selectMultiple("SELECT id, process_parameters FROM transactions_entries WHERE transaction_id=?", array($url[1]));
+				$entries = Database::selectMultiple("SELECT id, process_method, process_parameters, display FROM transactions_entries WHERE transaction_id=?", array($url[1]));
 				// set all entries to anonymous
 				if(isset($_POST['gift_anon']))
 				{
 					foreach($entries as $entry)
 					{
 						$entry['process_parameters'] = json_decode($entry['process_parameters'], true);
-						if(count($entry['process_parameters']) < 5)
-						{
-							$entry['process_parameters'][] = true;
-							$entry['process_parameters'] = json_encode($entry['process_parameters']);
-							Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
-						}
+						$entry['process_parameters'][4] = true;
+						$entry['process_parameters'] = json_encode($entry['process_parameters']);
+						Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
 					}
 				}
 				// set all entries to normal
@@ -117,12 +114,9 @@ if(isset($url[1]) && $url[1] != "new")
 					foreach($entries as $entry)
 					{
 						$entry['process_parameters'] = json_decode($entry['process_parameters'], true);
-						if(count($entry['process_parameters']) == 5)
-						{
-							unset($entry['process_parameters'][4]);
-							$entry['process_parameters'] = json_encode($entry['process_parameters']);
-							Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
-						}
+						$entry['process_parameters'][4] = false;
+						$entry['process_parameters'] = json_encode($entry['process_parameters']);
+						Database::query("UPDATE transactions_entries SET process_parameters=? WHERE id=? LIMIT 1", array($entry['process_parameters'], $entry['id']));
 					}
 				}
 				
@@ -131,7 +125,20 @@ if(isset($url[1]) && $url[1] != "new")
 				if($pass)
 				{
 					Alert::saveSuccess("Gift Sent", "Your gift has been sent to " . $recipient . "!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have received a gift from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '! Check the logs for details.');
+					foreach($entries as $entry)
+					{
+						switch($entry['process_method'])
+						{
+							case "sendAuro":
+								Notifications::create($recipientID, URL::karma_unifaction_com() . "/auro-transactions", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+								break;
+							case "sendItem":
+								Notifications::create($recipientID, SITE_URL . "/log-item", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+								break;
+							case "sendPackage":
+								Notifications::create($recipientID, SITE_URL . "/log-package", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+						}
+					}
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -206,7 +213,7 @@ if(isset($url[1]) && $url[1] != "new")
 		if($_POST['auro'] > 0)
 		{
 			// check for previous Auro entries and remove if necessary
-			if($transaction = Database::selectOne("SELECT id, process_method FROM transactions_entries WHERE transaction_id=? AND uni_id=? AND process_method=? LIMIT 1", array($url[1], Me::$id, "sendAuro_doTransaction")))
+			if($transaction = Database::selectOne("SELECT id FROM transactions_entries WHERE transaction_id=? AND uni_id=? AND process_method=? LIMIT 1", array($url[1], Me::$id, "sendAuro_doTransaction")))
 			{
 				$transaction['id'] = (int) $transaction['id'];
 				Transaction::removeEntry($transaction['id']);
@@ -247,7 +254,7 @@ if(isset($url[1]) && $url[1] != "new")
 					if($item)
 					{
 						$item['id'] = (int) $item['id'];
-						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction " . $url[1]), array("image" => "item.png", "caption" => $_GET['add'] . " " . $item['title'], "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
+						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendItem", array(Me::$id, $recipientID, $item['id'], "Transaction " . $url[1]), array("image" => "item.png", "caption" => $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : ""), "description" => $sender . " sends " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : "") . " to " . $recipient . ".")))
 						{
 							$approval[Me::$id] = 0;
 							$approval[$recipientID] = 0;
@@ -275,7 +282,7 @@ if(isset($url[1]) && $url[1] != "new")
 					if($package)
 					{
 						$package['id'] = (int) $package['id'];
-						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendPackage", array(Me::$id, $recipientID, $package['id'], "Transaction " . $url[1]), array("image" => "package.png", "caption" => $_GET['add'] . " " . $package['title'], "description" => $sender . " sends " . $package['title'] . " (" . $package['year'] . ") to " . $recipient . ".")))
+						if(Transaction::addEntry(Me::$id, $url[1], "AppTrade", "sendPackage", array(Me::$id, $recipientID, $package['id'], "Transaction " . $url[1]), array("image" => "package.png", "caption" => $package['title'] . " (" . $package['year'] . ")", "description" => $sender . " sends " . $package['title'] . " (" . $package['year'] . ") to " . $recipient . ".")))
 						{
 							$approval[Me::$id] = 0;
 							$approval[$recipientID] = 0;
