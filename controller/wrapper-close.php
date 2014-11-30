@@ -139,7 +139,7 @@ foreach($details as $key => $item)
 	// Display the Item					
 	$html .= '
 	<div class="item_block">
-		<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
+		<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />' . $item['title'] . ($item['id'] == $url[1] ? ' (Wrapper)' : '') . '<br/>
 		<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 		
 		foreach($colors as $color)
@@ -168,6 +168,7 @@ foreach($wrap['content']	as $cont)
 echo ' will be replaced with:<br/>
 ' . $details[$url[1]]['html'];
 echo '
+<br/>
 <form class="uniform" method="post">' . Form::prepare("wrapper-close") . '
 	<input type="submit" name="open" value="Re-Wrap ' . $details[$url[1]]['title'] . '"/>
 </form>';

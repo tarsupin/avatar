@@ -61,6 +61,8 @@ Alert::display() . '
 <div class="overwrap-box">
 	<div class="overwrap-line">Outfit Code (Preview Avatar)</div>
 	<div class="inner-box">';
+	
+$wrappers = AppAvatar::wrappers();
 
 // Output code of current preview outfit
 $output = array();
@@ -76,7 +78,7 @@ foreach($outfitArray as $oa)
 {
 	if($oa[0] == 0) { continue; }
 	$itemData = AppAvatar::itemData((int) $oa[0], "title");
-	echo $itemData['title'] . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]) ? " [&bull;]" : "") . "<br/>";
+	echo $itemData['title'] . (in_array($oa[0], $wrappers) ? ' (Wrapper)' : '') . " (" . $oa[1] . ")" . (AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]) ? " [&bull;]" : "") . "<br/>";
 }
 echo '</div>
 	<form class="uniform" method="post">' . Form::prepare("outfitcode-preview") . '

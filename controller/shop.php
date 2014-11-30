@@ -38,7 +38,7 @@ if(Me::$clearance >= 5)
 	$shops[13] = "Archive";
 	$shops[16] = "Staff Shop";
 	$shops[17] = "Test Shop";
-	$shops[19] = "Wrappers";
+	$shops[19] = "Wrapper Replacements";
 }
 
 // Check that the shop exists
@@ -89,6 +89,8 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 	$html = "";
 	$shopItems = AppAvatar::getShopItems($shopID);
 	
+	$wrappers = AppAvatar::wrappers();
+	
 	// Sort items alphabetically by title
 	function items_alpha($a, $b) { return strcmp($a['title'], $b['title']); }
 	usort($shopItems, "items_alpha");
@@ -107,7 +109,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 		$html .= '
 		<div class="item_block">
 			<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a><br />
-			' . $item['title'] . '<br /><span style="font-size:0.6em;"><a href="/shop-search?submit=Search&' . $item['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">' . $item['position'] . '</a>, ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . '</span><br />
+			' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . '<br /><span style="font-size:0.6em;"><a href="/shop-search?submit=Search&' . $item['position'] . '=on&gender=' . $avatarData['gender'] . 'ab">' . $item['position'] . '</a>, ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . '</span><br />
 			<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)

@@ -21,9 +21,11 @@ $wrappers = Database::selectMultiple("SELECT id, content, replacement FROM wrapp
 
 // get item info
 $ids = array();
+$wrap_ids = array();
 foreach($wrappers as $key => $wrap)
 {
 	$ids[] = (int) $wrap['id'];
+	$wrap_ids[] = (int) $wrap['id'];
 	$wrap['content'] = explode(",", $wrap['content']);
 	if($wrap['replacement'] != 0)
 	{
@@ -71,18 +73,19 @@ Alert::display() . '
 foreach($details as $key => $item)
 {
 	$html = '';
-
-	// Get list of colors
-	$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);				
-	if(!$colors) { continue; }
 	
 	if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
 	else	{ $gender = ($item['gender'] == "m" ? "male" : "female"); }
+	
+	// Get list of colors
+	$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $gender);				
+	if(!$colors) { continue; }
 
 	// Display the Item					
 	$html .= '
-	<div class="item_block">
+	<div class="item_block' . ($gender != $avatarData['gender_full'] ? ' opaque' : '') . '">
 		<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
+		' . $item['title'] . (in_array($item['id'], $wrap_ids) ? ' (Wrapper)' : '') . '<br/>
 		<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 		
 		foreach($colors as $color)
@@ -92,7 +95,7 @@ foreach($details as $key => $item)
 		}
 		
 		$html .= '
-		</select><br/>' . $item['title'];
+		</select>';
 	$html .= '
 	</div>';
 	$details[$key]['html'] = $html;
@@ -114,7 +117,7 @@ foreach($wrappers as $wrap)
 	If you own this wrapper, you can <a href="/wrapper-open">open it here</a>.<br/>
 	If you have opened this wrapper before and still have its contents, you can <a href="/wrapper-close/' . $wrap['id'] . '">re-wrap it here</a>.<br/>
 	<span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">' . $details[$wrap['id']]['html'] . ' can be replaced with:</span><div class="spoiler-content">';
-	foreach($wrap['content']	as $cont)
+	foreach($wrap['content'] as $cont)
 	{
 		echo $details[$cont]['html'];
 	}

@@ -38,6 +38,8 @@ if($ownItem)
 	Alert::info("Own Item", "Note: You already own this item!");
 }
 
+$wrappers = AppAvatar::wrappers();
+
 // Check if you purchased the item
 if(Form::submitted("purchase-item"))
 {
@@ -45,7 +47,7 @@ if(Form::submitted("purchase-item"))
 }
 
 // Set page title
-$config['pageTitle'] = "Purchase " . $item['title'];
+$config['pageTitle'] = "Purchase " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '');
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -61,9 +63,9 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 <div class="overwrap-box">
-	<div class="overwrap-line">Purchase ' . $item['title'] . '</div>
+	<div class="overwrap-line">Purchase ' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . '</div>
 	<div class="inner-box">
-	<p>Are you sure you want to purchase ' . $item['title'] . ' for ' . $item['cost'] . ' Auro? [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']</p>';
+	<p>Are you sure you want to purchase ' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ' for ' . $item['cost'] . ' Auro? [' . $item['position'] . ', ' . ($item['gender'] == "b" ? 'both genders' : ($item['gender'] == "m" ? 'male' : 'female')) . ']</p>';
 	
 	// Get some of the items
 	$images = Dir::getFiles(APP_PATH . "/avatar_items/" . $item['position'] . '/' . $item['title'] . '/');

@@ -13,6 +13,8 @@ if(!$getLink = Link::clicked())
 	$getLink = "";
 }
 
+$wrappers = AppAvatar::wrappers();
+
 // Equip an item
 if(isset($_GET['equip']))
 {
@@ -49,7 +51,7 @@ if(isset($_GET['equip']))
 	else
 	{
 		$itemData = AppAvatar::itemData($_GET['equip'], "title");
-		Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+		Alert::error("Not Owned", "You do not own " . $itemData['title'] . (in_array($_GET['equip'], $wrappers) ? ' (Wrapper)' : '') . ", so it cannot be equipped.");
 	}
 }
 
@@ -126,7 +128,7 @@ else if($getLink == "replace")
 		else
 		{
 			$itemData = AppAvatar::itemData($oa[0], "title");
-			Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+			Alert::error("Not Owned", "You do not own " . $itemData['title'] . (in_array($oa[0], $wrappers) ? ' (Wrapper)' : '') . ", so it cannot be equipped.");
 		}
 	}
 	
@@ -154,7 +156,7 @@ else if(isset($_POST['order']))
 		if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
 		{
 			$itemData = AppAvatar::itemData($oa[0], "title");
-			Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+			Alert::error("Not Owned", "You do not own " . $itemData['title'] . (in_array($oa[0], $wrappers) ? ' (Wrapper)' : '') . ", so it cannot be equipped.");
 			unset($outfitArray[$key]);
 		}
 	}
@@ -256,7 +258,7 @@ echo '
 			
 			echo '
 		<li id="worn_' . $eItem['id'] . '">
-			<div><img id="img_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
+			<div><img id="img_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . (in_array($eItem['id'], $wrappers) ? ' (Wrapper)' : '') . '"/></div>
 			<a class="close" href="/dress-avatar?' . (isset($_GET['position']) ? 'position=' . $_GET['position'] . '&' : '') . 'unequip=' . $eItem['id'] . '"><span class="icon-circle-close"></span></a>
 			<select id="color_' . $eItem['id'] . '">';
 			
@@ -340,7 +342,7 @@ echo '
 			echo '
 			<div class="item_block">
 				<a href="javascript:review_item(' . $item['id'] . ');"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a>
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)
@@ -363,7 +365,7 @@ echo '
 			echo '
 			<div class="item_block opaque">
 				<a href="javascript:review_item(' . $item['id'] . ');"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '.png" /></a>
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '\');">';
 			
 			foreach($colors as $color)

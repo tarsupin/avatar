@@ -37,13 +37,12 @@ else
 	Alert::error("No Cost", "The item's value could not be determined.");
 }
 
+$wrappers = AppAvatar::wrappers();
+
 // Check if you sold the item
 if(Form::submitted("sell-item") && !Alert::hasErrors())
-{
-	// get wrappers
-	$wrappers = AppAvatar::wrappers();
-		
-	if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($url[1], $wrappers) ? " (Wrapper)" : ""), $config['site-name']))
+{		
+	if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : ''), $config['site-name']))
 	{
 		AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop");
 		Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . round($item['cost']/2) . ' Auro.');
@@ -66,7 +65,7 @@ if($item['rarity_level'] != 0)
 }
 
 // Set page title
-$config['pageTitle'] = "Sell " . $item['title'];
+$config['pageTitle'] = "Sell " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '');
 
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
@@ -82,12 +81,12 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display() . '
 <div class="overwrap-box">
-	<div class="overwrap-line">Sell ' . $item['title'] . '</div>
+	<div class="overwrap-line">Sell ' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . '</div>
 	<div class="inner-box">';
-	if(!Alert::hasErrors())
-	{
+if(!Alert::hasErrors())
+{	
 	echo '
-	<p>Are you sure you want to sell ' . $item['title'] . ' for ' . round($item['cost']/2) . ' Auro?</p>';
+	<p>Are you sure you want to sell ' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ' for ' . round($item['cost']/2) . ' Auro?</p>';
 	
 	// Get some of the items
 	$images = Dir::getFiles(APP_PATH . "/avatar_items/" . $item['position'] . '/' . $item['title'] . '/');
@@ -122,7 +121,7 @@ echo '
 	<form class="uniform" action="/sell-item/' . $item['id'] . '" method="post">' . Form::prepare("sell-item") . '
 		<input type="submit" name="submit" value="Sell" />
 	</form>';
-	}
+}
 echo '
 	</div>
 </div>

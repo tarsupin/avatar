@@ -24,6 +24,7 @@ foreach($owned as $key => $own)
 	if(!isset($details[$own['id']]))
 	{
 		$details[$own['id']] = AppAvatar::itemData($own['id'], "id,title,position,gender");
+		$details[$own['id']]['wrapper'] = true;
 	}
 	$own['content'] = explode(",", $own['content']);
 	if($own['replacement'] != 0)
@@ -141,7 +142,7 @@ foreach($details as $key => $item)
 	// Display the Item					
 	$html .= '
 	<div class="item_block">
-		<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
+		<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />' . $item['title'] . (isset($item['wrapper']) ? ' (Wrapper)' : '') . '<br/>
 		<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 		
 		foreach($colors as $color)
@@ -177,6 +178,7 @@ foreach($owned as $own)
 	}
 	echo '
 	</div>
+	<br/>
 	<form class="uniform" method="post">' . Form::prepare("wrapper-open") . '
 		<input type="hidden" name="id" value="' . $own['id'] . '"/>
 		<input type="submit" name="open" value="Open ' . $details[$own['id']]['title'] . '"/>

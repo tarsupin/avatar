@@ -265,7 +265,7 @@ if($value == false)
 	AppAvatarAdmin::createShop("Staff Shop", 5);
 	AppAvatarAdmin::createShop("Test Shop", 5);
 	AppAvatarAdmin::createShop("Credit Shop");
-	AppAvatarAdmin::createShop("Wrappers", 5);
+	AppAvatarAdmin::createShop("Wrapper Replacements", 5);
 	Database::endTransaction();
 	
 	echo "Created shops.";

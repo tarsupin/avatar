@@ -125,12 +125,20 @@ abstract class AppAvatar {
 	
 	// $wrappers = AppAvatar::wrappers();
 	{
+		if($wrappers = Cache::get("list-of-wrappers"))
+		{
+			return json_decode($wrappers, true);
+		}
+	
 		$wrap = Database::selectMultiple("SELECT id FROM wrappers", array());
 		$wrappers = array();
 		foreach($wrap as $w)
 		{
 			$wrappers[] = (int) $w['id'];
 		}
+		
+		Cache::set("list-of-wrappers", json_encode($wrappers), 60 * 60);
+		
 		return $wrappers;
 	}
 	
@@ -185,7 +193,7 @@ abstract class AppAvatar {
 			$posList[] = $pos['position'];
 		}
 		
-		Cache::set("invLayers:" . $uniID, json_encode($posList), 60 * 3);
+		Cache::set("invLayers:" . $uniID, json_encode($posList), 60 * 60);
 		
 		return $posList;
 	}
@@ -315,7 +323,7 @@ abstract class AppAvatar {
 		$colorList["m"] = array_values($colorList["m"]);
 		$colorList["f"] = array_values($colorList["f"]);
 		
-		Cache::set("color:" . substr(md5($position . $title), 0, 20), json_encode($colorList), 60 * 48);
+		Cache::set("color:" . substr(md5($position . $title), 0, 20), json_encode($colorList), 60 * 60);
 		
 		// combine lists for both and the wanted gender(s)
 		$uniqueList = $colorList["b"];
@@ -489,15 +497,18 @@ abstract class AppAvatar {
 		// Make sure the item exists
 		if(!$itemData = self::itemData($itemID))
 		{
-			Alert::saveError($itemData['title'] . "  Does Not Exist", $itemData['title'] . " does not exist.");
+			Alert::saveError(" Does Not Exist", "This item does not exist.");
 			return false;
 		}
+		
+		// The list is cached
+		$wrappers = self::wrappers();
 		
 		// staff may purchase rare items
 		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
 		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
 		{
-			Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+			Alert::saveError("Not Allowed", "Purchase of " . $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : '') . " is not allowed.");
 			return false;
 		}
 		
@@ -506,7 +517,7 @@ abstract class AppAvatar {
 		{
 			if(!$shop['cost'] = self::itemMinCost($itemID))
 			{
-				Alert::saveError($itemData['title'] . "  Not Allowed", "Purchase of " . $itemData['title'] . " is not allowed.");
+				Alert::saveError("Not Allowed", "Purchase of " . $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : '') . " is not allowed.");
 				return false;
 			}
 		}
@@ -515,19 +526,19 @@ abstract class AppAvatar {
 		{
 			if(!$item = self::getShopItems($shopID, $itemID))
 			{
-				Alert::saveError($itemData['title'] . "  Not Available", $itemData['title'] . " is not available in this shop.");
+				Alert::saveError("Not Available", $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : '') . " is not available in this shop.");
 				return false;
 			}
 			$shop['cost'] = $item['cost'];
 		}
 		
 		// Spend the currency to purchase this item
-		if(Auro::spend(Me::$id, (int) $shop['cost'], "Purchased " . $itemData['title'], $config['site-name']))
+		if(Auro::spend(Me::$id, (int) $shop['cost'], "Purchased " . $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : ''), $config['site-name']))
 		{
 			// Add this item to your inventory
 			self::receiveItem(Me::$id, $itemID, "Purchased from Shop");
 			
-			Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
+			Alert::saveSuccess($itemData['title'] . " Purchased Item", 'You have purchased ' . $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : '') . '!' . ($shopID != 0 ? ' <a href="javascript:window.history.go(-2);">Would you like to go back to the previous page?</a>' : ''));
 			Cache::delete("invLayers:" . Me::$id);
 			return true;
 		}

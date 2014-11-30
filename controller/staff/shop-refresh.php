@@ -59,7 +59,7 @@ echo '
 	<a href="/staff/shop-refresh?refresh=13">Archive</a><br/>
 	<a href="/staff/shop-refresh?refresh=16">Staff Shop</a><br/>
 	<a href="/staff/shop-refresh?refresh=17">Test Shop</a><br/>
-	<a href="/staff/shop-refresh?refresh=19">Wrappers</a>
+	<a href="/staff/shop-refresh?refresh=19">Wrapper Replacements</a>
 	</div>
 </div>
 </div>';

@@ -31,6 +31,8 @@ if(!$confirm1->validate() && !$confirm2->validate() && $recipientID != Me::$id &
 // Get the layers you can search between
 $positions = AppAvatar::getInvPositions($recipientID);
 
+$wrappers = AppAvatar::wrappers();
+
 // Set page title
 $config['pageTitle'] = "View " . $user . "'s Equipment";
 if(isset($_GET['position']))
@@ -95,7 +97,7 @@ echo '
 			echo '
 			<div class="item_block">
 				<a href="javascript:review_item(' . $item['id'] . ');"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" /></a>
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . $avatarData['gender_full'] . '\');">';
 			
 			foreach($colors as $color)
@@ -117,7 +119,7 @@ echo '
 			echo '
 			<div class="item_block opaque">
 				<a href="javascript:review_item(' . $item['id'] . ');"><img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '.png" /></a>
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<select id="item_' . $item['id'] . '" onChange="switch_item_inventory(\'' . $item['id'] . '\', \'' . $_GET['position'] . '\', \'' . $item['title'] . '\', \'' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '\');">';
 			
 			foreach($colors as $color)

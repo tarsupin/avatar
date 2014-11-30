@@ -176,6 +176,8 @@ ksort($outfitArray);
 $outfitArray = array_reverse($outfitArray);
 $totalmissingcost = 0;
 
+$wrappers = AppAvatar::wrappers();
+
 // Gather your list of equipped items
 foreach($outfitArray as $pos => $item)
 {
@@ -191,7 +193,7 @@ foreach($outfitArray as $pos => $item)
 		
 		echo '
 	<li id="worn_' . $eItem['id'] . '">
-		<div><img id="itemImg_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . '"/></div>
+		<div><img id="itemImg_' . $eItem['id'] . '" src="/avatar_items/' . $eItem['position'] . '/' . $eItem['title'] . '/' . $eItem['color'] . '_' . $avatarData['gender_full'] . '.png" title="' . $eItem['title'] . (in_array($eItem['id'], $wrappers) ? ' (Wrapper)' : '') . '"/></div>
 		<a id="link_' . $eItem['id'] . '" class="close" href="/preview-avi?unequip=' . $eItem['id'] . '"><span class="icon-circle-close"></span></a>
 		<select id="color_' . $eItem['id'] . '">';
 		
@@ -218,7 +220,7 @@ foreach($outfitArray as $pos => $item)
 			{
 				$totalmissingcost += $cost;
 				echo '
-			<a class="buy" title="Buy for ' . $cost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '"><span class="icon-circle-check"></span></a>';
+			<a class="buy" title="Buy for ' . $cost . '" onclick="return confirm(\'Are you sure you want to buy ' . $eItem['title'] . (in_array($eItem['id'], $wrappers) ? ' (Wrapper)' : '') . '?\');" href="/preview-avi?buy=' . $eItem['id'] . '"><span class="icon-circle-check"></span></a>';
 			}
 		}
 

@@ -45,6 +45,8 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 	$html = "";
 	$space = false;
 	
+	$wrappers = AppAvatar::wrappers();
+	
 	// get packages
 	if($url[1] == date("Y"))
 	{
@@ -86,7 +88,7 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 			// Display the Item					
 			$html .= '
 			<div class="item_block">
-				<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />
+				<a href="javascript: review_item(\'' . $item['id'] . '\');"><img id="img_' . $item['id'] . '" src="/avatar_items/' . $item['position'] . '/' . $item['title'] . '/default_' . $gender . '.png" /></a><br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . '<br/>
 				<select id="item_' . $item['id'] . '" onChange="switch_item(\'' . $item['id'] . '\', \'' . $item['position'] . '\', \'' . $item['title'] . '\', \'' . $gender . '\');">';
 				
 				foreach($colors as $color)
@@ -97,7 +99,6 @@ if(CacheFile::load($cachedPage, 86400, true) === false)
 				
 			$html .= '
 				</select>
-				' . $item['title'] . '
 			</div>';
 		}
 		$html .= '</div>';

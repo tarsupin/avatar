@@ -231,7 +231,7 @@ echo '
 		<p><input type="number" name="shop_13" value="' . (isset($costs[13]) ? $costs[13] : 0) .  '"/> Archive<br/>
 		<input type="number" name="shop_16" value="' . (isset($costs[16]) ? $costs[16] : 0) .  '"/> Staff Shop<br/>
 		<input type="number" name="shop_17" value="' . (isset($costs[17]) ? $costs[17] : 0) .  '"/> Test Shop</p>
-		<input type="number" name="shop_19" value="' . (isset($costs[19]) ? $costs[19] : 0) .  '"/> Wrappers</p>
+		<input type="number" name="shop_19" value="' . (isset($costs[19]) ? $costs[19] : 0) .  '"/> Wrapper Replacements</p>
 		<p><input type="submit" value="Set"/></p>
 	</form>
 	<div class="spacer"></div>';

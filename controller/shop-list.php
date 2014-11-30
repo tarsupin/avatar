@@ -65,7 +65,7 @@ if(Me::$clearance >= 5)
 	<a class="shop-button2" href="/shop/13"><img src="/assets/shop-icons/default.png" alt="Archive" title="Archive" /></a>
 	<a class="shop-button2" href="/shop/16"><img src="/assets/shop-icons/default.png" alt="Staff Shop" title="Staff Shop" /></a>
 	<a class="shop-button2" href="/shop/17"><img src="/assets/shop-icons/default.png" alt="Test Shop" title="Test Shop" /></a>
-	<a class="shop-button2" href="/shop/19"><img src="/assets/shop-icons/default.png" alt="Wrappers" title="Wrappers" /></a>
+	<a class="shop-button2" href="/shop/19"><img src="/assets/shop-icons/default.png" alt="Wrapper Replacements" title="Wrapper Replacements" /></a>
 	</div>
 </div>';
 }

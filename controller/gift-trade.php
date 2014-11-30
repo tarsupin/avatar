@@ -15,6 +15,9 @@ if(!isset($avatarData['base']))
 // Set page title
 $config['pageTitle'] = "Gift & Trade";
 
+// get wrappers for display
+$wrappers = AppAvatar::wrappers();
+
 // initializing a transaction
 if(Form::submitted("initialize-transaction"))
 {
@@ -234,9 +237,6 @@ if(isset($url[1]) && $url[1] != "new")
 			}
 		}
 	}
-	
-	// get wrappers for display
-	$wrappers = AppAvatar::wrappers();
 	
 	// add item
 	if(isset($_GET['add']) && $link = Link::clicked())
@@ -506,7 +506,7 @@ else
 			echo '
 			<div class="item_block">
 				<img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . $avatarData['gender_full'] . '.png" />
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<br /><a id="link_' . $item['id'] . '" href="/gift-trade/' . $url[1] . '?position=' . $_GET['position'] . '&add=' . $item['id'] . '&' . Link::prepare("add-" . $item['id']) . '">Add to Transaction</a>
 			</div>';
 		}
@@ -517,7 +517,7 @@ else
 			echo '
 			<div class="item_block opaque">
 				<img id="pic_' . $item['id'] . '" src="/avatar_items/' . $_GET['position'] . '/' . $item['title'] . '/default_' . ($avatarData['gender_full'] == "male" ? "female" : "male") . '.png" />
-				<br />' . $item['title'] . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
+				<br />' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ($item['count'] > 1 ? ' (' . $item['count'] . ')' : "") . '
 				<br /><a id="link_' . $item['id'] . '" href="/gift-trade/' . $url[1] . '?position=' . $_GET['position'] . '&add=' . $item['id'] . '&' . Link::prepare("add-" . $item['id']) . '">Add to Transaction</a>
 			</div>';
 		}

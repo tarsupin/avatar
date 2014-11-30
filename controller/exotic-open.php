@@ -19,6 +19,9 @@ if(isset($url[1]))
 	{
 		header("Location: /exotic-open"); exit;
 	}
+	
+	// get wrappers
+	$wrappers = AppAvatar::wrappers();
 }
 
 if(isset($url[2]))
@@ -48,13 +51,10 @@ if(isset($url[2]))
 					
 		// give item
 		if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
-		{
-			// get wrappers
-			$wrappers = AppAvatar::wrappers();
-		
+		{		
 			// remove package
-			AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? " (Wrapper)" : ""));
-			Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . ".");
+			AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : ''));
+			Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ".");
 			header("Location:/dress-avatar?position=" . $item['position']); exit;
 		}
 	}
@@ -135,7 +135,7 @@ if(!isset($url[2]))
 				
 				echo '
 		</select>
-		<br/><a href="/exotic-open/' . $package['id'] . '/' . $item['id'] . '">Choose ' . $item['title'] . '</a>';
+		<br/><a href="/exotic-open/' . $package['id'] . '/' . $item['id'] . '">Choose ' . $item['title'] . '</a>' . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '');
 			if(AppAvatar::checkOwnItem(Me::$id, (int) $item['id']))
 			{
 				echo " [&bull;]";
@@ -169,7 +169,7 @@ else
 	}
 	echo '
 	<form class="uniform" method="post">' . Form::prepare("exotic-open") . '
-		<input type="submit" name="submit" value="Choose ' . $item['title'] . '" />
+		<input type="submit" name="submit" value="Choose ' . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . '" />
 	</form>';
 }
 

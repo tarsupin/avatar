@@ -88,6 +88,8 @@ Alert::display() . '
 // Page Display
 $wished = Database::selectMultiple("SELECT item_id, title, position, gender, rarity_level FROM user_wish INNER JOIN items ON user_wish.item_id=items.id WHERE uni_id=?" . $order, array(Me::$id));
 
+$wrappers = AppAvatar::wrappers();
+
 foreach($wished as $key => $wish)
 {
 	$wished[$key]['cost'] = AppAvatar::itemMinCost((int) $wish['item_id']);
@@ -149,7 +151,7 @@ foreach ($wished as $itemData)
 	echo '
 		<tr' . ($own ? ' class="opaque"' : "") . '>
 			<td><a href="/wish-list?remove=' . $itemData['item_id'] . '"><span class="icon-circle-close"></span></a></td>
-			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . ($own ? " [&bull;]" : "") . '</td>
+			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . (in_array($itemData['item_id'], $wrappers) ? ' (Wrapper)' : '') . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>
 			<td>' . ($itemData['cost'] != 0 ? '<a href="/wish-list?buy=' . $itemData['item_id'] . '&' . Link::prepare("purchase-wish") . '" onclick="return confirm(\'Are you sure you want to buy ' . $itemData['title'] . '?\');">' . $itemData['cost'] . ' Auro</a>' : 'Preview Only') . '</td>
