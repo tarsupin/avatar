@@ -55,6 +55,7 @@ if(Me::$loggedIn)
 			<ul>
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
+				<li class="dropdown-slot"><a href="staff/package-manage">Manage EPs</a></li>
 				<li class="dropdown-slot"><a href="staff/poof">Poof Item/Package</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer5">Transfer 5 to 6</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer6">Transfer 6 to 6</a></li>

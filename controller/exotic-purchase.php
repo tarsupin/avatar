@@ -116,16 +116,7 @@ for($i=1; $i<5; $i++)
 
 	if($slot == array() || $slot['expire'] < time())
 	{
-		// make exception for November 2014 (late package)
-		if($i == 1 && date("Y") == 2014 && date("n") == 11)
-		{
-			// assuming 18th as release date
-			$slot = AppExotic::chooseItem($i, 18);
-		}
-		else
-		{
-			$slot = AppExotic::chooseItem($i);
-		}
+		$slot = AppExotic::chooseItem($i);
 		if($slot != array())
 		{
 			// save new item

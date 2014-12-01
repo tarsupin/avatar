@@ -3,3 +3,5 @@ Database::initRoot();
 
 // Save _prepare_backup.php as _prepare.php
 // Use that prepare file.
+
+// Zip::package(APP_PATH . "/avatar_items", APP_PATH . "/avatar_items/avatar_items.zip");
