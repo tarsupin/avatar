@@ -63,10 +63,21 @@ if(Me::$loggedIn)
 			</ul>
 		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum</a></li><li class="menu-slot menu-plain hide-1000">' . date("M j, g:ia") . '</li>
 	</ul>
-</div>
-<div class="menu-wrap show-600">
-	<ul class="menu">
-		<li class="dropdown-slot"><a href="/menu">Menu</a></li>
+</div>');
+// Main Navigation
+WidgetLoader::add("MobilePanel", 50, '
+<div class="panel-box">
+	<ul class="panel-slots">
+		<li class="nav-slot"><a href="/menu-avatar">Avatar<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="/menu-outfit">Outfit</a><span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="/menu-preview">Preview<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="/menu-shops">Shops<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="/menu-giftandtrade">Gift &amp; Trade</a><span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="menu-eps">EPs<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="menu-wrappers">Wrappers<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="menu-misc">Misc</a><span class="icon-circle-right nav-arrow"></span></a></li>'
+		 . (Me::$clearance >= 5 ? '<li class="nav-slot"><a href="/menu-staff">Staff<span class="icon-circle-right nav-arrow"></span></a></li>' : '') . '
+		 <li class="nav-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum<span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');
 }

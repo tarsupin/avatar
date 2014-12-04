@@ -159,7 +159,7 @@ if(isset($url[1]) && $url[1] != "new")
 		elseif(isset($_POST['trade']))
 		{
 			// check that both sides contribute
-			if(!$contrib[Me::$id] || !$contrib[$recipientID])
+			if(!$contrib[Me::$id])
 			{
 				Alert::error("One Sided", "Trades require both participants to send something. If this is not what you wish to do, please use the Gift function instead.");
 			}
@@ -182,7 +182,7 @@ if(isset($url[1]) && $url[1] != "new")
 				if(Transaction::approve($url[1], Me::$id))
 				{
 					Alert::saveSuccess("Trade Completed", "The trade has been successfully completed!");
-					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '! Check the logs for details.');
+					Notifications::create($recipientID, SITE_URL . "/dress-avatar", 'You have completed a trade with ' . $sender . '!');
 					Transaction::delete($url[1]);
 					header("Location: /gift-trade"); exit;
 				}
@@ -380,7 +380,6 @@ if(!isset($url[1]))
 <div class="overwrap-box">
 	<div class="overwrap-line">Pending Transactions</div>
 	<div class="inner-box">
-	<div class="spacer"></div>
 	<ul>';
 	
 	$pending = Database::selectMultiple("SELECT transaction_id FROM transactions_users WHERE uni_id=?", array(Me::$id));
@@ -529,7 +528,7 @@ else
 	// submit options
 	echo '
 	<div class="spacer"></div>
-	<p>If you are trading, your trade partner can see a message from you. Would you like to set one?</p>
+	<p>If you are trading (as opposed to gifting), your trade partner can see a message from you. Would you like to set one?</p>
 	<form class="uniform" action="/gift-trade/' . $url[1] . '" method="post">' . Form::prepare("gift-trade-message") . '
 		<p><input type="text" name="message" maxlength="100"' . ($mymessage != '' ? ' value="' . $mymessage . '"' : '') . '/> (max 100 characters)</p>
 		<p><input type="submit" value="Set Message"/></p>

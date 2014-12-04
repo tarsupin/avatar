@@ -79,7 +79,7 @@ if(isset($url[1]) && isset($url[2]))
 	// Check if the values are legitimate
 	if(in_array($url[1], array("male", "female")) && in_array($url[2], $races))
 	{		
-		if($number['max'] >= $max)
+		if($number['max'] >= $max['max'])
 		{
 			Alert::error("Enough Avatars", "You cannot create more than " . $max['max'] . " avatars.");
 		}

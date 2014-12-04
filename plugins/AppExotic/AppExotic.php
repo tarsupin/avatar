@@ -83,7 +83,7 @@ abstract class AppExotic {
 					$item = $content[0]['item_id'];
 				}
 				// roughly equal time for all items
-				$expire = time() + (floor((date("t") - $exception + 1) / count($content) * 6) * 4 * 3600);
+				$expire = time() + (floor((date("t") - $exception) / count($content) * 6) * 4 * 3600);
 				// expire at the end of month, if not earlier
 				$expire = min($expire, mktime(0, 0, 0, date("n")+1, 1)-1);
 				break;				
