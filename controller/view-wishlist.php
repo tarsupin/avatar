@@ -236,7 +236,7 @@ if(isset($url[1]))
 			<td><a href="/shop-search?title=' . $itemData['title'] . '&' . $itemData['position'] . '=on&submit=Search">' . $itemData['title'] . '</a>' . (in_array($itemData['item_id'], $wrappers) ? ' (Wrapper)' : '') . ($own ? " [&bull;]" : "") . '</td>
 			<td>' . $itemData['position'] . '</td>
 			<td>' . ($itemData['gender'] == "b" ? "both genders" : ($itemData['gender'] == "m" ? "male" : "female")) . '</td>
-			<td>' . ($itemData['cost'] != 0 ? '<a href="/view-wishlist?buy=' . $itemData['item_id'] . '&' . Link::prepare("purchase-wish") . '" onclick="return confirm(\'Are you sure you want to buy ' . $itemData['title'] . '?\');">' . $itemData['cost'] . ' Auro</a>' : 'Preview Only') . '</td>
+			<td>' . ($itemData['cost'] != 0 ? '<a href="/view-wishlist/' . $recipient . '?buy=' . $itemData['item_id'] . '&' . Link::prepare("purchase-wish") . '" onclick="return confirm(\'Are you sure you want to buy ' . $itemData['title'] . '?\');">' . $itemData['cost'] . ' Auro</a>' : 'Preview Only') . '</td>
 			<td>' . ($package ? $package['title'] . " (" . $package['year'] . ")" : "&nbsp;") . '</td>
 		</tr>';
 	}

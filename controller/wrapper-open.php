@@ -174,6 +174,7 @@ foreach($owned as $own)
 	<span class="spoiler-header" onclick="$(this).next().slideToggle(\'slow\');">' . $details[$own['id']]['html'] . ' will be replaced with:</span><div class="spoiler-content">';
 	foreach($own['content']	as $cont)
 	{
+		$cont = (int) $cont;
 		echo $details[$cont]['html'];
 	}
 	echo '

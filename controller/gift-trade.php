@@ -130,16 +130,17 @@ if(isset($url[1]) && $url[1] != "new")
 					Alert::saveSuccess("Gift Sent", "Your gift has been sent to " . $recipient . "!");
 					foreach($entries as $entry)
 					{
+						$entry['display'] = json_decode($entry['display'], true);
 						switch($entry['process_method'])
 						{
-							case "sendAuro":
-								Notifications::create($recipientID, URL::karma_unifaction_com() . "/auro-transactions", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+							case "sendAuro_doTransaction":
+								Notifications::create($recipientID, URL::karma_unifaction_com() . '/auro-transactions', 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
 								break;
-							case "sendItem":
-								Notifications::create($recipientID, SITE_URL . "/log-item", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+							case "sendItem_doTransaction":
+								Notifications::create($recipientID, SITE_URL . '/log-item', 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
 								break;
-							case "sendPackage":
-								Notifications::create($recipientID, SITE_URL . "/log-package", 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
+							case "sendPackage_doTransaction":
+								Notifications::create($recipientID, SITE_URL . '/log-package', 'You have received ' . $entry['display']['caption'] . ' from ' . (isset($_POST['gift_anon']) ? 'an anonymous gifter' : $sender) . '!');
 						}
 					}
 					Transaction::delete($url[1]);

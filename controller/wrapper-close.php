@@ -161,8 +161,9 @@ echo '
 // output form
 echo '
 <h3>' . $details[$url[1]]['title'] . '</h3>';
-foreach($wrap['content']	as $cont)
+foreach($wrap['content'] as $cont)
 {
+	$cont = (int) $cont;
 	echo $details[$cont]['html'];
 }
 echo ' will be replaced with:<br/>

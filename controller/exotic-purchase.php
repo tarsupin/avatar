@@ -19,8 +19,9 @@ if(Form::submitted("purchase-exotic-item"))
 {
 	if(AppExotic::buyItem((int) $_POST['slot'], (int) $_POST['item']))
 	{
-		$itemData = AppAvatar::itemData((int) $_POST['item'], "title");
-		Alert::success("Purchased Item", "You have purchased " . $itemData['title'] . (in_array($slot['itemData']['id'], $wrappers) ? ' (Wrapper)' : '') . ". Thank you for giving to UniFaction!");
+		$_POST['item'] = (int) $_POST['item'];
+		$itemData = AppAvatar::itemData($_POST['item'], "title");
+		Alert::success("Purchased Item", "You have purchased " . $itemData['title'] . (in_array($_POST['item'], $wrappers) ? ' (Wrapper)' : '') . ". Thank you for giving to UniFaction!");
 	}
 	else
 	{

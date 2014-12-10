@@ -152,8 +152,9 @@ else if(isset($_POST['order']))
 	// check ownership
 	foreach($outfitArray as $key => $oa)
 	{
+		$oa[0] = (int) $oa[0];
 		if($oa[0] == 0)	{ continue; }
-		if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
+		if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
 		{
 			$itemData = AppAvatar::itemData($oa[0], "title");
 			Alert::error("Not Owned", "You do not own " . $itemData['title'] . (in_array($oa[0], $wrappers) ? ' (Wrapper)' : '') . ", so it cannot be equipped.");

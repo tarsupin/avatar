@@ -18,21 +18,27 @@ if(Form::submitted("outfitcode-real"))
 	$outfitArray = json_decode($_POST['saved'], true);
 	if($outfitArray === NULL)
 	{
-		$outfitArray = unserialize($_POST['saved']);
-		// Uni5 code, need to index properly; existence is automatically checked
-		// check ownership
-		foreach($outfitArray as $key => $oa)
+		if($outfitArray = unserialize($_POST['saved']))
 		{
-			if($oa[0] == 0) { continue; }
-			if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
+			// Uni5 code, need to index properly; existence is automatically checked
+			// check ownership
+			foreach($outfitArray as $key => $oa)
 			{
-				$itemData = AppAvatar::itemData((int) $oa[0], "title");
-				Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
-				unset($outfitArray[$key]);
+				if($oa[0] == 0) { continue; }
+				if(!AppAvatar::checkOwnItem(Me::$id, (int) $oa[0]))
+				{
+					$itemData = AppAvatar::itemData((int) $oa[0], "title");
+					Alert::error($itemData['title'] . " Not Owned", "You do not own " . $itemData['title'] . ", so it cannot be equipped.");
+					unset($outfitArray[$key]);
+				}
 			}
-		}			
-		
-		$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
+			
+			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
+		}
+		else
+		{
+			$outfitArray[0] = array(0, $avatarData['base']);
+		}
 	}
 	else
 	{
