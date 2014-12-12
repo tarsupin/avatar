@@ -24,7 +24,7 @@ if(Form::submitted("receive-gift"))
 	}
 }
 
-if(Form::submitted("new-calendar") && Me::$id >= 5)
+if(Form::submitted("new-calendar") && Me::$clearance >= 5)
 {
 	FormValidate::text("Title", $_POST['title'], 1, 255);
 	FormValidate::number("Year", $_POST['year'], 2014);
@@ -40,7 +40,7 @@ if(Form::submitted("new-calendar") && Me::$id >= 5)
 	}
 }
 
-if(Form::submitted("edit-calendar-entry") && Me::$id >= 5)
+if(Form::submitted("edit-calendar-entry") && Me::$clearance >= 5)
 {
 	$items = array();
 	$_POST['items'] = explode(",", $_POST['items']);
@@ -143,7 +143,7 @@ echo '
 </div>';
 
 // Calendar Management
-if(Me::$id >= 5)
+if(Me::$clearance >= 5)
 {
 	echo '
 <div class="overwrap-box">
