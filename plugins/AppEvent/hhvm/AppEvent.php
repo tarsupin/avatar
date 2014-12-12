@@ -11,8 +11,8 @@ This class provides handling of events, such as calendars and raffles.
 -------------------------------
 
 AppEvent::createCalendar("Christmas 2014", 2014, 12, 1, 24);
-AppEvent::editCalendarDay(1, 2014, 6, 5, array(100,101,102));
-AppEvent::getCalendarEntry(1, 2014, 6, 5);
+AppEvent::editCalendarDay(1, 2014, 12, 5, array(100,101,102));
+AppEvent::getCalendarEntry(1, 2014, 12, 5);
 AppEvent::claimCalendarItem(1, 102);
 AppEvent::pruneCalendar(1);
 
@@ -65,7 +65,7 @@ abstract class AppEvent {
 	,	array <int, int> $items			// <int:int> The IDs of items to make available on this day.
 	): bool					// RETURNS <bool> TRUE on success, FALSE on failure.
 	
-	// AppEvent::editCalendarDay(1, 2014, 6, 5, array(100,101,102));
+	// AppEvent::editCalendarDay(1, 2014, 12, 5, array(100,101,102));
 	{
 		$time = (int) mktime(0, 0, 0, $month, $day, $year);
 		return Database::query("UPDATE event_calendar_content SET items=? WHERE cal_id=? AND year=? AND doy=? LIMIT 1", array(implode(",", $items), $cal_id, (int) date("Y", $time), (int) date("z", $time)));
@@ -80,14 +80,19 @@ abstract class AppEvent {
 	,	int $day		// <int> The day to retrieve.
 	): array <int, int>				// RETURNS <int:int> a list of available items.
 	
-	// AppEvent::getCalendarEntry(1, 2014, 6, 5);
+	// AppEvent::getCalendarEntry(1, 2014, 12, 5);
 	{
 		$time = (int) mktime(0, 0, 0, $month, $day, $year);
 		if($items = Database::selectOne("SELECT items FROM event_calendar_content WHERE cal_id=? AND year=? AND doy=? LIMIT 1", array($cal_id, (int) date("Y", $time), (int) date("z", $time))))
 		{
 			if($items['items'] != '')
 			{
-				return explode(",", $items['items']);
+				$items['items'] = explode(",", $items['items']);
+				foreach($items['items'] as $key => $val)
+				{
+					$items['items'][$key] = (int) $val;
+				}
+				return $items['items'];
 			}
 		}
 		return array();
@@ -112,11 +117,7 @@ abstract class AppEvent {
 
 		if($cal_title == '')
 		{
-			if(!$title = Database::selectOne("SELECT title FROM event_calendar WHERE cal_id=? LIMIT 1", array($cal_id)))
-			{
-				$cal_title = "Event Calendar";
-			}
-			else
+			if($title = Database::selectOne("SELECT title FROM event_calendar WHERE cal_id=? LIMIT 1", array($cal_id)))
 			{
 				$cal_title = $title['title'];
 			}
@@ -133,7 +134,7 @@ abstract class AppEvent {
 		Database::startTransaction();
 		if(Database::query("INSERT INTO event_calendar_log VALUES (?, ?, ?, ?)", array(Me::$id, $item_id, Sanitize::punctuation($_SERVER['REMOTE_ADDR']), $cal_id)))
 		{
-			if(AppAvatar::receiveItem(Me::$id, $item_id, "Event Calendar: " . $cal_title))
+			if(AppAvatar::receiveItem(Me::$id, $item_id, 'Event Calendar' . ($cal_title != '' ? ': ' . $cal_title : '')))
 			{
 				Database::endTransaction();
 				return true;
@@ -155,7 +156,7 @@ abstract class AppEvent {
 		if($cal = Database::selectOne("SELECT start, duration FROM event_calendar WHERE cal_id=? LIMIT 1", array($cal_id)))
 		{
 			// calendar has ended
-			if($cal['start'] + $cal['duration']*86400 < time())
+			if($cal['start'] + ($cal['duration'] + 30) * 86400 <= time())
 			{
 				Database::startTransaction();
 				$pass1 = Database::query("DELETE FROM event_calendar WHERE cal_id=? LIMIT 1", array($cal_id));

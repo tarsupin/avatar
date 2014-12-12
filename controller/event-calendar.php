@@ -14,13 +14,48 @@ if(!isset($avatarData['base']))
 
 if(Form::submitted("receive-gift"))
 {
-	if(AppEvent::claimCalendarItem((int) $_POST['calendar'], (int) $_POST['item']))
+	if(AppEvent::claimCalendarItem((int) $_POST['calendar'], (int) $_POST['item'], $_POST['title']))
 	{
 		Alert::success("Received", "You have received the gift!");
 	}
 	else
 	{
 		Alert::error("Not Received", "This item is not available, or you cannot receive the same gift more than once!");
+	}
+}
+
+if(Form::submitted("new-calendar") && Me::$id >= 5)
+{
+	FormValidate::text("Title", $_POST['title'], 1, 255);
+	FormValidate::number("Year", $_POST['year'], 2014);
+	FormValidate::number("Month", $_POST['month'], 1, 12);
+	FormValidate::number("Day", $_POST['day'], 1, 31);
+	FormValidate::number("Duration", $_POST['duration'], 1);
+	if(FormValidate::pass())
+	{
+		if(AppEvent::createCalendar($_POST['title'], (int) $_POST['year'], (int) $_POST['month'], (int) $_POST['day'], (int) $_POST['duration']))
+		{
+			Alert::success("Calendar Created", "The event calendar has been created.");
+		}
+	}
+}
+
+if(Form::submitted("edit-calendar-entry") && Me::$id >= 5)
+{
+	$items = array();
+	$_POST['items'] = explode(",", $_POST['items']);
+	foreach($_POST['items'] as $item)
+	{
+		$item = (int) $item;
+		if($item > 0)
+		{
+			$items[] = (int) $item;
+		}
+	}	
+	
+	if(AppEvent::editCalendarDay((int) $_POST['calendar'], (int) $_POST['year'], (int) $_POST['month'], (int) $_POST['day'], $items))
+	{
+		Alert::success("Calendar Edited", "The entry has been edited.");
 	}
 }
 
@@ -60,7 +95,7 @@ foreach($calendars as $cal)
 		<h3>' . $cal['title'] . '</h3>';
 			foreach($available as $a)
 			{
-				$item = AppAvatar::itemData((int) $a);
+				$item = AppAvatar::itemData($a);
 				
 				if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
 				else	{ $gender = ($item['gender'] == "m" ? "male" : "female"); }
@@ -88,6 +123,7 @@ foreach($calendars as $cal)
 			<br/>
 			<form class="uniform" method="post">' . Form::prepare("receive-gift") . '
 				<input type="hidden" name="item" value="' . $item['id'] . '"/>
+				<input type="hidden" name="title" value="' . $cal['title'] . '"/>
 				<input type="hidden" name="calendar" value="' . $cal['cal_id'] . '"/>
 				<input type="submit" value="Receive" onclick="return confirm(\'Are you sure you want to receive this gift?\');"/>
 			</form>
@@ -96,7 +132,7 @@ foreach($calendars as $cal)
 		}
 	}
 	// leave data for a month to allow checks by staff
-	elseif($cal['start'] <= time() && $cal['start']+$cal['duration']*86400 > time() + 30 * 86400)
+	elseif($cal['start'] + ($cal['duration'] + 30) * 86400 <= time())
 	{
 		AppEvent::pruneCalendar((int) $cal['id']);
 	}
@@ -104,7 +140,54 @@ foreach($calendars as $cal)
 
 echo '
 	</div>
+</div>';
+
+// Calendar Management
+if(Me::$id >= 5)
+{
+	echo '
+<div class="overwrap-box">
+<div class="overwrap-line">New Event Calendar</div>
+	<div class="inner-box">
+		<form class="uniform" method="post">' . Form::prepare("new-calendar") . '
+			<p><input type="text" name="title" maxlength="255"/> title</p>
+			<p><input type="number" name="year" maxlength="4" min="2014" value="' . date("Y") . '"/> start year</p>
+			<p><input type="number" name="month" maxlength="2" min="1" max="12" value="' . date("n") . '"/> start month</p>
+			<p><input type="number" name="day" maxlength="2" min="1" max="31" value="' . date("j") . '"/> start day</p>
+			<p><input type="number" name="duration" min="1"/> duration in days</p>
+			<p><input type="submit" value="Create Calendar"/></p>
+		</form>
+	</div>
 </div>
+
+<div class="overwrap-box">
+<div class="overwrap-line">Edit Event Calendar Entries</div>
+	<div class="inner-box">';
+foreach($calendars as $cal)
+{
+	echo '<h3>' . $cal['title'] . '</h3>';
+	for($i=0; $i<$cal['duration']; $i++)
+	{
+		$time = $cal['start']+$i*86400;
+		if($time >= time())
+		{
+			$entry = AppEvent::getCalendarEntry((int) $cal['cal_id'], (int) date("Y", $time), (int) date("n", $time), (int) date("j", $time));
+			echo '
+		<form class="uniform" method="post">' . Form::prepare("edit-calendar-entry") . '
+			<input type="hidden" name="calendar" value="' . $cal['cal_id'] . '"/>
+			<input type="hidden" name="year" value="' . date("Y", $time) . '"/>
+			<input type="hidden" name="month" value="' . date("n", $time) . '"/>
+			<input type="hidden" name="day" value="' . date("j", $time) . '"/>
+			<p><input type="text" name="items" value="' . implode(",", $entry) . '" maxlength="255"> ' . date("M j", $time) . ' <input type="submit" value="Edit Entry"/></p>
+		</form>';
+		}
+	}
+}
+echo '
+	</div>
+</div>';
+}
+echo '
 </div>';
 
 // Display the Footer
