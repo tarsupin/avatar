@@ -172,13 +172,19 @@ foreach($calendars as $cal)
 		if($time >= time())
 		{
 			$entry = AppEvent::getCalendarEntry((int) $cal['cal_id'], (int) date("Y", $time), (int) date("n", $time), (int) date("j", $time));
+			$readable = array();
+			foreach($entry as $e)
+			{
+				$title = AppAvatar::itemData($e, "title");
+				$readable[] = $title['title'];
+			}
 			echo '
 		<form class="uniform" method="post">' . Form::prepare("edit-calendar-entry") . '
 			<input type="hidden" name="calendar" value="' . $cal['cal_id'] . '"/>
 			<input type="hidden" name="year" value="' . date("Y", $time) . '"/>
 			<input type="hidden" name="month" value="' . date("n", $time) . '"/>
 			<input type="hidden" name="day" value="' . date("j", $time) . '"/>
-			<p><input type="text" name="items" value="' . implode(",", $entry) . '" maxlength="255"> ' . date("M j", $time) . ' <input type="submit" value="Edit Entry"/></p>
+			<p><input type="text" name="items" value="' . implode(",", $entry) . '" maxlength="255"> ' . date("M j", $time) . ' <input type="submit" value="Edit Entry"/> ' . implode(", ", $readable) . '</p>
 		</form>';
 		}
 	}

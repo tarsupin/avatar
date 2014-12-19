@@ -23,7 +23,7 @@ abstract class AppOutfit {
 * AppOutfit::drawSrc($uniID, $type);
 * 
 * AppOutfit::sortDelete($uniID, $deleteOrder);
-* AppOutfit::sortAll($outfitArray, $gender, $type);
+* AppOutfit::sortAll($outfitArray, $gender);
 * AppOutfit::removeFromAvatar($uniID, $itemID);
 */
 	
@@ -582,10 +582,9 @@ abstract class AppOutfit {
 	(
 		array $outfitArray		// <array> The outfit data.
 	,	string $gender				// <str> The gender of the avatar.
-	,	string $type = "preview"	// <str> The type of outfit.
 	): array						// RETURNS <array> the sorted and checked outfit data.
 	
-	// $outfitArray = AppOutfit::sortAll($outfitArray, $gender, $type);
+	// $outfitArray = AppOutfit::sortAll($outfitArray, $gender);
 	// Outfits are often constructed by entering a code or submitting various changes at once, so it needs to be built and checked from scratch.
 	// Outfits that this function is called on always include the base.
 	{

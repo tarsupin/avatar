@@ -32,6 +32,7 @@ if(Me::$loggedIn)
 		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '"><a href="/menu-giftandtrade">Gift &amp; Trade</a>
 			<ul>
 				<li class="dropdown-slot"><a href="/gift-trade">Gift &amp; Trade</a></li>
+				<li class="dropdown-slot"><a href="' . URL::karma_unifaction_com() . '/auro-transactions">Auro Log</a></li>
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
 				<li class="dropdown-slot"><a href="/log-package">EP Log</a></li>
 			</ul>

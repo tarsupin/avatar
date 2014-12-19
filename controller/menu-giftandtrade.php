@@ -20,6 +20,7 @@ echo '
 	<div class="overwrap-line">Gift &amp; Trade Menu</div>
 	<div class="inner-box">
 	<p><a href="/gift-trade">Gift &amp; Trade</a></p>
+	<p><a href="' . URL::karma_unifaction_com() . '/auro-transactions">Auro Log</a></p>
 	<p><a href="/log-item">Item Log</a></p>
 	<p><a href="/log-item">EP Log</a></p>
 	</div>

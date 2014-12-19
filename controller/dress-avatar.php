@@ -163,7 +163,7 @@ else if(isset($_POST['order']))
 	}
 			
 	// resort it all
-	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
+	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 	
 	// Update your avatar's image
 	$aviData = Avatar::imageData(Me::$id, $activeAvatar);

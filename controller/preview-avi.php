@@ -107,7 +107,7 @@ else if(isset($_POST['order']))
 	}
 
 	// resort it all
-	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], "preview");
+	$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 	
 	// Save the outfit
 	AppOutfit::save(Me::$id, "preview", $outfitArray);
@@ -184,8 +184,7 @@ foreach($outfitArray as $pos => $item)
 	// Get Items
 	if($item[0] != 0)
 	{
-		$eItem = Database::selectOne("SELECT id, title, position, rarity_level FROM items WHERE id=?", array($item[0]));
-		
+		$eItem = AppAvatar::itemData($item[0], "id, title, position, rarity_level");
 		// Recognize Integers
 		$eItem['id'] = (int) $eItem['id'];
 		

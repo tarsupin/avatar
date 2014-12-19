@@ -33,7 +33,7 @@ if(Form::submitted("outfitcode-real"))
 				}
 			}
 			
-			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender'], $avatarData['identification']);
+			$outfitArray = AppOutfit::sortAll($outfitArray, $avatarData['gender']);
 		}
 		else
 		{

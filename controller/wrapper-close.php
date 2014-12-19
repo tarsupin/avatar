@@ -129,12 +129,12 @@ foreach($details as $key => $item)
 {
 	$html = '';
 
-	// Get list of colors
-	$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);				
-	if(!$colors) { continue; }
-	
 	if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
 	else	{ $gender = ($avatarData['gender'] == "m" ? "female" : "male"); }
+	
+	// Get list of colors
+	$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $gender);				
+	if(!$colors) { continue; }
 	
 	// Display the Item					
 	$html .= '

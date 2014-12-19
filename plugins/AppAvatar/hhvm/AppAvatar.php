@@ -471,7 +471,7 @@ abstract class AppAvatar {
 				// Update the Avatar Image
 				$outfitArray = AppOutfit::get($uniID, ($aviID == 1 ? "real" : "real" . $aviID));
 				$outfitArray[0] = array(0, $base);
-				$outfitArray = AppOutfit::sortAll($outfitArray, $gender, ($aviID == 1 ? "real" : "real" . $aviID));
+				$outfitArray = AppOutfit::sortAll($outfitArray, $gender);
 				$aviData = Avatar::imageData(Me::$id, $aviID);
 				AppOutfit::draw($base, $gender[0], $outfitArray, APP_PATH . '/' . $aviData['image_directory'] . '/' . $aviData['main_directory'] . '/' . $aviData['second_directory'] . '/' . $aviData['filename']);
 				AppOutfit::save($uniID, ($aviID == 1 ? "real" : "real" . $aviID), $outfitArray);

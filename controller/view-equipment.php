@@ -20,6 +20,8 @@ if($recipientID == array())
 }
 $recipientID = (int) $recipientID['uni_id'];
 
+You::load($recipientID);
+
 // check permission
 $confirm1 = new Confirm("share-equip-" . $recipientID . "-" . Me::$id);
 $confirm2 = new Confirm("share-equip-" . $recipientID . "-0");

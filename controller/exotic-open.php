@@ -114,12 +114,12 @@ if(!isset($url[2]))
 			// get item data
 			$item = AppAvatar::itemData((int) $cont['item_id'], "id,title,position,gender");
 
-			// Get list of colors
-			$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $avatarData['gender']);
-			if(!$colors) { continue; }
-			
 			if($item['gender'] == "b" || $item['gender'] == $avatarData['gender'])	{ $gender = $avatarData['gender_full']; }
 			else	{ $gender = ($item['gender'] == "m" ? "male" : "female"); }
+			
+			// Get list of colors
+			$colors	= AppAvatar::getItemColors($item['position'], $item['title'], $gender);
+			if(!$colors) { continue; }
 
 			// Display the Item					
 			echo '

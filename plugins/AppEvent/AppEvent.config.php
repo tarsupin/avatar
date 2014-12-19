@@ -26,7 +26,7 @@ class AppEvent_config {
 		CREATE TABLE `event_calendar_log` (
 			`uni_id`	int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`item_id`	mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
-			`ip`		char(16)					NOT NULL	DEFAULT '',
+			`ip`		char(39)					NOT NULL	DEFAULT '',
 			`cal_id`	smallint(5)		unsigned	NOT NULL	DEFAULT '0',
 			PRIMARY KEY (`uni_id`, `item_id`),
 			INDEX (`cal_id`)

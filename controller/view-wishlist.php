@@ -18,6 +18,8 @@ if(isset($url[1]))
 	if($recipientID != array())
 	{
 		$recipientID = (int) $recipientID['uni_id'];
+		You::load($recipientID);
+		
 		// get owner and permission setting
 		$owner = Database::selectOne("SELECT uni_id FROM user_share_wishlist WHERE uni_id=? AND (other_id=? OR other_id=?) LIMIT 1", array($recipientID, 0, Me::$id));
 		if($owner == array() && $recipientID != Me::$id)
@@ -203,11 +205,11 @@ echo '
 Alert::display();
 
 // Page Display
-if(isset($url[1]))
+if(isset($url[1]) && isset($recipient))
 {
 	echo '
 <div class="overwrap-box">
-	<div class="overwrap-line">' . (isset($recipient) ? $recipient . "'s " : "") . 'Wish List</div>
+	<div class="overwrap-line">' . $recipient . '\'s Wish List</div>
 	<div class="inner-box">
 	<table class="mod-table">
 		<tr>';
