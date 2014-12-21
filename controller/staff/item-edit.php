@@ -87,6 +87,7 @@ if(Form::submitted("upload-item"))
 		$imageUpload->maxWidth = 205;
 		$imageUpload->maxHeight = 383;
 		$imageUpload->maxFilesize = 1024 * 1000;
+		$imageUpload->maxFilenameLength = 30;
 		$imageUpload->save(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'] . "/" . $imageUpload->filename . "." . $imageUpload->extension, ImageUpload::MODE_OVERWRITE);
 	}
 

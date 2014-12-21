@@ -110,8 +110,7 @@ abstract class AppAvatarAdmin {
 	// AppAvatarAdmin::editItemPosition($itemID, $position);
 	{
 		// Position - Test Legitimacy
-		$positionsAllowed = self::positions();
-		
+		$positionsAllowed = AppAvatar::positions();
 		if(!in_array($position, $positionsAllowed)) { return false; }
 		
 		$itemData = AppAvatar::itemData($itemID);
@@ -119,7 +118,7 @@ abstract class AppAvatarAdmin {
 		{
 			if(Dir::move(APP_PATH . "/avatar_items/" . $itemData['position'] . "/" . $itemData['title'], APP_PATH . "/avatar_items/" . $position . "/" . $itemData['title']))
 			{
-				return Database::query("UPDATE `items` SET position=? WHERE itemID=? LIMIT 1", array($position, $itemID));
+				return Database::query("UPDATE `items` SET position=? WHERE id=? LIMIT 1", array($position, $itemID));
 			}
 			return false;
 		}

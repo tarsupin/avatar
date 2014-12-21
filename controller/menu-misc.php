@@ -22,6 +22,7 @@ echo '
 	<p><a href="/wish-list">My Wish List</a></p>
 	<p><a href="/view-wishlist">Share Wish List</a></p>
 	<p><a href="/share-equipment">Share Equipment List</a></p>
+	<p><a href="/event-calendar">Event Calendar</a></p>
 	</div>
 	</div>
 </div>';

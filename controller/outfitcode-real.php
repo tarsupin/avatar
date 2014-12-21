@@ -18,7 +18,7 @@ if(Form::submitted("outfitcode-real"))
 	$outfitArray = json_decode($_POST['saved'], true);
 	if($outfitArray === NULL)
 	{
-		if($outfitArray = unserialize($_POST['saved']))
+		if($outfitArray = @unserialize($_POST['saved']))
 		{
 			// Uni5 code, need to index properly; existence is automatically checked
 			// check ownership
