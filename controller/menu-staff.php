@@ -34,6 +34,7 @@ echo '
 	<p><a href="staff/shop-refresh">Refresh Shops</a></p>
 	<p><a href="staff/item-create">Create Item</a></p>
 	<p><a href="staff/package-manage">Manage EPs</a></p>
+	<p><a href="staff/wrapper-manage">Manage Wrappers</a></p>
 	<p><a href="staff/poof">Poof Item/Package</a></p>
 	<p><a href="staff/transfer5">Transfer 5 to 6</a></p>
 	<p><a href="staff/transfer6">Transfer 6 to 6</a></p>

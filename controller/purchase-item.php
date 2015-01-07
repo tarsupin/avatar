@@ -32,18 +32,15 @@ if(!$item = AppAvatar::getShopItems($shopID, $url[1]))
 $item['id'] = (int) $item['id'];
 $ownItem = AppAvatar::checkOwnItem(Me::$id, $item['id']);
 
-// If you own the item, announce it here
-if($ownItem)
-{
-	Alert::info("Own Item", "Note: You already own this item!");
-}
-
 $wrappers = AppAvatar::wrappers();
 
 // Check if you purchased the item
 if(Form::submitted("purchase-item"))
 {
-	AppAvatar::purchaseItem($item['id'], $shopID);
+	if(AppAvatar::purchaseItem($item['id'], $shopID))
+	{
+		$ownItem = true;
+	}
 }
 
 // Set page title
@@ -98,7 +95,7 @@ echo '
 	echo '
 	<br /><br />
 	<form class="uniform" method="post">' . Form::prepare("purchase-item") . '
-		<input type="submit" name="submit" value="Purchase" />
+		<input type="submit" name="submit" style="white-space:normal;" value="' . ($ownItem ? 'You already own this item. Purchase Again?' : 'Purchase') . '" />
 	</form>
 	</div>
 </div>

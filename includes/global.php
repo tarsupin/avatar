@@ -3,11 +3,6 @@
 // Main Navigation
 $urlActive = (isset($url[0]) && $url[0] != "" ? $url[0] : "home");
 
-if($urlActive != "preview-avi" && time() < 1419580800)
-{
-	Alert::success("Event", 'Learn about the Winter Wonderland Calendar <a href="http://avatar.unifaction.community/official-events/27906-unifactions-winter-wonderland">here</a> and don\'t forget to <a href="/event-calendar">check back daily</a>!');
-}
-
 if(Me::$loggedIn)
 {
 	WidgetLoader::add("UniFactionMenu", 10, '
@@ -56,12 +51,13 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
 				<li class="dropdown-slot"><a href="staff/package-manage">Manage EPs</a></li>
+				<li class="dropdown-slot"><a href="staff/wrapper-manage">Manage Wrappers</a></li>
 				<li class="dropdown-slot"><a href="staff/poof">Poof Item/Package</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer5">Transfer 5 to 6</a></li>
 				<li class="dropdown-slot"><a href="staff/transfer6">Transfer 6 to 6</a></li>
 				<li class="dropdown-slot"><a href="staff/transferred-names">Transfer Name Changes</a></li>
 			</ul>
-		</li>' : "") . '<li class="menu-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum</a></li>
+		</li>' : "") . '
 	</ul>
 </div>');
 // Main Navigation
@@ -77,7 +73,6 @@ WidgetLoader::add("MobilePanel", 50, '
 		<li class="nav-slot"><a href="menu-wrappers">Wrappers<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot"><a href="menu-misc">Misc</a><span class="icon-circle-right nav-arrow"></span></a></li>'
 		 . (Me::$clearance >= 5 ? '<li class="nav-slot"><a href="/menu-staff">Staff<span class="icon-circle-right nav-arrow"></span></a></li>' : '') . '
-		 <li class="nav-slot"><a href="' . URL::avatar_unifaction_community() . Me::$slg . '">Forum<span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');
 }

@@ -14,7 +14,7 @@ if(Me::$clearance < 5)
 
 if(Form::submitted("create-item"))
 {
-	$title = Sanitize::word($_POST['title'], " ");
+	$title = Sanitize::word($_POST['title'], " 0123456789");
 	$position = Sanitize::variable($_POST['position']);
 	$gender = (in_array($_POST['gender'], array("b", "f", "m")) ? $_POST['gender'] : "b");
 	$rarityLevel = (int) $_POST['rarity'];

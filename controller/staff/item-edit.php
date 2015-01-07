@@ -24,7 +24,7 @@ if(isset($_GET['delete']))
 
 if(Form::submitted("edit-item"))
 {
-	$title = Sanitize::word($_POST['title'], " ");
+	$title = Sanitize::word($_POST['title'], " 0123456789");
 	if($title != $itemData['title'])
 	{
 		Database::query("UPDATE `items` SET title=? WHERE id=? LIMIT 1", array($title, $url[2]));
