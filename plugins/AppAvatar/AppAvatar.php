@@ -239,7 +239,7 @@ abstract class AppAvatar {
 	
 	// $itemData = AppAvatar::itemMinCost($itemID);
 	{
-		if(Me::$clearance < 5)
+		if(Me::$clearance < 4)
 		{
 			$rarity = self::itemData($itemID, "rarity_level");
 			if($rarity['rarity_level'] != 0)
@@ -506,7 +506,7 @@ abstract class AppAvatar {
 		
 		// staff may purchase rare items
 		$itemData['rarity_level'] = (int) $itemData['rarity_level'];
-		if($itemData['rarity_level'] > 0 && Me::$clearance < 5)
+		if($itemData['rarity_level'] > 0 && Me::$clearance < 4)
 		{
 			Alert::saveError("Not Allowed", "Purchase of " . $itemData['title'] . (in_array($itemID, $wrappers) ? ' (Wrapper)' : '') . " is not allowed.");
 			return false;

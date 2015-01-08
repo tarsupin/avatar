@@ -212,7 +212,7 @@ foreach($outfitArray as $pos => $item)
 			echo '
 		<span class="owned" href="">[&bull;]</span>';
 		}
-		elseif($eItem['rarity_level'] == 0 || Me::$clearance >= 5)
+		elseif($eItem['rarity_level'] == 0 || Me::$clearance >= 4)
 		{
 			$cost = AppAvatar::itemMinCost($eItem['id']);
 			if($cost != 0)

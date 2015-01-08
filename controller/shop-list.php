@@ -56,7 +56,7 @@ echo '
 </div>';
 	
 // Display Staff Shops
-if(Me::$clearance >= 5)
+if(Me::$clearance >= 4)
 {
 	echo '
 <div class="overwrap-box">

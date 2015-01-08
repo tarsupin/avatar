@@ -14,13 +14,13 @@ if(Me::$clearance < 5)
 
 if(Form::submitted("create-wrapper"))
 {
-	$_POST['id'] = (int) $_POST['id'];
+	$_POST['item'] = (int) $_POST['item'];
 	FormValidate::input("Content", $_POST['content'], 1, 255);
 	$_POST['content'] = explode(",", $_POST['content']);
 	foreach($_POST['content'] as $key => $val)
 	{
 		$_POST['content'][$key] = (int) $val;
-		if($val == $_POST['id'])
+		if($val == $_POST['item'])
 		{
 			unset($_POST['content'][$key]);
 		}
@@ -28,10 +28,10 @@ if(Form::submitted("create-wrapper"))
 	$_POST['content'] = array_unique($_POST['content']);
 	
 	// check if item is already a wrapper
-	if(!$wrapper = Database::selectOne("SELECT id FROM wrappers WHERE id=? LIMIT 1", array($_POST['id'])))
+	if(!$wrapper = Database::selectOne("SELECT id FROM wrappers WHERE id=? LIMIT 1", array($_POST['item'])))
 	{
 		// check existence of wrapper and content
-		if($wrap = AppAvatar::itemData($wrapper['id']))
+		if($wrap = AppAvatar::itemData($_POST['item']))
 		{
 			foreach($_POST['content'] as $p)
 			{
@@ -124,7 +124,6 @@ echo '
 <div class="overwrap-box">
 <div class="overwrap-line">Create Wrapper</div>
 	<div class="inner-box">
-	<span style="color:red">This tool is untested! Please contact Pegasus before first use.</span>
 	<form class="uniform" method="post">' . Form::prepare("create-wrapper") . '
 		<p><input type="number" name="item" maxlength="8"/> wrapper ID</p>
 		<p><input type="text" name="content" maxlength="255"/> content IDs (separated by comma)</p>

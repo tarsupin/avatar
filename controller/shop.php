@@ -33,7 +33,7 @@ $shops = array(
 	18 => "Credit Shop",
 	14 => "Exotic Exhibit"
 );
-if(Me::$clearance >= 5)
+if(Me::$clearance >= 4)
 {
 	$shops[13] = "Archive";
 	$shops[16] = "Staff Shop";
@@ -146,7 +146,7 @@ echo '
 </div>';
 
 // Allow staff to purchase all items (replaces the "Preview" text with a purchase link)
-if(Me::$clearance >= 5)
+if(Me::$clearance >= 4)
 {
 ?>
 		
