@@ -49,10 +49,11 @@ if(Form::submitted("create-wrapper"))
 				// create duplicate if necessary
 				if(isset($_POST['replacement']))
 				{
-					if(AppAvatarAdmin::createItem($wrap['title'], $wrap['position'], $wrap['gender'], $wrap['rarity_level'], $wrap['coord_x_male'], $wrap['coord_y_male'], $wrap['coord_x_female'], $wrap['coord_y_female']))
+					if(AppAvatarAdmin::createItem($wrap['title'], $wrap['position'], $wrap['gender'], ($wrap['rarity_level'] < 2 ? (int) $wrap['rarity_level'] : 1), (int) $wrap['coord_x_male'], (int) $wrap['coord_y_male'], (int) $wrap['coord_x_female'], (int) $wrap['coord_y_female']))
 					{
 						$replace = Database::$lastID;
-						if($cost = AppAvatar::itemMinCost($wrap['id']))
+						Database::query("UPDATE items SET min_order=?, max_order=? WHERE id=? LIMIT 1", array((int) $wrap['min_order'], (int) $wrap['max_order'], $replace));
+						if($cost = AppAvatar::itemMinCost((int) $wrap['id']))
 						{
 							if(AppAvatarAdmin::addShopItem(19, $replace, $cost))
 							{
@@ -76,7 +77,7 @@ if(Form::submitted("create-wrapper"))
 				
 				if(FormValidate::pass())
 				{
-					if(Database::query("INSERT INTO wrappers VALUES (?, ?, ?)", array($wrap['id'], implode(",", $_POST['content']), (isset($replace) ? $replace : 0))))
+					if(Database::query("INSERT INTO wrappers VALUES (?, ?, ?)", array((int) $wrap['id'], implode(",", $_POST['content']), (isset($replace) ? $replace : 0))))
 					{
 						Database::endTransaction();
 						Alert::success("Wrapper Added", "The wrapper has been created.");

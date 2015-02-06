@@ -198,7 +198,7 @@ foreach($positions as $position)
 }
 echo '</select> layer</p>
 		<p><select name="gender"><option value="b"' . ($itemData['gender'] == "b" ? ' selected' : '') . '>both</option><option value="f"' . ($itemData['gender'] == "f" ? ' selected' : '') . '>female</option><option value="m" ' . ($itemData['gender'] == "m" ? ' selected' : '') . '>male</option></select> gender</p>
-		<p><select name="rarity"><option value="0"' . ($itemData['rarity_level'] == 0 ? ' selected' : '') . '>freely purchasable</option><option value="1"' . ($itemData['rarity_level'] == 1 ? ' selected' : '') . '>not purchasable</option><option value="2"' . ($itemData['rarity_level'] == 2 ? ' selected' : '') . '>costs UniJoule</option></select> rarity</p>
+		<p><select name="rarity"><option value="0"' . ($itemData['rarity_level'] == 0 ? ' selected' : '') . '>freely purchasable</option><option value="1"' . ($itemData['rarity_level'] == 1 ? ' selected' : '') . '>not purchasable</option><option value="2"' . ($itemData['rarity_level'] == 2 ? ' selected' : '') . '>EP item</option></select> rarity</p>
 		<p><select name="relation"><option value="free">free</option><option value="above"' . ($itemData['min_order'] == 2 && $itemData['max_order'] == 99 ? ' selected' : '') . '>above base</option><option value="skin"' . ($itemData['min_order'] == 1 && $itemData['max_order'] == 1 ? ' selected' : '') . '>on base (skin)</option><option value="below"' . ($itemData['min_order'] == -99 && $itemData['max_order'] == -1 ? ' selected' : '') . '>below base</option></select> relation to base</p>
 		<p><input type="submit" value="Edit"/></p>
 	</form>
