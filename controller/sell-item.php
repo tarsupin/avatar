@@ -45,6 +45,13 @@ if(Form::submitted("sell-item") && !Alert::hasErrors())
 	if(Auro::grant(Me::$id, (int) round($item['cost']/2), "Sold " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : ''), $config['site-name']))
 	{
 		AppAvatar::dropItem(Me::$id, $url[1], "Sold to Shop");
+		if($item['rarity_level'] != 0)
+		{
+			if($packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($item['id'])))
+			{
+				AppExotic::stats($packageID, 0, $item['id'], -1);
+			}
+		}
 		Alert::saveSuccess("Item Sold", 'You have sold ' . $item['title'] . ' for ' . round($item['cost']/2) . ' Auro.');
 		header("Location: /dress-avatar?position=" . $item['position']); exit;	
 	}

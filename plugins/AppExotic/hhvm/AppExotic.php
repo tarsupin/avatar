@@ -9,11 +9,13 @@ This class provides handling of the Exotic Item Shop.
 -------------------------------
 ------ Methods Available ------
 -------------------------------
+
 $slot =		AppExotic::getItem($slotID);			// get the slot's current content
 $slot =		AppExotic::chooseItem($slotID);			// choose an item for one of the 4 shop slots
 			AppExotic::saveSlot($slotID, $data); 	// save slot to database
 $success =	AppExotic::buyItem($slotID, $itemID); 	// purchase an available item
 $success = 	AppExotic::buyPackage($packageID);		// purchase the current package
+$success = 	AppExotic::stats($packageID, $packageChange, $itemID);	// log the change in EP (item) numbers
 
 */
 
@@ -83,8 +85,8 @@ abstract class AppExotic {
 					$item = $content[0]['item_id'];
 				}
 				// roughly equal time for all items
-				//$expire = time() + (floor((date("t") - $exception) / count($content) * 6) * 4 * 3600);
-				$expire = time() + (floor((date("t") - $exception) / 9 * 6) * 4 * 3600);
+				$expire = time() + (floor((date("t") - $exception) / count($content) * 6) * 4 * 3600);
+				//$expire = time() + (floor((date("t") - $exception) / 9 * 6) * 4 * 3600);
 				// expire at the end of month, if not earlier
 				$expire = min($expire, mktime(0, 0, 0, date("n")+1, 1)-1);
 				break;				
@@ -173,16 +175,13 @@ abstract class AppExotic {
 			{
 				$success3 = Database::query("UPDATE shop_exotic SET stock=stock-? WHERE slot=? AND item=? LIMIT 1", array(1, $slotID, $itemID));
 			}
-			if($success1 && $success2 && $success3)
-			{
-				Database::endTransaction();
-				return true;
-			}
-			else
-			{
-				Database::endTransaction(false);
-				return false;
-			}
+			
+			// get package ID
+			$packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($itemID));
+			self::stats($packageID, 0, $itemID);
+			
+			Database::endTransaction($success1 && $success2 && $success3);
+			return ($success1 && $success2 && $success3);
 		}
 		
 		return false;
@@ -209,19 +208,58 @@ abstract class AppExotic {
 			Database::startTransaction();
 			$success1 = Credits::chargeInstant(Me::$id, 3.50, "Purchased " . $exist['title']);
 			$success2 = AppAvatar::receivePackage(Me::$id, $packageID, "Purchased from Exotic Shop");
-			if($success1 && $success2)
-			{
-				Database::endTransaction();
-				return true;
-			}
-			else
-			{
-				Database::endTransaction(false);
-				return false;
-			}
+			self::stats($packageID, 1);
+			
+			Database::endTransaction($success1 && $success2);
+			return ($success1 && $success2);
 		}
 		
 		return false;
+	}
+	
+/****** Log for the sale statistics ******/
+	public static function stats
+	(
+		int $packageID		// <int> The ID of the package being bought or opened.
+	,	int $packageChange	// <int> What to do with the package count. -1 for reduce (opening), 0 for nothing (buying item), 1 for increase (purchasing)
+	,	int $itemID = 0		// <int> The ID of the item being bought or chosen, if applicable.
+	,	int $itemChange = 1	// <int> Whether to increase or reduce the item count.
+	): bool					// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppExotic::stats($packageID, $packageChange, $itemID);
+	{
+		if(!$packageID)
+		{
+			return false;
+		}
+		
+		$pass = true;
+		Database::startTransaction();
+		if(!Database::selectOne("SELECT existing FROM packages_stats WHERE package_id=? LIMIT 1", array($packageID)))
+		{
+			$count = (int) Database::selectValue("SELECT COUNT(*) FROM user_packages WHERE package_id=?", array($packageID));
+			$pass = Database::query("INSERT INTO packages_stats VALUES (?, ?)", array($packageID, $count));
+		}
+		if($pass && $packageChange != 0)
+		{
+			$pass = Database::query("UPDATE packages_stats SET existing=existing+? WHERE package_id=? LIMIT 1", array($packageChange, $packageID));
+		}
+
+		if($itemID && $pass)
+		{
+			if(!Database::selectValue("SELECT existing FROM packages_content WHERE item_id=? AND package_id=? LIMIT 1", array($itemID, $packageID)))
+			{
+				$count = (int) Database::selectValue("SELECT COUNT(*) FROM user_items WHERE item_id=?", array($itemID));
+				$pass = Database::query("REPLACE INTO packages_content VALUES (?, ?, ?)", array($itemID, $packageID, $count));
+			}
+			else
+			{
+				$pass = Database::query("UPDATE packages_content SET existing=existing+? WHERE item_id=? AND package_id=? LIMIT 1", array($itemChange, $itemID, $packageID));
+			}
+		}
+		Database::endTransaction($pass);
+		
+		return $pass;
 	}
 	
 }

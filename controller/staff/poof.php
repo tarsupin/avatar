@@ -25,13 +25,18 @@ if(Form::submitted("poof-item"))
 		if(count($item) == 1)
 		{
 			Database::startTransaction();
+			$packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array((int) $item[0]['id']));
 			for($i=0; $i<$_POST['amount']; $i++)
 			{
 				if(!AppAvatar::receiveItem($account, (int) $item[0]['id'], $_POST['reason']))
 				{
-					Alert::error("Package Not Given", $item[0]['title'] . " could not be given to " . $_POST['account'] . ".");
+					Alert::error("Item Not Given", $item[0]['title'] . " could not be given to " . $_POST['account'] . ".");
 					Database::endTransaction(false);
 					break;
+				}
+				elseif($packageID)
+				{
+					AppExotic::stats($packageID, 0, (int) $item[0]['id']);
 				}
 			}
 			
@@ -80,6 +85,10 @@ if(Form::submitted("poof-package"))
 					Alert::error("Package Not Given", $packages[$_POST['package']] . " could not be given to " . $_POST['account'] . ".");
 					Database::endTransaction(false);
 					break;
+				}
+				else
+				{
+					AppExotic::stats($_POST['package'], 1);
 				}
 			}
 			

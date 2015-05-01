@@ -40,6 +40,13 @@ if(Form::submitted("purchase-item"))
 	if(AppAvatar::purchaseItem($item['id'], $shopID))
 	{
 		$ownItem = true;
+		if(Me::$clearance >= 4)
+		{
+			if($packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($item['id'])))
+			{
+				AppExotic::stats($packageID, 0, $item['id']);
+			}
+		}
 	}
 }
 

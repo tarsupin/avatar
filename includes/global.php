@@ -50,6 +50,7 @@ if(Me::$loggedIn)
 			<ul>
 				<li class="dropdown-slot"><a href="staff/shop-refresh">Refresh Shops</a></li>
 				<li class="dropdown-slot"><a href="staff/item-create">Create Item</a></li>
+				' . (Me::$clearance >= 8 ? '<li class="dropdown-slot"><a href="staff/exotic-stats">Exotic Stats</a></li>' : '') . '
 				<li class="dropdown-slot"><a href="staff/package-manage">Manage EPs</a></li>
 				<li class="dropdown-slot"><a href="staff/wrapper-manage">Manage Wrappers</a></li>
 				<li class="dropdown-slot"><a href="staff/poof">Poof Item/Package</a></li>

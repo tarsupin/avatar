@@ -130,6 +130,7 @@ class AppAvatar_config {
 		(
 			`item_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`package_id`			smallint(5)		unsigned	NOT NULL	DEFAULT '0',
+			`existing`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
 			UNIQUE (`item_id`, `package_id`)
 		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;

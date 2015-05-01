@@ -33,6 +33,7 @@ echo '
 	<div class="inner-box">
 	<p><a href="staff/shop-refresh">Refresh Shops</a></p>
 	<p><a href="staff/item-create">Create Item</a></p>
+	' . (Me::$clearance >= 8 ? '<p><a href="staff/exotic-stats">Exotic Stats</a></p>' : '') . '
 	<p><a href="staff/package-manage">Manage EPs</a></p>
 	<p><a href="staff/wrapper-manage">Manage Wrappers</a></p>
 	<p><a href="staff/poof">Poof Item/Package</a></p>

@@ -80,7 +80,16 @@ else if($getLink == "replace")
 else if(isset($_GET['buy']))
 {
 	$_GET['buy'] = (int) $_GET['buy'];
-	AppAvatar::purchaseItem($_GET['buy']);
+	if(AppAvatar::purchaseItem($_GET['buy']))
+	{
+		if(Me::$clearance >= 4)
+		{
+			if($packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($_GET['buy'])))
+			{
+				AppExotic::stats($packageID, 0, $_GET['buy']);
+			}
+		}
+	}
 }
 
 else if($getLink == "buyAll")
@@ -91,7 +100,16 @@ else if($getLink == "buyAll")
 		
 		if(!AppAvatar::checkOwnItem(Me::$id, $oa[0]))
 		{
-			AppAvatar::purchaseItem($oa[0]);
+			if(AppAvatar::purchaseItem($oa[0]))
+			{
+				if(Me::$clearance >= 4)
+				{
+					if($packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($oa[0])))
+					{
+						AppExotic::stats($packageID, 0, $oa[0]);
+					}
+				}
+			}
 		}
 	}
 }

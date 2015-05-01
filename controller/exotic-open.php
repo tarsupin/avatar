@@ -51,9 +51,10 @@ if(isset($url[2]))
 					
 		// give item
 		if(AppAvatar::receiveItem(Me::$id, $item['id'], "Chosen from EP"))
-		{		
+		{
 			// remove package
 			AppAvatar::dropPackage(Me::$id, $url[1], "Chose " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : ''));
+			AppExotic::stats($url[1], -1, $item['id']);
 			Alert::saveSuccess("Item Chosen", "You have received " . $item['title'] . (in_array($item['id'], $wrappers) ? ' (Wrapper)' : '') . ".");
 			header("Location:/dress-avatar?position=" . $item['position']); exit;
 		}

@@ -29,6 +29,10 @@ abstract class AppTransfer {
 		{
 			if(AppAvatar::receiveItem($uniID, (int) $item['clothingID'], "Transfer from Uni5"))
 			{
+				if($packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array((int) $item['clothingID'])))
+				{
+					AppExotic::stats($packageID, 0, (int) $item['clothingID']);
+				}
 				Database::query("DELETE FROM _transfer_items WHERE id=? AND account=? LIMIT 1", array((int) $item['id'], $oldUsername));
 			}
 			else
@@ -60,7 +64,8 @@ abstract class AppTransfer {
 		foreach($list as $package)
 		{
 			if(AppAvatar::receivePackage($uniID, (int) $package['packageID'], "Transfer from Uni5"))
-			{				
+			{
+				AppExotic::stats((int) $package['packageID'], 1);
 				Database::query("DELETE FROM _transfer_packages WHERE id=? AND account=? LIMIT 1", array((int) $package['id'], $oldUsername));
 			}
 			else
