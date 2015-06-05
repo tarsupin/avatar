@@ -68,7 +68,7 @@ foreach($positions as $position)
 }
 echo '</select> layer</p>
 		<p><select name="gender"><option value="b">both</option><option value="f">female</option><option value="m">male</option></select> gender</p>
-		<p><select name="rarity"><option value="0">freely purchasable</option><option value="1">not purchasable</option><option value="2">EP item</option></select> rarity</p>
+		<p><select name="rarity"><option value="0">freely purchasable</option><option value="1">not purchasable</option><option value="2">EP/UJ item</option></select> rarity</p>
 		<p><select name="relation"><option value="free">free</option><option value="above">above base</option><option value="skin">on base (skin)</option><option value="below">below base</option></select> relation to base</p>
 		<p><input type="submit" value="Create"/></p>
 	</form>

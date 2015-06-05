@@ -15,7 +15,7 @@ if(Me::$clearance < 5)
 if(Form::submitted("poof-item"))
 {
 	$_POST['amount'] = (int) $_POST['amount'];
-	$_POST['item'] = Sanitize::word($_POST['item'], " ");
+	$_POST['item'] = Sanitize::variable($_POST['item'], " .");
 	$_POST['account'] = Sanitize::variable($_POST['account'], ".");
 	$_POST['reason'] = Sanitize::punctuation($_POST['reason']);
 	$account = User::getIDByHandle($_POST['account']);	

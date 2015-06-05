@@ -90,7 +90,7 @@ if(!isset($url[2]))
 	if(!isset($url[1]))
 	{
 		// get packages
-		$packages = Database::selectMultiple("SELECT id, title, year, month, COUNT(uni_id) AS count FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? GROUP BY id", array(Me::$id));
+		$packages = Database::selectMultiple("SELECT id, title, year, month, COUNT(uni_id) AS count FROM packages INNER JOIN user_packages ON packages.id=user_packages.package_id WHERE uni_id=? GROUP BY id ORDER BY id DESC", array(Me::$id));
 
 		// get item info
 		foreach($packages as $key => $package)

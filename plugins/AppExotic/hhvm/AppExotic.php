@@ -29,7 +29,7 @@ abstract class AppExotic {
 	
 	//	AppExotic::getSlot($slotID);
 	{
-		if($slotID > 1)
+		if($slotID > 1 && $slotID < 5)
 		{
 			return Database::selectOne("SELECT item, stock, cost, expire FROM shop_exotic WHERE slot=? AND stock>? AND expire>=? LIMIT 1", array($slotID, 0, time()));
 		}
@@ -50,6 +50,7 @@ abstract class AppExotic {
 
 		switch($slotID)
 		{
+			// current month item
 			case 1:
 				$age = 0;
 				$stock = 0;
@@ -85,21 +86,23 @@ abstract class AppExotic {
 					$item = $content[0]['item_id'];
 				}
 				// roughly equal time for all items
-				$expire = time() + (floor((date("t") - $exception) / count($content) * 6) * 4 * 3600);
-				//$expire = time() + (floor((date("t") - $exception) / 9 * 6) * 4 * 3600);
+				$expire = time() + (floor((date("t") - $exception) / count($content) * 8) * 3600);
 				// expire at the end of month, if not earlier
 				$expire = min($expire, mktime(0, 0, 0, date("n")+1, 1)-1);
-				break;				
+				break;
+			// last month item
 			case 2:
 				$age = rand(1, 3);
 				$stock = rand(7, 10);
 				$expire = time() + (rand(36, 60) * 3600);
 				break;
+			// older item
 			case 3:
 				$age = rand(4, 10);
 				$stock = rand(4, 7);
 				$expire = time() + (rand(36, 60) * 3600);
 				break;
+			// older item
 			case 4:
 				$oldest = $current_year - 2009;
 				$oldest *= 12;
@@ -107,6 +110,20 @@ abstract class AppExotic {
 				$age = rand(11, $oldest);
 				$stock = rand(1, 3);
 				$expire = time() + (rand(36, 60) * 3600);
+				break;
+			// credit shop items
+			default:
+				srand(date("z") . date("Y"));
+				$items = Database::selectMultiple("SELECT item, cost FROM shop_exotic_inventory", array());
+				$keys = array_rand($items, 5);
+				$expire = mktime(0, 0, 0, date("n"), date("j")+1);
+				for($i=5; $i<10; $i++)
+				{
+					$key = $keys[$i-5];
+					$item = AppAvatar::itemData((int) $items[$key]['item'], "id, title, position, gender");
+					$result[$i] = array("itemData" => $item, "stock" => 0, "expire" => $expire, "cost" => (float) $items[$key]['cost']);
+				}
+				return $result;
 		}
 		
 		$month = (int) date("n", mktime(0, 0, 0, $current_month-$age, 1, $current_year));
@@ -161,7 +178,7 @@ abstract class AppExotic {
 		if($exist != array())
 		{
 			// item has expired or run out of stock
-			if(($exist['stock'] == 0 && $slotID > 1) || $exist['expire'] < time())
+			if(($exist['stock'] == 0 && $slotID > 1 && $slotID < 5) || $exist['expire'] < time())
 			{
 				return false;
 			}
@@ -171,14 +188,13 @@ abstract class AppExotic {
 			$success1 = Credits::chargeInstant(Me::$id, (float) $exist['cost'], "Purchased " . $itemData['title']);
 			$success2 = AppAvatar::receiveItem(Me::$id, $itemID, "Purchased from Exotic Shop");
 			$success3 = true;
-			if($slotID > 1)
+			if($slotID > 1 && $slotID < 5)
 			{
 				$success3 = Database::query("UPDATE shop_exotic SET stock=stock-? WHERE slot=? AND item=? LIMIT 1", array(1, $slotID, $itemID));
+				// get package ID
+				$packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($itemID));
+				self::stats($packageID, 0, $itemID);
 			}
-			
-			// get package ID
-			$packageID = (int) Database::selectValue("SELECT package_id FROM packages_content WHERE item_id=? LIMIT 1", array($itemID));
-			self::stats($packageID, 0, $itemID);
 			
 			Database::endTransaction($success1 && $success2 && $success3);
 			return ($success1 && $success2 && $success3);
@@ -192,6 +208,7 @@ abstract class AppExotic {
 	public static function buyPackage
 	(
 		int $packageID		// <int> The ID of the package you are purchasing.
+	,	bool $bulk = false	// <bool> Whether the user purchases a single package (false) or 5 packages for a discount (true).
 	)					// RETURNS TRUE on success, or FALSE if failed.
 	
 	//	AppExotic::buyPackage($packageID);
@@ -206,9 +223,23 @@ abstract class AppExotic {
 		
 			// try to purchase
 			Database::startTransaction();
-			$success1 = Credits::chargeInstant(Me::$id, 3.50, "Purchased " . $exist['title']);
-			$success2 = AppAvatar::receivePackage(Me::$id, $packageID, "Purchased from Exotic Shop");
-			self::stats($packageID, 1);
+			if(!$bulk)
+			{
+				$success1 = Credits::chargeInstant(Me::$id, 3.50, "Purchased " . $exist['title']);
+				$success2 = AppAvatar::receivePackage(Me::$id, $packageID, "Purchased from Exotic Shop");
+				self::stats($packageID, 1);
+			}
+			else
+			{
+				$success1 = Credits::chargeInstant(Me::$id, 15.00, "Purchased 5 " . $exist['title'] . "s");
+				$count = 0;
+				do
+				{
+					$count++;
+					$success2 = AppAvatar::receivePackage(Me::$id, $packageID, "Purchased from Exotic Shop");
+				} while($success2 && $count < 5);
+				self::stats($packageID, 5);
+			}
 			
 			Database::endTransaction($success1 && $success2);
 			return ($success1 && $success2);

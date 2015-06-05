@@ -32,6 +32,29 @@ class AppExotic_config {
 		ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 		
+		Database::exec("
+		CREATE TABLE `shop_exotic` (
+			`slot` TINYINT(1) UNSIGNED NOT NULL,
+			`item` MEDIUMINT(6) UNSIGNED NOT NULL,
+			`stock` TINYINT(2) UNSIGNED NOT NULL,
+			`cost` DECIMAL(7,2) UNSIGNED NOT NULL,
+			`expire` INT(10) UNSIGNED NOT NULL,
+			PRIMARY KEY (`slot`, `item`),
+			INDEX `stock` (`stock`, `expire`)
+		)
+		ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+		
+		Database::exec("
+		CREATE TABLE `shop_exotic_inventory` (
+			`item` MEDIUMINT(6) UNSIGNED NOT NULL,
+			`cost` DECIMAL(7,2) UNSIGNED NOT NULL,
+			PRIMARY KEY (`item`)
+		)
+		ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+
+		
 		return $this->isInstalled();
 	}
 	
