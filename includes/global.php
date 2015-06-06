@@ -58,7 +58,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="staff/transfer6">Transfer 6 to 6</a></li>
 				<li class="dropdown-slot"><a href="staff/transferred-names">Transfer Name Changes</a></li>
 			</ul>
-		</li>' : "") . '<li onmouseover="" class="menu-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a></li>
+		</li>' : "") . '
 	</ul>
 </div>');
 // Main Navigation
@@ -74,7 +74,6 @@ WidgetLoader::add("MobilePanel", 50, '
 		<li class="nav-slot"><a href="menu-wrappers">Wrappers<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot"><a href="menu-misc">Misc</a><span class="icon-circle-right nav-arrow"></span></a></li>'
 		 . (Me::$clearance >= 5 ? '<li class="nav-slot"><a href="/menu-staff">Staff<span class="icon-circle-right nav-arrow"></span></a></li>' : '') . '
-		<li class="nav-slot"><a href="' . URL::avatar_unifaction_community() . '">Forum</a><span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');
 }
