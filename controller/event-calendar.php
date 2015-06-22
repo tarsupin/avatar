@@ -80,7 +80,7 @@ echo '
 	<div class="overwrap-line">Event Calendar</div>
 	<div class="inner-box">
 		<p>Event calendars provide items for free. When any items are available, they are listed below. You can receive each item exactly once. Usually the available items change daily.</p>
-		<p>Since this makes the items gifts from the staff, there is one rule to remember: Do not attempt to gain extras through mule accounts (secondary accounts belonging to the same person)! Ninjas and similar non-profit accounts are excempt from this rule.</p>';
+		<p>Since this makes the items gifts from the staff, there is one rule to remember: Do not attempt to gain extras through mule accounts (secondary accounts belonging to the same person)! Ninjas and similar non-profit accounts are exempt from this rule.</p>';
 
 $wrappers = AppAvatar::wrappers();
 $calendars = Database::selectMultiple("SELECT * FROM event_calendar WHERE 1", array());
@@ -134,7 +134,7 @@ foreach($calendars as $cal)
 	// leave data for a month to allow checks by staff
 	elseif($cal['start'] + ($cal['duration'] + 30) * 86400 <= time())
 	{
-		AppEvent::pruneCalendar((int) $cal['id']);
+		AppEvent::pruneCalendar((int) $cal['cal_id']);
 	}
 }
 
