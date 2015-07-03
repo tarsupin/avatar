@@ -379,6 +379,7 @@ abstract class AppOutfit {
 					break;
 				case 3302:	// Dancer Base
 				case 3454:  // Velvet Dancer
+				case 4590:	// Base Wipe
 					$toerase['female']['base'][] = array(0, 0, 205, 383, $oa[0]);
 					$toerase['male']['base'][] = array(0, 0, 205, 383, $oa[0]);
 					break;

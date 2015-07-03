@@ -25,7 +25,7 @@ if(Me::$loggedIn)
 				<li class="dropdown-slot"><a href="/exotic-purchase">Exotic Items</a></li>
 				<li class="dropdown-slot"><a href="/shop-search">Shop Search</a></li>
 			</ul>
-		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item")) ? " nav-active" : "") . '"><a href="/gift-trade">Gift &amp; Trade</a>
+		</li><li onmouseover="" class="menu-slot' . (in_array($urlActive, array("gift-trade", "log-auro", "log-item", "log-package")) ? " nav-active" : "") . '"><a href="/gift-trade">Gift &amp; Trade</a>
 			<ul>
 				<li class="dropdown-slot"><a href="' . URL::karma_unifaction_com() . '/auro-transactions">Auro Log</a></li>
 				<li class="dropdown-slot"><a href="/log-item">Item Log</a></li>
